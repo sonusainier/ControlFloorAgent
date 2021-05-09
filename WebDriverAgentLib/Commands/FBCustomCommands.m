@@ -57,6 +57,8 @@
 #endif
     [[FBRoute POST:@"/wda/pressButton"] respondWithTarget:self action:@selector(handlePressButtonCommand:)],
     [[FBRoute POST:@"/wda/performIoHidEvent"] respondWithTarget:self action:@selector(handlePeformIOHIDEvent:)],
+    [[FBRoute POST:@"/wda/tap"] respondWithTarget:self action:@selector(handleDeviceTap:)],
+    [[FBRoute POST:@"/wda/tap"].withoutSession respondWithTarget:self action:@selector(handleDeviceTap:)],
     [[FBRoute POST:@"/wda/expectNotification"] respondWithTarget:self action:@selector(handleExpectNotification:)],
     [[FBRoute POST:@"/wda/siri/activate"] respondWithTarget:self action:@selector(handleActivateSiri:)],
     [[FBRoute POST:@"/wda/apps/launchUnattached"].withoutSession respondWithTarget:self action:@selector(handleLaunchUnattachedApp:)],
@@ -255,6 +257,17 @@
   if (![XCUIDevice.sharedDevice fb_activateSiriVoiceRecognitionWithText:(id)request.arguments[@"text"] error:&error]) {
     return FBResponseWithUnknownError(error);
   }
+  return FBResponseWithOK();
+}
+
++ (id <FBResponsePayload>)handleDeviceTap:(FBRouteRequest *)request
+{
+  CGFloat x = [request.arguments[@"x"] doubleValue];
+  CGFloat y = [request.arguments[@"y"] doubleValue];
+  [XCUIDevice.sharedDevice
+    fb_synthTapWithX:x
+    y:y];
+    
   return FBResponseWithOK();
 }
 

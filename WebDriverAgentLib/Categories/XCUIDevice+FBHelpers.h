@@ -113,6 +113,9 @@ NS_ASSUME_NONNULL_BEGIN
                             duration:(NSTimeInterval)duration
                                error:(NSError **)error;
 
+- (BOOL)fb_synthTapWithX:(CGFloat)x
+  y:(CGFloat)y;
+
 @end
 
 NS_ASSUME_NONNULL_END
