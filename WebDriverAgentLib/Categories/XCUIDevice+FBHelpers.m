@@ -290,12 +290,14 @@ static bool fb_isLocked;
 
 - (BOOL)fb_performIOHIDEventWithPage:(unsigned int)page
                                usage:(unsigned int)usage
+                               //type:(unsigned int)type
                             duration:(NSTimeInterval)duration
                                error:(NSError **)error
 {
   XCDeviceEvent *event = [XCDeviceEvent deviceEventWithPage:page
                                                       usage:usage
                                                    duration:duration];
+  //event.type = type;
   return [self performDeviceEvent:event error:error];
 }
 
@@ -315,6 +317,60 @@ static bool fb_isLocked;
   [[self eventSynthesizer] 
     synthesizeEvent:eventRecord 
     completion:(id)^(BOOL result, NSError *invokeError) {} ];
+  return YES;
+}
+
+- (BOOL)fb_synthSwipe:(CGFloat)x1
+  y1:(CGFloat) y1
+  x2:(CGFloat) x2
+  y2:(CGFloat) y2
+  delay:(CGFloat) delay
+{
+  CGPoint point1 = CGPointMake(x1,y1);
+  CGPoint point2 = CGPointMake(x2,y2);
+  
+  CGFloat TapDuration = 0.05;
+  
+  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point1 offset:0];
+  [pointerEventPath moveToPoint:point2 atOffset:delay];
+  [pointerEventPath liftUpAtOffset:delay];
+  
+  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
+  [eventRecord addPointerEventPath:pointerEventPath];
+  
+  [[self eventSynthesizer]
+    synthesizeEvent:eventRecord
+    completion:(id)^(BOOL result, NSError *invokeError) {} ];
+  return YES;
+}
+
+- (BOOL)fb_synthKeyEvent:(id)keyId
+  modifierFlags:(unsigned long long) modifierFlags
+{
+  //XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] init];
+  //[pointerEventPath liftUpAtOffset:TapDuration];
+  
+  CGFloat x = 200;
+  CGFloat y = 200;
+  CGPoint point = CGPointMake(x,y);
+  
+  CGFloat TapDuration = 0.05;
+  
+  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point offset:0];
+      
+  [pointerEventPath typeKey:keyId modifiers:modifierFlags atOffset:0];
+    
+  [pointerEventPath liftUpAtOffset:TapDuration];
+  
+  XCPointerEvent *event = pointerEventPath.pointerEvents[1];
+  
+  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
+  [eventRecord addPointerEventPath:pointerEventPath];
+  
+  [[self eventSynthesizer] 
+    synthesizeEvent:event
+    completion:(id)^(BOOL result, NSError *invokeError) {} ];
+
   return YES;
 }
 
