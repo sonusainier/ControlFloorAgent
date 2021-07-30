@@ -452,7 +452,10 @@
                 [FBLogger logFmt:@"sending err :%d", sendErr ];
             }
             nng_msg_free( respN );
-            if( freeResponse ) free( respText );
+            if( freeResponse ) {
+                free( respText );
+                freeResponse = false;
+            }
         }
     }
     
