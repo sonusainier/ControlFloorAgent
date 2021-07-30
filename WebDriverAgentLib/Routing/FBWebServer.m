@@ -8,6 +8,7 @@
  */
 
 #import "FBWebServer.h"
+#import "NNGServer.h"
 
 #import "RoutingConnection.h"
 #import "RoutingHTTPServer.h"
@@ -91,7 +92,7 @@ static NSString *const FBServerURLEndMarker = @"<-ServerURLHere";
 
   [self registerRouteHandlers:[self.class collectCommandHandlerClasses]];
   [self registerServerKeyRouteHandlers];
-
+  
   NSRange serverPortRange = FBConfiguration.bindingPortRange;
   NSError *error;
   BOOL serverStarted = NO;
@@ -113,6 +114,18 @@ static NSString *const FBServerURLEndMarker = @"<-ServerURLHere";
     abort();
   }
   [FBLogger logFmt:@"%@http://%@:%d%@", FBServerURLBeginMarker, [XCUIDevice sharedDevice].fb_wifiIPAddress ?: @"localhost", [self.server port], FBServerURLEndMarker];
+}
+
+- (void)startNng
+{
+  _nngThreadInst = [[NngThread alloc] init:8101];
+  //[NSThread detachNewThreadSelector:@selector(entry:) toTarget:_nngThreadInst withObject:nil];
+  [_nngThreadInst entry:self];
+}
+
+- (void)stopNng
+{
+  
 }
 
 - (void)initScreenshotsBroadcaster

@@ -24,9 +24,6 @@
 #import "XCDeviceEvent.h"
 
 #import "XCPointerEventPath.h"
-#import "XCSynthesizedEventRecord.h"
-#import "FBXCTestDaemonsProxy.h"
-#import "XCTRunnerDaemonSession.h"
 
 static const NSTimeInterval FBHomeButtonCoolOffTime = 1.;
 static const NSTimeInterval FBScreenLockTimeout = 5.;
@@ -299,79 +296,6 @@ static bool fb_isLocked;
                                                    duration:duration];
   //event.type = type;
   return [self performDeviceEvent:event error:error];
-}
-
-- (BOOL)fb_synthTapWithX:(CGFloat)x
-  y:(CGFloat) y
-{
-  CGPoint point = CGPointMake(x,y);
-  
-  CGFloat TapDuration = 0.05;
-  
-  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point offset:0];
-  [pointerEventPath liftUpAtOffset:TapDuration];
-  
-  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
-  [eventRecord addPointerEventPath:pointerEventPath];
-  
-  [[self eventSynthesizer] 
-    synthesizeEvent:eventRecord 
-    completion:(id)^(BOOL result, NSError *invokeError) {} ];
-  return YES;
-}
-
-- (BOOL)fb_synthSwipe:(CGFloat)x1
-  y1:(CGFloat) y1
-  x2:(CGFloat) x2
-  y2:(CGFloat) y2
-  delay:(CGFloat) delay
-{
-  CGPoint point1 = CGPointMake(x1,y1);
-  CGPoint point2 = CGPointMake(x2,y2);
-  
-  CGFloat TapDuration = 0.05;
-  
-  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point1 offset:0];
-  [pointerEventPath moveToPoint:point2 atOffset:delay];
-  [pointerEventPath liftUpAtOffset:delay];
-  
-  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
-  [eventRecord addPointerEventPath:pointerEventPath];
-  
-  [[self eventSynthesizer]
-    synthesizeEvent:eventRecord
-    completion:(id)^(BOOL result, NSError *invokeError) {} ];
-  return YES;
-}
-
-- (BOOL)fb_synthKeyEvent:(id)keyId
-  modifierFlags:(unsigned long long) modifierFlags
-{
-  //XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] init];
-  //[pointerEventPath liftUpAtOffset:TapDuration];
-  
-  CGFloat x = 200;
-  CGFloat y = 200;
-  CGPoint point = CGPointMake(x,y);
-  
-  CGFloat TapDuration = 0.05;
-  
-  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point offset:0];
-      
-  [pointerEventPath typeKey:keyId modifiers:modifierFlags atOffset:0];
-    
-  [pointerEventPath liftUpAtOffset:TapDuration];
-  
-  XCPointerEvent *event = pointerEventPath.pointerEvents[1];
-  
-  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
-  [eventRecord addPointerEventPath:pointerEventPath];
-  
-  [[self eventSynthesizer] 
-    synthesizeEvent:event
-    completion:(id)^(BOOL result, NSError *invokeError) {} ];
-
-  return YES;
 }
 
 @end

@@ -510,6 +510,15 @@
 		C8FB547422D3949C00B69954 /* LSApplicationWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = C8FB547322D3949C00B69954 /* LSApplicationWorkspace.h */; };
 		C8FB547922D4C1FC00B69954 /* FBUnattachedAppLauncher.h in Headers */ = {isa = PBXBuildFile; fileRef = C8FB547722D4C1FC00B69954 /* FBUnattachedAppLauncher.h */; };
 		C8FB547A22D4C1FC00B69954 /* FBUnattachedAppLauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = C8FB547822D4C1FC00B69954 /* FBUnattachedAppLauncher.m */; };
+		CEA4750326AB82E2006D60B5 /* libnng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA4750226AB82CF006D60B5 /* libnng.a */; };
+		CEA4752426ABF477006D60B5 /* libnng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA4750226AB82CF006D60B5 /* libnng.a */; };
+		CEA4753026ABF4A9006D60B5 /* red_black_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */; };
+		CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752E26ABF4A9006D60B5 /* ujsonin.c */; };
+		CEA4753226ABF4A9006D60B5 /* string-tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752F26ABF4A9006D60B5 /* string-tree.c */; };
+		CEACE61126B21D4B0006AA5C /* NNGServer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE61026B21D4B0006AA5C /* NNGServer.m */; };
+		CEACE61226B21D4B0006AA5C /* NNGServer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE61026B21D4B0006AA5C /* NNGServer.m */; };
+		CEACE62526B220B70006AA5C /* XCUIDevice+CFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */; };
+		CEACE62626B220B70006AA5C /* XCUIDevice+CFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */; };
 		E444DC65249131890060D7EB /* HTTPErrorResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = E444DC59249131880060D7EB /* HTTPErrorResponse.h */; };
 		E444DC67249131890060D7EB /* HTTPDataResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E444DC5B249131880060D7EB /* HTTPDataResponse.m */; };
 		E444DC6C249131890060D7EB /* HTTPDataResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = E444DC60249131890060D7EB /* HTTPDataResponse.h */; };
@@ -1070,6 +1079,15 @@
 		C8FB547322D3949C00B69954 /* LSApplicationWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSApplicationWorkspace.h; sourceTree = "<group>"; };
 		C8FB547722D4C1FC00B69954 /* FBUnattachedAppLauncher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FBUnattachedAppLauncher.h; sourceTree = "<group>"; };
 		C8FB547822D4C1FC00B69954 /* FBUnattachedAppLauncher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FBUnattachedAppLauncher.m; sourceTree = "<group>"; };
+		CEA4750226AB82CF006D60B5 /* libnng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnng.a; sourceTree = "<group>"; };
+		CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = red_black_tree.c; path = ujsonin/red_black_tree.c; sourceTree = SOURCE_ROOT; };
+		CEA4752E26ABF4A9006D60B5 /* ujsonin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ujsonin.c; path = ujsonin/ujsonin.c; sourceTree = SOURCE_ROOT; };
+		CEA4752F26ABF4A9006D60B5 /* string-tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "string-tree.c"; path = "ujsonin/string-tree.c"; sourceTree = SOURCE_ROOT; };
+		CEACE61026B21D4B0006AA5C /* NNGServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NNGServer.m; sourceTree = "<group>"; };
+		CEACE61B26B21D7F0006AA5C /* NNGServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NNGServer.h; sourceTree = "<group>"; };
+		CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XCUIDevice+CFHelpers.m"; sourceTree = "<group>"; };
+		CEACE62F26B220C90006AA5C /* XCUIDevice+CFHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+CFHelpers.h"; sourceTree = "<group>"; };
+		CEACE63826B238480006AA5C /* XCElementSnapshot-XCUIElementSnapshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCElementSnapshot-XCUIElementSnapshot.h"; sourceTree = "<group>"; };
 		E444DC59249131880060D7EB /* HTTPErrorResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPErrorResponse.h; path = WebDriverAgentLib/Vendor/CocoaHTTPServer/Responses/HTTPErrorResponse.h; sourceTree = SOURCE_ROOT; };
 		E444DC5B249131880060D7EB /* HTTPDataResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPDataResponse.m; path = WebDriverAgentLib/Vendor/CocoaHTTPServer/Responses/HTTPDataResponse.m; sourceTree = SOURCE_ROOT; };
 		E444DC60249131890060D7EB /* HTTPDataResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPDataResponse.h; path = WebDriverAgentLib/Vendor/CocoaHTTPServer/Responses/HTTPDataResponse.h; sourceTree = SOURCE_ROOT; };
@@ -1374,6 +1392,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA4750326AB82E2006D60B5 /* libnng.a in Frameworks */,
 				7155B414224D5B170042A993 /* XCTest.framework in Frameworks */,
 				7155B41C224D5B5D0042A993 /* libxml2.tbd in Frameworks */,
 				7155B41B224D5B5A0042A993 /* libAccessibility.tbd in Frameworks */,
@@ -1393,6 +1412,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA4752426ABF477006D60B5 /* libnng.a in Frameworks */,
 				7155B40E224D5A850042A993 /* libAccessibility.tbd in Frameworks */,
 				7155B424224D5BA10042A993 /* XCTest.framework in Frameworks */,
 				716C9347224D540C004B8542 /* libxml2.tbd in Frameworks */,
@@ -1624,6 +1644,7 @@
 		B6E83A410C45944B036B6B0F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CEA4750226AB82CF006D60B5 /* libnng.a */,
 				716C9341224D5369004B8542 /* iOS */,
 				716C9340224D5358004B8542 /* tvOS */,
 			);
@@ -1740,6 +1761,8 @@
 				EEDFE1201D9C06F800E6FFE5 /* XCUIDevice+FBHealthCheck.m */,
 				AD6C26961CF2481700F8B5FF /* XCUIDevice+FBHelpers.h */,
 				AD6C26971CF2481700F8B5FF /* XCUIDevice+FBHelpers.m */,
+				CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */,
+				CEACE62F26B220C90006AA5C /* XCUIDevice+CFHelpers.h */,
 				EEE3763D1D59F81400ED88DD /* XCUIDevice+FBRotation.h */,
 				EEE3763E1D59F81400ED88DD /* XCUIDevice+FBRotation.m */,
 				EE9AB7451CAEDF0C008C271F /* XCUIElement+FBAccessibility.h */,
@@ -1850,6 +1873,8 @@
 				715557D2211DBCE700613B26 /* FBTCPSocket.m */,
 				EE9AB78C1CAEDF0C008C271F /* FBWebServer.h */,
 				EE9AB78D1CAEDF0C008C271F /* FBWebServer.m */,
+				CEACE61026B21D4B0006AA5C /* NNGServer.m */,
+				CEACE61B26B21D7F0006AA5C /* NNGServer.h */,
 			);
 			name = Routing;
 			path = WebDriverAgentLib/Routing;
@@ -2075,6 +2100,9 @@
 		EEC288F81BF0ED2500B4DC79 /* WebDriverAgentLib */ = {
 			isa = PBXGroup;
 			children = (
+				CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */,
+				CEA4752F26ABF4A9006D60B5 /* string-tree.c */,
+				CEA4752E26ABF4A9006D60B5 /* ujsonin.c */,
 				E444DC4A24912EC40060D7EB /* Vendor */,
 				EE9AB73E1CAEDF0C008C271F /* Categories */,
 				EE9AB74F1CAEDF0C008C271F /* Commands */,
@@ -2203,6 +2231,7 @@
 				1BA7DD8C206D694B007C7C26 /* XCTElementSetTransformer-Protocol.h */,
 				7119097B2152580600BA3C7E /* XCUIScreen.h */,
 				711CD03325ED1106001C01D2 /* XCUIScreenDataSource-Protocol.h */,
+				CEACE63826B238480006AA5C /* XCElementSnapshot-XCUIElementSnapshot.h */,
 			);
 			path = XCTest;
 			sourceTree = "<group>";
@@ -2928,12 +2957,11 @@
 			};
 			buildConfigurationList = 91F9DAE41B99DBC2001349B2 /* Build configuration list for PBXProject "WebDriverAgent" */;
 			compatibilityVersion = "Xcode 10.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
-				English,
 			);
 			mainGroup = 91F9DAE01B99DBC2001349B2;
 			productRefGroup = 91F9DAEA1B99DBC2001349B2 /* Products */;
@@ -3053,6 +3081,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEACE62626B220B70006AA5C /* XCUIDevice+CFHelpers.m in Sources */,
+				CEACE61226B21D4B0006AA5C /* NNGServer.m in Sources */,
 				718226CF2587443700661B83 /* GCDAsyncSocket.m in Sources */,
 				E444DCBC24917A5E0060D7EB /* HTTPResponseProxy.m in Sources */,
 				E444DCBE24917A5E0060D7EB /* Route.m in Sources */,
@@ -3180,17 +3210,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */,
 				EE158AC71CBD456F00A3E3F0 /* FBScreenshotCommands.m in Sources */,
 				E444DC98249131D40060D7EB /* HTTPConnection.m in Sources */,
 				EEEC7C931F21F27A0053426C /* FBPredicate.m in Sources */,
 				7136A47A1E8918E60024FC3D /* XCUIElement+FBPickerWheel.m in Sources */,
 				E444DC84249131B10060D7EB /* DDRange.m in Sources */,
 				6385F4A7220A40760095BBDB /* XCUIApplicationProcessDelay.m in Sources */,
+				CEA4753026ABF4A9006D60B5 /* red_black_tree.c in Sources */,
 				711084451DA3AA7500F913D6 /* FBXPath.m in Sources */,
 				719CD8FD2126C88B00C7D0C2 /* XCUIApplication+FBAlert.m in Sources */,
 				71241D781FAE31F100B9559F /* FBAppiumActionsSynthesizer.m in Sources */,
 				641EE70E2240CE4800173FCB /* FBTVNavigationTracker.m in Sources */,
 				71BD20741F86116100B36EC2 /* XCUIApplication+FBTouchAction.m in Sources */,
+				CEA4753226ABF4A9006D60B5 /* string-tree.c in Sources */,
 				EE158AE71CBD456F00A3E3F0 /* FBWebServer.m in Sources */,
 				718226EA2587446200661B83 /* YYKVStorage.m in Sources */,
 				718226EE2587446200661B83 /* YYCache.m in Sources */,
@@ -3229,6 +3262,7 @@
 				EE158ADB1CBD456F00A3E3F0 /* FBResponseJSONPayload.m in Sources */,
 				EE7E271F1D06C69F001BEC7B /* FBXCTestCaseImplementationFailureHoldingProxy.m in Sources */,
 				7155D704211DCEF400166C20 /* FBMjpegServer.m in Sources */,
+				CEACE61126B21D4B0006AA5C /* NNGServer.m in Sources */,
 				EEDFE1221D9C06F800E6FFE5 /* XCUIDevice+FBHealthCheck.m in Sources */,
 				E444DCB424913C220060D7EB /* RoutingHTTPServer.m in Sources */,
 				7140974E1FAE20EE008FB2C5 /* FBBaseActionsSynthesizer.m in Sources */,
@@ -3257,6 +3291,7 @@
 				718226F42587446200661B83 /* YYMemoryCache.m in Sources */,
 				EE158AAF1CBD456F00A3E3F0 /* XCUIElement+FBAccessibility.m in Sources */,
 				7150348821A6DAD600A0F4BA /* FBImageUtils.m in Sources */,
+				CEACE62526B220B70006AA5C /* XCUIDevice+CFHelpers.m in Sources */,
 				E444DCAB24913C220060D7EB /* HTTPResponseProxy.m in Sources */,
 				E444DC6D249131890060D7EB /* HTTPErrorResponse.m in Sources */,
 				71F5BE25252E576C00EE9EBA /* XCUIElement+FBSwiping.m in Sources */,
@@ -3609,7 +3644,13 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.WebDriverAgentLib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -3668,8 +3709,14 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "";
+				PRELINK_LIBS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.WebDriverAgentLib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3897,9 +3944,11 @@
 			baseConfigurationReference = EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = NO;
+				DEVELOPMENT_TEAM = 7628766FL2;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -3915,8 +3964,12 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.WebDriverAgentLib;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appium.WebDriverAgentLib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3972,6 +4025,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
@@ -4197,7 +4254,9 @@
 			baseConfigurationReference = EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7628766FL2;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = WebDriverAgentRunner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -4209,7 +4268,7 @@
 					"$(inherited)",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.WebDriverAgentRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appium.WebDriverAgentRunner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USES_XCTRUNNER = YES;
 				WARNING_CFLAGS = (

@@ -29,10 +29,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)startServing;
 
+- (void)startNng;
+
+@property id nngThreadInst;
+
 /**
  Stops WebDriverAgent service, shutting down HTTP and USB servers.
  */
 - (void)stopServing;
+
+- (void)stopNng;
 
 @end
 

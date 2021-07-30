@@ -83,6 +83,14 @@ static FBSession *_activeSession = nil;
   _activeSession = session;
 }
 
+- (void)setApplication:(FBApplication *)application
+{
+  NSMutableDictionary *apps = [NSMutableDictionary dictionary];
+  [apps setObject:application forKey:application.bundleID];
+  self.applications = apps.copy;
+  self.testedApplicationBundleId = application.bundleID;
+}
+
 + (instancetype)sessionWithIdentifier:(NSString *)identifier
 {
   if (!identifier) {
