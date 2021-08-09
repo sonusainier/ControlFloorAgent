@@ -1,8 +1,5 @@
-//
-//  NNGServer.h
 //  Copyright © 2021 DryArk LLC. All rights reserved.
 //  Anti-Corruption License ( AC_LICENSE.TXT )
-//
 
 #ifndef NNGServer_h
 #define NNGServer_h

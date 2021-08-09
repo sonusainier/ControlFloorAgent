@@ -39,6 +39,8 @@
 - (id)initForTextInput;
 // Since Xcode 10.2
 - (void)setModifiers:(unsigned long long)arg1 mergeWithCurrentModifierFlags:(_Bool)arg2 atOffset:(double)arg3;
+// Since ?
+- (id)initForMouseEvents;
 
 - (id)init;
 

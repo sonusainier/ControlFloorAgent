@@ -15,20 +15,49 @@
 
 @implementation XCUIDevice (CFHelpers)
 
+- (void)runEventPath:(XCPointerEventPath*)path
+{
+  XCSynthesizedEventRecord *event = [[XCSynthesizedEventRecord alloc]
+                                     initWithName:nil
+                                     interfaceOrientation:0];
+  [event addPointerEventPath:path];
+  
+  [[self eventSynthesizer]
+    synthesizeEvent:event
+    completion:(id)^(BOOL result, NSError *invokeError) {} ];
+}
+
 - (void)cf_tap:(CGFloat)x
   y:(CGFloat) y
 {
-  CGPoint point = CGPointMake(x,y);
-  
-  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point offset:0];
-  [pointerEventPath liftUpAtOffset:0.05];
-  
-  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
-  [eventRecord addPointerEventPath:pointerEventPath];
-  
-  [[self eventSynthesizer]
-    synthesizeEvent:eventRecord
-    completion:(id)^(BOOL result, NSError *invokeError) {} ];
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                              initForTouchAtPoint:CGPointMake(x,y)
+                              offset:0];
+  [path liftUpAtOffset:0.05];
+  [self runEventPath:path];
+}
+
+- (void)cf_tapTime:(CGFloat)x
+  y:(CGFloat) y
+  time:(CGFloat) time
+{
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                              initForTouchAtPoint:CGPointMake(x,y)
+                              offset:0];
+  [path liftUpAtOffset:time];
+  [self runEventPath:path];
+}
+
+- (void)cf_tapFirm:(CGFloat)x
+  y:(CGFloat) y
+  pressure:(CGFloat) pressure
+{
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                              initForMouseAtPoint:CGPointMake(x,y)
+                              offset:0];
+  [path pressDownWithPressure:pressure atOffset:0];
+  [path liftUpAtOffset:0.05];
+  [self runEventPath:path];
 }
 
 - (void)cf_swipe:(CGFloat)x1
@@ -37,41 +66,20 @@
   y2:(CGFloat) y2
   delay:(CGFloat) delay
 {
-  CGPoint point1 = CGPointMake(x1,y1);
-  CGPoint point2 = CGPointMake(x2,y2);
-  
-  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point1 offset:0];
-  [pointerEventPath moveToPoint:point2 atOffset:delay];
-  [pointerEventPath liftUpAtOffset:delay];
-  
-  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
-  [eventRecord addPointerEventPath:pointerEventPath];
-  
-  [[self eventSynthesizer]
-    synthesizeEvent:eventRecord
-    completion:(id)^(BOOL result, NSError *invokeError) {} ];
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                              initForTouchAtPoint:CGPointMake(x1,y1)
+                              offset:0];
+  [path moveToPoint:CGPointMake(x2,y2) atOffset:delay];
+  [path liftUpAtOffset:delay];
+  [self runEventPath:path];
 }
 
 - (void)cf_keyEvent:(id)keyId
   modifierFlags:(unsigned long long) modifierFlags
 {
-  CGPoint point = CGPointMake(200,200);
-  
-  //XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTouchAtPoint:point offset:0];
-  
-  XCPointerEventPath *pointerEventPath = [[XCPointerEventPath alloc] initForTextInput];
-  //[pointerEventPath t]
-  [pointerEventPath typeKey:keyId modifiers:modifierFlags atOffset:0.00];
-  //[pointerEventPath typeText:keyId atOffset:0.00 typingSpeed: 10];
-  
-  //[pointerEventPath liftUpAtOffset:0.10];
-  
-  XCSynthesizedEventRecord *eventRecord = [[XCSynthesizedEventRecord alloc] initWithName:nil interfaceOrientation:0];
-  [eventRecord addPointerEventPath:pointerEventPath];
-  
-  [[self eventSynthesizer]
-    synthesizeEvent:eventRecord
-    completion:(id)^(BOOL result, NSError *invokeError) {} ];
+  XCPointerEventPath *path = [[XCPointerEventPath alloc] initForTextInput];
+  [path typeKey:keyId modifiers:modifierFlags atOffset:0.00];
+  [self runEventPath:path];
 }
 
 - (BOOL)cf_iohid:(unsigned int)page
@@ -80,9 +88,10 @@
                             duration:(NSTimeInterval)duration
                                error:(NSError **)error
 {
-  XCDeviceEvent *event = [XCDeviceEvent deviceEventWithPage:page
-                                                      usage:usage
-                                                   duration:duration];
+  XCDeviceEvent *event = [XCDeviceEvent
+                          deviceEventWithPage:page
+                          usage:usage
+                          duration:duration];
   event.type = type;
   return [self performDeviceEvent:event error:error];
 }
