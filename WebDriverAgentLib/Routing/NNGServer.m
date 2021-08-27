@@ -58,14 +58,14 @@
     unsigned long cCount = [children count];
     
     NSString *typeStr = _typeMap[ elementType ];
-    [str appendFormat:@"%@<el type=%@", spaces, typeStr ];
-    if( [ident length] != 0 ) [str appendFormat:@" id=%@", ident ];
+    [str appendFormat:@"%@<el type=\"%@\"", spaces, typeStr ];
+    if( [ident length] != 0 ) [str appendFormat:@" id=\"%@\"", ident ];
   
     NSString *label = dict[@"label"];
-    if( [label length] ) [str appendFormat:@" label=%@", label];
+    if( [label length] ) [str appendFormat:@" label=\"%@\"", label];
   
     NSString *title = dict[@"title"];
-    if( [title length] ) [str appendFormat:@" title=%@", title];
+    if( [title length] ) [str appendFormat:@" title=\"%@\"", title];
   
     NSDictionary *rect = [dict objectForKey:@"frame"];
     [str
@@ -84,6 +84,51 @@
     }
   
     if( cCount ) [str appendFormat:@"%@</el>\n", spaces ];
+}
+
+-(void) dictToJson:(NSDictionary *)dict str:(NSMutableString *)str depth:(int)depth
+{
+    NSString *spaces = [@"" stringByPaddingToLength:depth withString:@"  " startingAtIndex:0];
+    //horizontalSizeClass,enabled,elementType,frame,title,verticalSizeClass,identifier,label,hasFocus,selected,children
+    long elementType = [dict[@"elementType"] integerValue];
+    NSString *ident = dict[@"identifier"];
+    
+    NSArray *children = dict[@"children"];
+    unsigned long cCount = [children count];
+    
+    NSString *typeStr = _typeMap[ elementType ];
+    [str appendFormat:@"%@{ \"type\":\"%@\",", spaces, typeStr ];
+    if( [ident length] != 0 ) [str appendFormat:@" \"id\":\"%@\",", ident ];
+  
+    NSString *label = dict[@"label"];
+    if( [label length] ) {
+      if( [label containsString:@"\""] ) {
+        label = [label stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+      }
+      [str appendFormat:@" \"label\":\"%@\",", label];
+    }
+  
+    NSString *title = dict[@"title"];
+    if( [title length] ) [str appendFormat:@" \"title\":\"%@\",", title];
+  
+    NSDictionary *rect = [dict objectForKey:@"frame"];
+    [str
+     appendFormat:@" \"x\":%.0f, \"y\":%.0f, \"w\":%.0f, \"h\":%.0f",
+     [rect[@"X"]     floatValue], [rect[@"Y"]      floatValue],
+     [rect[@"Width"] floatValue], [rect[@"Height"] floatValue]];
+   
+    if( !cCount ) [str appendFormat:@"}\n" ];
+    else [str appendFormat:@",\"c\":[\n" ];
+    
+    for( unsigned long i = 0; i < cCount; i++) {
+        NSObject *child = [children objectAtIndex:i];
+        //const char *className = class_getName( [child class] );
+        //[str appendFormat:@"  i:%d className:%s\n",i,className ];
+        [self dictToJson:(NSDictionary *)child str:str depth:(depth+2)];
+        if( i != ( cCount -1 ) ) [str appendFormat:@",\n" ];
+    }
+  
+    if( cCount ) [str appendFormat:@"%@]}\n", spaces ];
 }
 
 -(void) entry:(id)param {
@@ -275,9 +320,12 @@
                     XCElementSnapshot *snapshot = (XCElementSnapshot *) [el snapshotWithError:&error];
                     if( error != nil ) [FBLogger logFmt:@"err:%@", error ];
                     NSDictionary *dict = [snapshot dictionaryRepresentation];
-                    NSMutableString *str = [NSMutableString stringWithString:@""];;
-                    [self dictToStr:dict str:str depth: 0];
-                  
+                    NSMutableString *str = [NSMutableString stringWithString:@""];
+                    if( strlen( action ) > 6 ) {
+                        [self dictToJson:dict str:str depth: 0];
+                    } else {
+                        [self dictToStr:dict str:str depth: 0];
+                    }
                     //char buffer[1000];
                     //NSArray *keys = [dict allKeys];
                     /*for( int i = 0; i < [keys count]; i++) {
