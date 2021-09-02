@@ -6,6 +6,7 @@
 #import "FBConfiguration.h"
 #import "FBLogger.h"
 #import "FBSession.h"
+#import "FBAlert.h"
 #import "XCUIDevice+FBHelpers.h"
 #import "XCUIDevice+CFHelpers.h"
 #import "XCPointerEventPath.h"
@@ -271,6 +272,27 @@
                     if( eid ) {
                         [FBLogger logFmt:@"getElement id:%s", eid];
                         respTextA = strdup( eid );
+                    }
+                }
+                else if( !strncmp( action, "alertInfo", 9 ) ) {
+                    FBSession *session = [FBSession activeSession];
+                    FBAlert *alert = [FBAlert alertWithApplication:session.activeApplication];
+                    
+                    if(!alert.isPresent) {
+                        respText = "{present:false}";
+                    } else {
+                        NSString *res = @"{\n  present:true\n  buttons:[\n";
+                        NSString *alertText = alert.text;
+                        NSArray *labels = alert.buttonLabels;
+                        
+                        for( unsigned long i = 0; i < [labels count]; i++) {
+                            NSString *label = [labels objectAtIndex:i];
+                            res = [res stringByAppendingFormat:@"    \"%@\"\n", label ];
+                        }
+                        alertText = [alertText stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+                        res = [res stringByAppendingFormat:@"]\n  alert:\"%@\"\n]\n}", alertText];
+                      
+                        respTextA = strdup( [res UTF8String] );
                     }
                 }
                 else if( !strncmp( action, "status", 6 ) ) {
