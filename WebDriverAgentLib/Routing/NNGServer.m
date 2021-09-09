@@ -245,6 +245,17 @@
                     NSError *error = nil;
                     [element fb_tapWithError:&error];
                 }
+                else if( !strncmp( action, "elTouchAndHold", 14 ) ) {
+                    FBSession *session = [FBSession activeSession];
+                    
+                    FBElementCache *elementCache = session.elementCache;
+                    char *elId = node_hash__get_str( root, "id", 2 );
+                    NSString *id2 = [NSString stringWithUTF8String:elId];
+                  
+                    XCUIElement *element = [elementCache elementForUUID:id2];
+                    double forTime = node_hash__get_double( root, "time", 4 );
+                    [element pressForDuration:forTime];
+                }
                 else if( !strncmp( action, "elByName", 8 ) ) {
                     char *sid = node_hash__get_str( root, "sessionId", 9 );
                     NSString *sid2 = [NSString stringWithUTF8String:sid];
