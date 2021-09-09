@@ -306,6 +306,20 @@
                         respTextA = strdup( [res UTF8String] );
                     }
                 }
+                else if( !strncmp( action, "isLocked", 8 ) ) {
+                    bool locked = [XCUIDevice sharedDevice].fb_isScreenLocked;
+                    respText = locked ? "{\"locked\":true}" : "{\"locked\":false}";
+                }
+                else if( !strncmp( action, "lock", 4 ) ) {
+                    NSError *error;
+                    bool success = [[XCUIDevice sharedDevice] fb_lockScreen:&error];
+                    respText = success ? "{\"success\":true}" : "{\"success\":false}";
+                }
+                else if( !strncmp( action, "unlock", 6 ) ) {
+                    NSError *error;
+                    bool success = [[XCUIDevice sharedDevice] fb_unlockScreen:&error];
+                    respText = success ? "{\"success\":true}" : "{\"success\":false}";
+                }
                 else if( !strncmp( action, "status", 6 ) ) {
                     NSString *sessionId = [FBSession activeSession].identifier ?: nil;
                     if( sessionId == nil ) {
