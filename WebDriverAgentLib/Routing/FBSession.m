@@ -102,6 +102,25 @@ static FBSession *_activeSession = nil;
   return _activeSession;
 }
 
++ (instancetype)init
+{
+  FBSession *session = [FBSession new];
+  session.alertsMonitor = nil;
+  session.defaultAlertAction = nil;
+  session.identifier = [[NSUUID UUID] UUIDString];
+  session.defaultActiveApplication = FBDefaultApplicationAuto;
+  //session.testedApplicationBundleId = nil;
+  //NSMutableDictionary *apps = [NSMutableDictionary dictionary];
+  //if (application) {
+  //  [apps setObject:application forKey:application.bundleID];
+  //  session.testedApplicationBundleId = application.bundleID;
+  //}
+  //session.applications = apps.copy;
+  session.elementCache = [FBElementCache new];
+  [FBSession markSessionActive:session];
+  return session;
+}
+
 + (instancetype)initWithApplication:(FBApplication *)application
 {
   FBSession *session = [FBSession new];

@@ -5,7 +5,6 @@
 #import "XCElementSnapshot-XCUIElementSnapshot.h"
 #import "FBConfiguration.h"
 #import "FBLogger.h"
-#import "FBSession.h"
 #import "FBAlert.h"
 #import "XCUIDevice+FBHelpers.h"
 #import "XCUIDevice+CFHelpers.h"
@@ -18,6 +17,7 @@
 #import "XCUIElement+FBUID.h"
 #import "XCUIApplication+FBQuiescence.h"
 #import "XCUIApplication+FBHelpers.h"
+#import "FBXCAXClientProxy.h"
 #import <objc/runtime.h>
 
 @implementation NngThread
@@ -132,6 +132,19 @@
     if( cCount ) [str appendFormat:@"%@]}\n", spaces ];
 }
 
+NSString *createKey(void);
+NSString *createKey(void) {
+    NSString *keyCharSet = @"abcdefghijklmnopqrstuvwxyz0123456789";
+    int setLength = (int) [keyCharSet length];
+  
+    NSMutableString *key = [NSMutableString stringWithCapacity: 5];
+    for( int i=0; i<5; i++ ) {
+        [key appendFormat: @"%C",
+            [keyCharSet characterAtIndex: arc4random_uniform(setLength)]];
+    }
+    return key;
+}
+
 -(void) entry:(id)param {
     nng_rep_open(&_replySocket);
     
@@ -145,6 +158,11 @@
     }
     [FBLogger logFmt:@"NNG Ready"];
 
+    XCUIApplication *app = nil;
+    XCUIApplication *systemApp = nil;
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
+    XCUIDevice *device = XCUIDevice.sharedDevice;
+  
     ujsonin_init();
     while( 1 ) {
         nng_msg *nmsg = NULL;
@@ -178,21 +196,21 @@
                 else if( !strncmp( action, "tap", 3 ) && strlen( action ) == 3 ) {
                     int x = node_hash__get_int( root, "x", 1 );
                     int y = node_hash__get_int( root, "y", 1 );
-                    [XCUIDevice.sharedDevice cf_tap:x y:y];
+                    [device cf_tap:x y:y];
                     respText = "ok";
                 }
                 else if( !strncmp( action, "tapFirm" , 7 ) ) {
                     int x = node_hash__get_int( root, "x", 1 );
                     int y = node_hash__get_int( root, "y", 1 );
                     double pressure = node_hash__get_double( root, "pressure", 8 );
-                    [XCUIDevice.sharedDevice cf_tapFirm:x y:y pressure:pressure];
+                    [device cf_tapFirm:x y:y pressure:pressure];
                     respText = "ok";
                 }
                 else if( !strncmp( action, "tapTime" , 7 ) ) {
                     int x = node_hash__get_int( root, "x", 1 );
                     int y = node_hash__get_int( root, "y", 1 );
                     double forTime = node_hash__get_double( root, "time", 4 );
-                    [XCUIDevice.sharedDevice cf_tapTime:x y:y time:forTime];
+                    [device cf_tapTime:x y:y time:forTime];
                     respText = "ok";
                 }
                 else if( !strncmp( action, "swipe", 5 ) ) {
@@ -201,20 +219,18 @@
                     int x2 = node_hash__get_int( root, "x2", 2 );
                     int y2 = node_hash__get_int( root, "y2", 2 );
                     double delay = node_hash__get_double( root, "delay", 5 );
-                    [FBLogger logFmt:@"swipe x1:%d y1:%d x2:%d y2:%d delay:%f", x1,y1,x2,y2,delay];
-                    [XCUIDevice.sharedDevice
-                     cf_swipe:x1
-                     y1:y1 x2:x2 y2:y2 delay:delay];
+                    [FBLogger logFmt:@"swipe x1:%d y1:%d x2:%d y2:%d delay:%f",x1,y1,x2,y2,delay];
+                    [device cf_swipe:x1 y1:y1 x2:x2 y2:y2 delay:delay];
                     respText = "ok";
                 }
                 else if( !strncmp( action, "iohid", 5 ) ) {
-                    int page     = node_hash__get_int( root, "page", 4 );
-                    int usage    = node_hash__get_int( root, "usage", 5 );
-                    //int value    = node_hash__get_str( root, "value", 5 );
+                    int page        = node_hash__get_int( root, "page", 4 );
+                    int usage       = node_hash__get_int( root, "usage", 5 );
+                    //int value       = node_hash__get_str( root, "value", 5 );
                     double duration = node_hash__get_double( root, "duration", 8 );
                     
                     NSError *error;
-                    [XCUIDevice.sharedDevice
+                    [device
                      fb_performIOHIDEventWithPage:page
                      usage:usage
                      duration:duration
@@ -227,67 +243,59 @@
                     NSError *error;
                     char *name = node_hash__get_str( root, "name", 4 );
                     NSString *name2 = [NSString stringWithUTF8String:name];
-                    [XCUIDevice.sharedDevice
-                     fb_pressButton:name2
-                     error:&error];
+                    [device fb_pressButton:name2 error:&error];
                     free( name );
                     respText = "ok";
                 }
                 else if( !strncmp( action, "elClick", 7 ) ) {
-                    FBSession *session = [FBSession activeSession];
-                    //XCUIApplication *app = session.activeApplication;
-                    
-                    FBElementCache *elementCache = session.elementCache;
                     char *elId = node_hash__get_str( root, "id", 2 );
                     NSString *id2 = [NSString stringWithUTF8String:elId];
                   
-                    XCUIElement *element = [elementCache elementForUUID:id2];
+                    XCUIElement *element = dict[id2];
+                    [dict removeObjectForKey:id2];
                     NSError *error = nil;
                     [element fb_tapWithError:&error];
                 }
                 else if( !strncmp( action, "elTouchAndHold", 14 ) ) {
-                    FBSession *session = [FBSession activeSession];
-                    
-                    FBElementCache *elementCache = session.elementCache;
                     char *elId = node_hash__get_str( root, "id", 2 );
                     NSString *id2 = [NSString stringWithUTF8String:elId];
                   
-                    XCUIElement *element = [elementCache elementForUUID:id2];
+                    XCUIElement *element = dict[id2];
+                    [dict removeObjectForKey:id2];
                     double forTime = node_hash__get_double( root, "time", 4 );
                     [element pressForDuration:forTime];
                 }
                 else if( !strncmp( action, "elByName", 8 ) ) {
-                    char *sid = node_hash__get_str( root, "sessionId", 9 );
-                    NSString *sid2 = [NSString stringWithUTF8String:sid];
-                  
                     char *name = node_hash__get_str( root, "name", 4 );
                     NSString *name2 = [NSString stringWithUTF8String:name];
-                  
-                    FBSession *session = [FBSession sessionWithIdentifier:sid2];
-                    XCUIApplication *app = session.activeApplication;
                     
-                    XCUIElement *element = [  [app
-                                               fb_descendantsMatchingIdentifier:name2
-                                               shouldReturnAfterFirstMatch:true]
+                    XCUIElement *element = [ [app
+                                              fb_descendantsMatchingIdentifier:name2
+                                              shouldReturnAfterFirstMatch:true]
                                             firstObject];
+                    if( element == nil ) {
+                      element = [ [systemApp
+                                   fb_descendantsMatchingIdentifier:name2
+                                   shouldReturnAfterFirstMatch:true]
+                                 firstObject];
+                    }
                     
                     //let predicate = NSPredicate(format: "identifier CONTAINS 'Cat'")
                     //let image = app.images.matching(predicate).element(boundBy: 0)
                     //XCUIElementQuery *q = app.buttons;
                     //XCUIElement *element = [q elementBoundByIndex:0 ];
                   
-                    [session.elementCache storeElement:element];
-                  
-                    NSString *elId = element.fb_uid;
-                    const char *eid = [elId UTF8String];
-                    if( eid ) {
-                        [FBLogger logFmt:@"getElement id:%s", eid];
-                        respTextA = strdup( eid );
+                    NSString *key;
+                    for( int i=0;i<20;i++ ) {
+                        key = createKey();
+                        if( dict[key] == nil ) break;
                     }
+                    dict[key] = element;
+                    
+                    respTextA = strdup( [key UTF8String] );
                 }
                 else if( !strncmp( action, "alertInfo", 9 ) ) {
-                    FBSession *session = [FBSession activeSession];
-                    FBAlert *alert = [FBAlert alertWithApplication:session.activeApplication];
+                    FBAlert *alert = [FBAlert alertWithApplication:app];
                     
                     if(!alert.isPresent) {
                         respText = "{present:false}";
@@ -300,28 +308,29 @@
                             NSString *label = [labels objectAtIndex:i];
                             res = [res stringByAppendingFormat:@"    \"%@\"\n", label ];
                         }
-                        alertText = [alertText stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+                        alertText = [alertText stringByReplacingOccurrencesOfString:@"\""
+                                     withString:@"\\\""];
                         res = [res stringByAppendingFormat:@"]\n  alert:\"%@\"\n]\n}", alertText];
                       
                         respTextA = strdup( [res UTF8String] );
                     }
                 }
                 else if( !strncmp( action, "isLocked", 8 ) ) {
-                    bool locked = [XCUIDevice sharedDevice].fb_isScreenLocked;
+                    bool locked = device.fb_isScreenLocked;
                     respText = locked ? "{\"locked\":true}" : "{\"locked\":false}";
                 }
                 else if( !strncmp( action, "lock", 4 ) ) {
                     NSError *error;
-                    bool success = [[XCUIDevice sharedDevice] fb_lockScreen:&error];
+                    bool success = [device fb_lockScreen:&error];
                     respText = success ? "{\"success\":true}" : "{\"success\":false}";
                 }
                 else if( !strncmp( action, "unlock", 6 ) ) {
                     NSError *error;
-                    bool success = [[XCUIDevice sharedDevice] fb_unlockScreen:&error];
+                    bool success = [device fb_unlockScreen:&error];
                     respText = success ? "{\"success\":true}" : "{\"success\":false}";
                 }
                 else if( !strncmp( action, "status", 6 ) ) {
-                    NSString *sessionId = [FBSession activeSession].identifier ?: nil;
+                    NSString *sessionId = @"fakesession";
                     if( sessionId == nil ) {
                         respText = "{sessionId:\"\"}";
                     } else {
@@ -333,8 +342,6 @@
                 else if( !strncmp( action, "typeText", 8 ) ) {
                     char *text = node_hash__get_str( root, "text", 4 );
                     NSString *text2 = [NSString stringWithUTF8String:text];
-                    FBSession *session = [FBSession activeSession];
-                    XCUIApplication *app = session.activeApplication;
                     [app typeText: text2];
                 }
                 // Doesn't work...
@@ -347,48 +354,32 @@
                       modifierFlags:XCUIKeyModifierShift];
                 }
                 else if( !strncmp( action, "updateApplication", 17 ) ) {
-                    FBSession *session = [FBSession activeSession];
-                  
                     char *bi = node_hash__get_str( root, "bundleId", 8 );
-                    FBApplication *app = [  [FBApplication alloc]
-                                          initPrivateWithPath:nil
-                                          bundleID:[NSString stringWithUTF8String:bi]];
-                    [session setApplication:app];
+                    app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bi]];
                 }
                 else if( !strncmp( action, "source", 6 ) ) {
-                    //application.fb_xmlRepresentation
-                    
-                    FBSession *session = [FBSession activeSession];
-                    XCUIApplication *app = session.activeApplication;
-                    //NSString *src = app.fb_xmlRepresentation;
                     XCUIElement *el = app;
                   
-                    NSError *error = nil;
-                    XCElementSnapshot *snapshot = (XCElementSnapshot *) [el snapshotWithError:&error];
-                    if( error != nil ) [FBLogger logFmt:@"err:%@", error ];
-                    NSDictionary *dict = [snapshot dictionaryRepresentation];
+                    NSError *serror = nil;
+                    XCElementSnapshot *snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
+                    if( serror != nil ) [FBLogger logFmt:@"err:%@", serror ];
+                    NSDictionary *sdict = [snapshot dictionaryRepresentation];
                     NSMutableString *str = [NSMutableString stringWithString:@""];
                     if( strlen( action ) > 6 ) {
-                        [self dictToJson:dict str:str depth: 0];
+                        [self dictToJson:sdict str:str depth: 0];
                     } else {
-                        [self dictToStr:dict str:str depth: 0];
+                        [self dictToStr:sdict str:str depth: 0];
                     }
-                    //char buffer[1000];
-                    //NSArray *keys = [dict allKeys];
-                    /*for( int i = 0; i < [keys count]; i++) {
-                        NSString *el = [keys objectAtIndex:i];
-                        [FBLogger logFmt:@"el:%s", el ];
-                    }*/
-                    //NSString *keysStr = [keys componentsJoinedByString:@","];
                     respTextA = strdup( [str UTF8String] );
                 }
                 else if( !strncmp( action, "windowSize", 10 ) ) {
-                    FBSession *session = [FBSession activeSession];
-                    XCUIApplication *app = session.activeApplication;
                     CGRect frame = CGRectIntegral( app.frame );
                     
                     char output[100];
-                    sprintf(output,"{width:%d,height:%d}",(int)frame.size.width,(int)frame.size.height);
+                    sprintf(output,
+                            "{width:%d,height:%d}",
+                            (int)frame.size.width,
+                            (int)frame.size.height);
                     respText = output;
                 }
                 else if( !strncmp( action, "createSession", 13 ) ) {
@@ -411,12 +402,12 @@
                     //FBConfiguration.waitForIdleTimeout = 0.2;
                     
                     char *bundleID = node_hash__get_str( root, "bundleId", 8 );
-                    FBApplication *app = nil;
-                                      
+                                            
+                    int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+                    systemApp = [FBApplication applicationWithPID:pid];
                     if( strlen(bundleID) ) {
-                      app = [  [FBApplication alloc]
-                             initPrivateWithPath:nil
-                             bundleID:[NSString stringWithUTF8String:bundleID]];
+                      app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bundleID]];
+                      
                       app.fb_shouldWaitForQuiescence = true; // or nil
                       app.launchArguments = @[];
                       app.launchEnvironment = @{};
@@ -425,13 +416,11 @@
                       if( app.processID == 0 ) {
                         // todo
                       }
+                    } else {
+                      app = systemApp;
                     }
-                    
-                    //[FBSession initWithApplication:app
-                    //            defaultAlertAction:(id)requirements[DEFAULT_ALERT_ACTION]];
-                    [FBSession initWithApplication:app];
-                    
-                    NSString *sessionId = [FBSession activeSession].identifier;
+                                        
+                    NSString *sessionId = @"fakesession";
                     const char *sid = [sessionId UTF8String];
                     [FBLogger logFmt:@"createSession sid:%s", sid ];
                     respTextA = strdup( sid );

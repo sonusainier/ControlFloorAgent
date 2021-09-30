@@ -47,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (nullable instancetype)sessionWithIdentifier:(NSString *)identifier;
 
++ (instancetype)init;
+
 /**
  Creates and saves new session for application
 
