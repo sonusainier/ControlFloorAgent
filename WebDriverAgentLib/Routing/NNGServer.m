@@ -437,9 +437,11 @@ NSString *createKey(void) {
             [FBLogger logFmt:@"sending back :%s", respText ];
             if( respText ) nng_msg_append( respN, respText, strlen( respText ) );
             int sendErr = nng_sendmsg( _replySocket, respN, 0 );
-            if( sendErr ) [FBLogger logFmt:@"sending err :%d", sendErr ];
-
-            nng_msg_free( respN );
+            if( sendErr ) {
+                [FBLogger logFmt:@"sending err :%d", sendErr ];
+                nng_msg_free( respN );
+            }
+            
             if( respTextA ) free( respTextA );
         }
     }
