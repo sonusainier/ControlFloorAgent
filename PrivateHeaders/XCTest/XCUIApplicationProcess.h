@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <WebDriverAgentLib/CDStructures.h>
+#import <CFAgentLib/CDStructures.h>
 
 @class XCAXClient_iOS;
 @class XCAccessibilityElement;
