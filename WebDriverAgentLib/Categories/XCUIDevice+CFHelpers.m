@@ -20,6 +20,7 @@
   XCSynthesizedEventRecord *event = [[XCSynthesizedEventRecord alloc]
                                      initWithName:nil
                                      interfaceOrientation:0];
+  //XCSynthesizedEventRecord *event = [[XCSynthesizedEventRecord alloc] init];
   [event addPointerEventPath:path];
   
   [[self eventSynthesizer]

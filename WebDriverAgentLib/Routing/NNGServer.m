@@ -145,6 +145,90 @@ NSString *createKey(void) {
     return key;
 }
 
+/*XCUIElementQuery *appElsActivityIndicator( XCUIApplication *app ) { return app.activityIndicators; }
+XCUIElementQuery *appElsAlert( XCUIApplication *app ) { return app.alerts; }
+//XCUIElementQuery *appElsAny( XCUIApplication *app ) { return app.anys; }
+//XCUIElementQuery *appElsApplication( XCUIApplication *app ) { return app.applications; }
+XCUIElementQuery *appElsBrowser( XCUIApplication *app ) { return app.browsers; }
+XCUIElementQuery *appElsButton( XCUIApplication *app ) { return app.buttons; }
+XCUIElementQuery *appElsCell( XCUIApplication *app ) { return app.cells; }
+XCUIElementQuery *appElsCheckBox( XCUIApplication *app ) { return app.checkBoxes; }
+XCUIElementQuery *appElsCollectionView( XCUIApplication *app ) { return app.collectionViews; }
+XCUIElementQuery *appElsColorWell( XCUIApplication *app ) { return app.colorWells; }
+XCUIElementQuery *appElsComboBox( XCUIApplication *app ) { return app.comboBoxes; }
+XCUIElementQuery *appElsDatePicker( XCUIApplication *app ) { return app.datePickers; }
+XCUIElementQuery *appElsDecrementArrow( XCUIApplication *app ) { return app.decrementArrows; }
+XCUIElementQuery *appElsDialog( XCUIApplication *app ) { return app.dialogs; }
+XCUIElementQuery *appElsDisclosureTriangle( XCUIApplication *app ) { return app.disclosureTriangles; }
+XCUIElementQuery *appElsDockItem( XCUIApplication *app ) { return app.dockItems; }
+XCUIElementQuery *appElsDrawer( XCUIApplication *app ) { return app.drawers; }
+XCUIElementQuery *appElsGrid( XCUIApplication *app ) { return app.grids; }
+XCUIElementQuery *appElsGroup( XCUIApplication *app ) { return app.groups; }
+XCUIElementQuery *appElsHandle( XCUIApplication *app ) { return app.handles; }
+XCUIElementQuery *appElsHelpTag( XCUIApplication *app ) { return app.helpTags; }
+XCUIElementQuery *appElsIcon( XCUIApplication *app ) { return app.icons; }
+XCUIElementQuery *appElsImage( XCUIApplication *app ) { return app.images; }
+XCUIElementQuery *appElsIncrementArrow( XCUIApplication *app ) { return app.incrementArrows; }
+XCUIElementQuery *appElsKey( XCUIApplication *app ) { return app.keys; }
+XCUIElementQuery *appElsKeyboard( XCUIApplication *app ) { return app.keyboards; }
+XCUIElementQuery *appElsLayoutArea( XCUIApplication *app ) { return app.layoutAreas; }
+XCUIElementQuery *appElsLayoutItem( XCUIApplication *app ) { return app.layoutItems; }
+XCUIElementQuery *appElsLevelIndicator( XCUIApplication *app ) { return app.levelIndicators; }
+XCUIElementQuery *appElsLink( XCUIApplication *app ) { return app.links; }
+XCUIElementQuery *appElsMap( XCUIApplication *app ) { return app.maps; }
+XCUIElementQuery *appElsMatte( XCUIApplication *app ) { return app.mattes; }
+XCUIElementQuery *appElsMenu( XCUIApplication *app ) { return app.menus; }
+XCUIElementQuery *appElsMenuBar( XCUIApplication *app ) { return app.menuBars; }
+XCUIElementQuery *appElsMenuBarItem( XCUIApplication *app ) { return app.menuBarItems; }
+XCUIElementQuery *appElsMenuButton( XCUIApplication *app ) { return app.menuButtons; }
+XCUIElementQuery *appElsMenuItem( XCUIApplication *app ) { return app.menuItems; }
+XCUIElementQuery *appElsNavigationBar( XCUIApplication *app ) { return app.navigationBars; }
+XCUIElementQuery *appElsOther( XCUIApplication *app ) { return app.otherElements; }
+XCUIElementQuery *appElsOutline( XCUIApplication *app ) { return app.outlines; }
+XCUIElementQuery *appElsOutlineRow( XCUIApplication *app ) { return app.outlineRows; }
+XCUIElementQuery *appElsPageIndicator( XCUIApplication *app ) { return app.pageIndicators; }
+XCUIElementQuery *appElsPicker( XCUIApplication *app ) { return app.pickers; }
+XCUIElementQuery *appElsPickerWheel( XCUIApplication *app ) { return app.pickerWheels; }
+XCUIElementQuery *appElsPopUpButton( XCUIApplication *app ) { return app.popUpButtons; }
+XCUIElementQuery *appElsPopover( XCUIApplication *app ) { return app.popovers; }
+XCUIElementQuery *appElsProgressIndicator( XCUIApplication *app ) { return app.progressIndicators; }
+XCUIElementQuery *appElsRadioButton( XCUIApplication *app ) { return app.radioButtons; }
+XCUIElementQuery *appElsRadioGroup( XCUIApplication *app ) { return app.radioGroups; }
+XCUIElementQuery *appElsRatingIndicator( XCUIApplication *app ) { return app.ratingIndicators; }
+XCUIElementQuery *appElsRelevanceIndicator( XCUIApplication *app ) { return app.relevanceIndicators; }
+XCUIElementQuery *appElsRuler( XCUIApplication *app ) { return app.rulers; }
+XCUIElementQuery *appElsRulerMarker( XCUIApplication *app ) { return app.rulerMarkers; }
+XCUIElementQuery *appElsScrollBar( XCUIApplication *app ) { return app.scrollBars; }
+XCUIElementQuery *appElsScrollView( XCUIApplication *app ) { return app.scrollViews; }
+XCUIElementQuery *appElsSearchField( XCUIApplication *app ) { return app.searchFields; }
+XCUIElementQuery *appElsSecureTextField( XCUIApplication *app ) { return app.secureTextFields; }
+XCUIElementQuery *appElsSegmentedControl( XCUIApplication *app ) { return app.segmentedControls; }
+XCUIElementQuery *appElsSheet( XCUIApplication *app ) { return app.sheets; }
+XCUIElementQuery *appElsSlider( XCUIApplication *app ) { return app.sliders; }
+XCUIElementQuery *appElsSplitGroup( XCUIApplication *app ) { return app.splitGroups; }
+XCUIElementQuery *appElsSplitter( XCUIApplication *app ) { return app.splitters; }
+XCUIElementQuery *appElsStaticText( XCUIApplication *app ) { return app.staticTexts; }
+XCUIElementQuery *appElsStatusBar( XCUIApplication *app ) { return app.statusBars; }
+XCUIElementQuery *appElsStatusItem( XCUIApplication *app ) { return app.statusItems; }
+XCUIElementQuery *appElsStepper( XCUIApplication *app ) { return app.steppers; }
+XCUIElementQuery *appElsSwitch( XCUIApplication *app ) { return app.switches; }
+XCUIElementQuery *appElsTab( XCUIApplication *app ) { return app.tabs; }
+XCUIElementQuery *appElsTabBar( XCUIApplication *app ) { return app.tabBars; }
+XCUIElementQuery *appElsTabGroup( XCUIApplication *app ) { return app.tabGroups; }
+XCUIElementQuery *appElsTable( XCUIApplication *app ) { return app.tables; }
+XCUIElementQuery *appElsTableColumn( XCUIApplication *app ) { return app.tableColumns; }
+XCUIElementQuery *appElsTableRow( XCUIApplication *app ) { return app.tableRows; }
+XCUIElementQuery *appElsTextField( XCUIApplication *app ) { return app.textFields; }
+XCUIElementQuery *appElsTextView( XCUIApplication *app ) { return app.textViews; }
+XCUIElementQuery *appElsTimeline( XCUIApplication *app ) { return app.timelines; }
+XCUIElementQuery *appElsToggle( XCUIApplication *app ) { return app.toggles; }
+XCUIElementQuery *appElsToolbar( XCUIApplication *app ) { return app.toolbars; }
+XCUIElementQuery *appElsToolbarButton( XCUIApplication *app ) { return app.toolbarButtons; }
+XCUIElementQuery *appElsValueIndicator( XCUIApplication *app ) { return app.valueIndicators; }
+XCUIElementQuery *appElsWebView( XCUIApplication *app ) { return app.webViews; }
+XCUIElementQuery *appElsWindow( XCUIApplication *app ) { return app.windows; }
+XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars; }*/
+
 -(void) entry:(id)param {
     nng_rep_open(&_replySocket);
     
@@ -158,6 +242,180 @@ NSString *createKey(void) {
     }
     [FBLogger logFmt:@"NNG Ready"];
 
+    NSDictionary *types = [[NSDictionary alloc] initWithObjectsAndKeys:
+                             [NSNumber numberWithInt:XCUIElementTypeActivityIndicator],@"activityIndicator",
+                             [NSNumber numberWithInt:XCUIElementTypeAlert],@"alert",
+                             [NSNumber numberWithInt:XCUIElementTypeAny],@"any",
+                             [NSNumber numberWithInt:XCUIElementTypeApplication],@"application",
+                             [NSNumber numberWithInt:XCUIElementTypeBrowser],@"browser",
+                             [NSNumber numberWithInt:XCUIElementTypeButton],@"button",
+                             [NSNumber numberWithInt:XCUIElementTypeCell],@"cell",
+                             [NSNumber numberWithInt:XCUIElementTypeCheckBox],@"checkBox",
+                             [NSNumber numberWithInt:XCUIElementTypeCollectionView],@"collectionView",
+                             [NSNumber numberWithInt:XCUIElementTypeColorWell],@"colorWell",
+                             [NSNumber numberWithInt:XCUIElementTypeComboBox],@"comboBox",
+                             [NSNumber numberWithInt:XCUIElementTypeDatePicker],@"datePicker",
+                             [NSNumber numberWithInt:XCUIElementTypeDecrementArrow],@"decrementArrow",
+                             [NSNumber numberWithInt:XCUIElementTypeDialog],@"dialog",
+                             [NSNumber numberWithInt:XCUIElementTypeDisclosureTriangle],@"disclosureTriangle",
+                             [NSNumber numberWithInt:XCUIElementTypeDockItem],@"dockItem",
+                             [NSNumber numberWithInt:XCUIElementTypeDrawer],@"drawer",
+                             [NSNumber numberWithInt:XCUIElementTypeGrid],@"grid",
+                             [NSNumber numberWithInt:XCUIElementTypeGroup],@"group",
+                             [NSNumber numberWithInt:XCUIElementTypeHandle],@"handle",
+                             [NSNumber numberWithInt:XCUIElementTypeHelpTag],@"helpTag",
+                             [NSNumber numberWithInt:XCUIElementTypeIcon],@"icon",
+                             [NSNumber numberWithInt:XCUIElementTypeImage],@"image",
+                             [NSNumber numberWithInt:XCUIElementTypeIncrementArrow],@"incrementArrow",
+                             [NSNumber numberWithInt:XCUIElementTypeKey],@"key",
+                             [NSNumber numberWithInt:XCUIElementTypeKeyboard],@"keyboard",
+                             [NSNumber numberWithInt:XCUIElementTypeLayoutArea],@"layoutArea",
+                             [NSNumber numberWithInt:XCUIElementTypeLayoutItem],@"layoutItem",
+                             [NSNumber numberWithInt:XCUIElementTypeLevelIndicator],@"levelIndicator",
+                             [NSNumber numberWithInt:XCUIElementTypeLink],@"link",
+                             [NSNumber numberWithInt:XCUIElementTypeMap],@"map",
+                             [NSNumber numberWithInt:XCUIElementTypeMatte],@"matte",
+                             [NSNumber numberWithInt:XCUIElementTypeMenu],@"menu",
+                             [NSNumber numberWithInt:XCUIElementTypeMenuBar],@"menuBar",
+                             [NSNumber numberWithInt:XCUIElementTypeMenuBarItem],@"menuBarItem",
+                             [NSNumber numberWithInt:XCUIElementTypeMenuButton],@"menuButton",
+                             [NSNumber numberWithInt:XCUIElementTypeMenuItem],@"menuItem",
+                             [NSNumber numberWithInt:XCUIElementTypeNavigationBar],@"navigationBar",
+                             [NSNumber numberWithInt:XCUIElementTypeOther],@"other",
+                             [NSNumber numberWithInt:XCUIElementTypeOutline],@"outline",
+                             [NSNumber numberWithInt:XCUIElementTypeOutlineRow],@"outlineRow",
+                             [NSNumber numberWithInt:XCUIElementTypePageIndicator],@"pageIndicator",
+                             [NSNumber numberWithInt:XCUIElementTypePicker],@"picker",
+                             [NSNumber numberWithInt:XCUIElementTypePickerWheel],@"pickerWheel",
+                             [NSNumber numberWithInt:XCUIElementTypePopUpButton],@"popUpButton",
+                             [NSNumber numberWithInt:XCUIElementTypePopover],@"popover",
+                             [NSNumber numberWithInt:XCUIElementTypeProgressIndicator],@"progressIndicator",
+                             [NSNumber numberWithInt:XCUIElementTypeRadioButton],@"radioButton",
+                             [NSNumber numberWithInt:XCUIElementTypeRadioGroup],@"radioGroup",
+                             [NSNumber numberWithInt:XCUIElementTypeRatingIndicator],@"ratingIndicator",
+                             [NSNumber numberWithInt:XCUIElementTypeRelevanceIndicator],@"relevanceIndicator",
+                             [NSNumber numberWithInt:XCUIElementTypeRuler],@"ruler",
+                             [NSNumber numberWithInt:XCUIElementTypeRulerMarker],@"rulerMarker",
+                             [NSNumber numberWithInt:XCUIElementTypeScrollBar],@"scrollBar",
+                             [NSNumber numberWithInt:XCUIElementTypeScrollView],@"scrollView",
+                             [NSNumber numberWithInt:XCUIElementTypeSearchField],@"searchField",
+                             [NSNumber numberWithInt:XCUIElementTypeSecureTextField],@"secureTextField",
+                             [NSNumber numberWithInt:XCUIElementTypeSegmentedControl],@"segmentedControl",
+                             [NSNumber numberWithInt:XCUIElementTypeSheet],@"sheet",
+                             [NSNumber numberWithInt:XCUIElementTypeSlider],@"slider",
+                             [NSNumber numberWithInt:XCUIElementTypeSplitGroup],@"splitGroup",
+                             [NSNumber numberWithInt:XCUIElementTypeSplitter],@"splitter",
+                             [NSNumber numberWithInt:XCUIElementTypeStaticText],@"staticText",
+                             [NSNumber numberWithInt:XCUIElementTypeStatusBar],@"statusBar",
+                             [NSNumber numberWithInt:XCUIElementTypeStatusItem],@"statusItem",
+                             [NSNumber numberWithInt:XCUIElementTypeStepper],@"stepper",
+                             [NSNumber numberWithInt:XCUIElementTypeSwitch],@"switch",
+                             [NSNumber numberWithInt:XCUIElementTypeTab],@"tab",
+                             [NSNumber numberWithInt:XCUIElementTypeTabBar],@"tabBar",
+                             [NSNumber numberWithInt:XCUIElementTypeTabGroup],@"tabGroup",
+                             [NSNumber numberWithInt:XCUIElementTypeTable],@"table",
+                             [NSNumber numberWithInt:XCUIElementTypeTableColumn],@"tableColumn",
+                             [NSNumber numberWithInt:XCUIElementTypeTableRow],@"tableRow",
+                             [NSNumber numberWithInt:XCUIElementTypeTextField],@"textField",
+                             [NSNumber numberWithInt:XCUIElementTypeTextView],@"textView",
+                             [NSNumber numberWithInt:XCUIElementTypeTimeline],@"timeline",
+                             [NSNumber numberWithInt:XCUIElementTypeToggle],@"toggle",
+                             [NSNumber numberWithInt:XCUIElementTypeToolbar],@"toolbar",
+                             [NSNumber numberWithInt:XCUIElementTypeToolbarButton],@"toolbarButton",
+                             [NSNumber numberWithInt:XCUIElementTypeValueIndicator],@"valueIndicator",
+                             [NSNumber numberWithInt:XCUIElementTypeWebView],@"webView",
+                             [NSNumber numberWithInt:XCUIElementTypeWindow],@"window",
+                             [NSNumber numberWithInt:XCUIElementTypeTouchBar],@"touchBar",
+                           nil
+    ];
+    
+  // Unnecessary function map based method for selecting elements
+  /*XCUIElementQuery *(*appElsFuncs[90])(XCUIApplication *app);
+  for( int i=0;i<90;i++ ) appElsFuncs[i] = NULL;
+  appElsFuncs[XCUIElementTypeActivityIndicator] = appElsActivityIndicator;
+  appElsFuncs[XCUIElementTypeAlert] = appElsAlert;
+  //appElsFuncs[XCUIElementTypeAny] = appElsAny;
+  //appElsFuncs[XCUIElementTypeApplication] = appElsApplication;
+  appElsFuncs[XCUIElementTypeBrowser] = appElsBrowser;
+  appElsFuncs[XCUIElementTypeButton] = appElsButton;
+  appElsFuncs[XCUIElementTypeCell] = appElsCell;
+  appElsFuncs[XCUIElementTypeCheckBox] = appElsCheckBox;
+  appElsFuncs[XCUIElementTypeCollectionView] = appElsCollectionView;
+  appElsFuncs[XCUIElementTypeColorWell] = appElsColorWell;
+  appElsFuncs[XCUIElementTypeComboBox] = appElsComboBox;
+  appElsFuncs[XCUIElementTypeDatePicker] = appElsDatePicker;
+  appElsFuncs[XCUIElementTypeDecrementArrow] = appElsDecrementArrow;
+  appElsFuncs[XCUIElementTypeDialog] = appElsDialog;
+  appElsFuncs[XCUIElementTypeDisclosureTriangle] = appElsDisclosureTriangle;
+  appElsFuncs[XCUIElementTypeDockItem] = appElsDockItem;
+  appElsFuncs[XCUIElementTypeDrawer] = appElsDrawer;
+  appElsFuncs[XCUIElementTypeGrid] = appElsGrid;
+  appElsFuncs[XCUIElementTypeGroup] = appElsGroup;
+  appElsFuncs[XCUIElementTypeHandle] = appElsHandle;
+  appElsFuncs[XCUIElementTypeHelpTag] = appElsHelpTag;
+  appElsFuncs[XCUIElementTypeIcon] = appElsIcon;
+  appElsFuncs[XCUIElementTypeImage] = appElsImage;
+  appElsFuncs[XCUIElementTypeIncrementArrow] = appElsIncrementArrow;
+  appElsFuncs[XCUIElementTypeKey] = appElsKey;
+  appElsFuncs[XCUIElementTypeKeyboard] = appElsKeyboard;
+  appElsFuncs[XCUIElementTypeLayoutArea] = appElsLayoutArea;
+  appElsFuncs[XCUIElementTypeLayoutItem] = appElsLayoutItem;
+  appElsFuncs[XCUIElementTypeLevelIndicator] = appElsLevelIndicator;
+  appElsFuncs[XCUIElementTypeLink] = appElsLink;
+  appElsFuncs[XCUIElementTypeMap] = appElsMap;
+  appElsFuncs[XCUIElementTypeMatte] = appElsMatte;
+  appElsFuncs[XCUIElementTypeMenu] = appElsMenu;
+  appElsFuncs[XCUIElementTypeMenuBar] = appElsMenuBar;
+  appElsFuncs[XCUIElementTypeMenuBarItem] = appElsMenuBarItem;
+  appElsFuncs[XCUIElementTypeMenuButton] = appElsMenuButton;
+  appElsFuncs[XCUIElementTypeMenuItem] = appElsMenuItem;
+  appElsFuncs[XCUIElementTypeNavigationBar] = appElsNavigationBar;
+  appElsFuncs[XCUIElementTypeOther] = appElsOther;
+  appElsFuncs[XCUIElementTypeOutline] = appElsOutline;
+  appElsFuncs[XCUIElementTypeOutlineRow] = appElsOutlineRow;
+  appElsFuncs[XCUIElementTypePageIndicator] = appElsPageIndicator;
+  appElsFuncs[XCUIElementTypePicker] = appElsPicker;
+  appElsFuncs[XCUIElementTypePickerWheel] = appElsPickerWheel;
+  appElsFuncs[XCUIElementTypePopUpButton] = appElsPopUpButton;
+  appElsFuncs[XCUIElementTypePopover] = appElsPopover;
+  appElsFuncs[XCUIElementTypeProgressIndicator] = appElsProgressIndicator;
+  appElsFuncs[XCUIElementTypeRadioButton] = appElsRadioButton;
+  appElsFuncs[XCUIElementTypeRadioGroup] = appElsRadioGroup;
+  appElsFuncs[XCUIElementTypeRatingIndicator] = appElsRatingIndicator;
+  appElsFuncs[XCUIElementTypeRelevanceIndicator] = appElsRelevanceIndicator;
+  appElsFuncs[XCUIElementTypeRuler] = appElsRuler;
+  appElsFuncs[XCUIElementTypeRulerMarker] = appElsRulerMarker;
+  appElsFuncs[XCUIElementTypeScrollBar] = appElsScrollBar;
+  appElsFuncs[XCUIElementTypeScrollView] = appElsScrollView;
+  appElsFuncs[XCUIElementTypeSearchField] = appElsSearchField;
+  appElsFuncs[XCUIElementTypeSecureTextField] = appElsSecureTextField;
+  appElsFuncs[XCUIElementTypeSegmentedControl] = appElsSegmentedControl;
+  appElsFuncs[XCUIElementTypeSheet] = appElsSheet;
+  appElsFuncs[XCUIElementTypeSlider] = appElsSlider;
+  appElsFuncs[XCUIElementTypeSplitGroup] = appElsSplitGroup;
+  appElsFuncs[XCUIElementTypeSplitter] = appElsSplitter;
+  appElsFuncs[XCUIElementTypeStaticText] = appElsStaticText;
+  appElsFuncs[XCUIElementTypeStatusBar] = appElsStatusBar;
+  appElsFuncs[XCUIElementTypeStatusItem] = appElsStatusItem;
+  appElsFuncs[XCUIElementTypeStepper] = appElsStepper;
+  appElsFuncs[XCUIElementTypeSwitch] = appElsSwitch;
+  appElsFuncs[XCUIElementTypeTab] = appElsTab;
+  appElsFuncs[XCUIElementTypeTabBar] = appElsTabBar;
+  appElsFuncs[XCUIElementTypeTabGroup] = appElsTabGroup;
+  appElsFuncs[XCUIElementTypeTable] = appElsTable;
+  appElsFuncs[XCUIElementTypeTableColumn] = appElsTableColumn;
+  appElsFuncs[XCUIElementTypeTableRow] = appElsTableRow;
+  appElsFuncs[XCUIElementTypeTextField] = appElsTextField;
+  appElsFuncs[XCUIElementTypeTextView] = appElsTextView;
+  appElsFuncs[XCUIElementTypeTimeline] = appElsTimeline;
+  appElsFuncs[XCUIElementTypeToggle] = appElsToggle;
+  appElsFuncs[XCUIElementTypeToolbar] = appElsToolbar;
+  appElsFuncs[XCUIElementTypeToolbarButton] = appElsToolbarButton;
+  appElsFuncs[XCUIElementTypeValueIndicator] = appElsValueIndicator;
+  appElsFuncs[XCUIElementTypeWebView] = appElsWebView;
+  appElsFuncs[XCUIElementTypeWindow] = appElsWindow;
+  appElsFuncs[XCUIElementTypeTouchBar] = appElsTouchBar;*/
+  
     XCUIApplication *app = nil;
     XCUIApplication *systemApp = nil;
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
@@ -264,6 +522,75 @@ NSString *createKey(void) {
                     [dict removeObjectForKey:id2];
                     double forTime = node_hash__get_double( root, "time", 4 );
                     [element pressForDuration:forTime];
+                }
+                else if( !strncmp( action, "getEl", 9 ) ) {
+                    char *name = node_hash__get_str( root, "id", 2 );
+                    NSString *name2 = [NSString stringWithUTF8String:name];
+                    
+                    char *type = node_hash__get_str( root, "type", 4 );
+                    int typeNum = 0;
+                    if( type ) {
+                        NSString *type2 = [NSString stringWithUTF8String:type];
+                        id typeNumNS = types[ type2 ];
+                        if( typeNumNS ) typeNum = [typeNumNS intValue];
+                    }
+                    
+                    int wait = node_hash__get_int( root, "wait", 4 );
+                  
+                    XCUIElement *el = nil;
+                  
+                    for(;;) {
+                        if( node_hash__get( root, "system", 6 ) ) {
+                            //el = systemApp.buttons[name2];
+                            //XCUIElementQuery *(*qfunc)(XCUIApplication *app);
+                            //qfunc = appElsFuncs[typeNum];
+                            //if( qfunc ) el = qfunc( systemApp )[name2];
+                            
+                            //el = [systemApp descendantsMatchingType:typeNum][name2];//.firstMatch;
+                            
+                            XCUIElementQuery *query = [systemApp descendantsMatchingType:typeNum];
+                            el = [query elementMatchingType:typeNum identifier:name2];
+                        }
+                        else {
+                            //el = app.buttons[name2];
+                            //XCUIElementQuery *(*qfunc)(XCUIApplication *app);
+                            //qfunc = appElsFuncs[typeNum];
+                            //if( qfunc ) el = qfunc( app )[name2];
+                            
+                            //el = [app descendantsMatchingType:typeNum][name2];
+                            
+                            XCUIElementQuery *query = [app descendantsMatchingType:typeNum];
+                            el = [query elementMatchingType:typeNum identifier:name2];
+                          
+                            //NSPredicate *p1 = [NSPredicate predicateWithFormat:@"type == cd //%@",typeNum];
+                            //query = [query matchingPredicate:pred];
+                            
+                        }
+                      
+                        if( wait != -1 ) {
+                            bool exists = [el waitForExistenceWithTimeout:wait];
+                            if( !exists ) el = nil;
+                        }
+                        else {
+                            if( !el.exists ) el = nil;
+                        }
+                        
+                        if( el == nil ) {
+                            respText = "";
+                            break;
+                        }
+                        
+                        NSString *key;
+                        for( int i=0;i<20;i++ ) {
+                            key = createKey();
+                            if( dict[key] == nil ) break;
+                        }
+                        dict[key] = el;
+                        
+                        respTextA = strdup( [key UTF8String] );
+                        
+                        break;
+                    }
                 }
                 else if( !strncmp( action, "elByName", 8 ) ) {
                     char *name = node_hash__get_str( root, "name", 4 );

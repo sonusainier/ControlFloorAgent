@@ -202,6 +202,7 @@ char *node_hash__get_str( node_hash *self, char *key, int keyLen ) {
 int node_hash__get_int( node_hash *self, char *key, int keyLen ) {
     char type;
     jnode *node = string_tree__get_len( self->tree, key, keyLen, &type );
+    if( !node ) return -1;
     if( node->type == 2 || node->type == 4 || node->type == 5 ) {
         node_str *nodeStr = (node_str *) node;
         char buffer[50];
