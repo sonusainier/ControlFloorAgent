@@ -702,8 +702,16 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bi]];
                 }
                 else if( !strncmp( action, "source", 6 ) ) {
-                    XCUIElement *el = app;
-                  
+                    XCUIElement *el = nil;
+                    
+                    char *bi = node_hash__get_str( root, "bi", 2 );
+                    if( bi ) {
+                        NSString *bi2 = [NSString stringWithUTF8String:bi];
+                        el = [ [XCUIApplication alloc] initWithBundleIdentifier:bi2];
+                    } else {
+                        el = app;
+                    }
+                    
                     NSError *serror = nil;
                     XCElementSnapshot *snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
                     if( serror != nil ) [FBLogger logFmt:@"err:%@", serror ];
@@ -715,6 +723,29 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                         [self dictToStr:sdict str:str depth: 0];
                     }
                     respTextA = strdup( [str UTF8String] );
+                }
+                else if( !strncmp( action, "elementAtPoint", 14 ) ) {
+                    int x = node_hash__get_int( root, "x", 1 );
+                    int y = node_hash__get_int( root, "y", 1 );
+                    //XCUIElement *el = [XCUIApplication elementAtPoint:x y:y];
+                    XCUIElement *el = [FBXCAXClientProxy.sharedClient elementAtPoint:x y:y];
+                    XCUIApplication *app = [el application];
+                    NSString *bi = app.bundleID;
+                    respTextA = strdup( [bi UTF8String] );
+                }
+                else if( !strncmp( action, "elPos", 5 ) ) {
+                    char *elId = node_hash__get_str( root, "id", 2 );
+                    NSString *id2 = [NSString stringWithUTF8String:elId];
+                  
+                    XCUIElement *element = dict[id2];
+                    CGRect frame = [element frame];
+                    int x = (int) frame.origin.x;
+                    int y = (int) frame.origin.y;
+                    int width = (int) frame.size.width;
+                    int height = (int) frame.size.height;
+                    char json[200];
+                    sprintf( json, "{x:%d,y:%d,w:%d,h:%d}", x, y, width, height );
+                    respTextA = strdup( json );
                 }
                 else if( !strncmp( action, "windowSize", 10 ) ) {
                     CGRect frame = CGRectIntegral( systemApp.frame );

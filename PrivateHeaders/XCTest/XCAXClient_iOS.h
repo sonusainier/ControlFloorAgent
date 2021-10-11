@@ -11,6 +11,8 @@
 @class XCAccessibilityElement;
 @class XCElementSnapshot;
 
+@protocol XCUIRemoteAccessibilityInterface;
+
 @interface XCAXClient_iOS : NSObject
 {
     NSMutableDictionary *_userTestingNotificationHandlers;
