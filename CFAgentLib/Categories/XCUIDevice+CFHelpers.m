@@ -54,8 +54,8 @@
   pressure:(CGFloat) pressure
 {
   XCPointerEventPath *path = [[XCPointerEventPath alloc]
-                              initForMouseAtPoint:CGPointMake(x,y)
-                              offset:0];
+                              initForTouchAtPoint:CGPointMake(x,y)
+                              offset:0.0];
   [path pressDownWithPressure:pressure atOffset:0];
   [path liftUpAtOffset:0.05];
   [self runEventPath:path];

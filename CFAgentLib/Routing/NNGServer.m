@@ -14,6 +14,7 @@
 #import "XCUIElement+FBFind.h"
 #import "FBElementCache.h"
 #import "XCUIElement+FBTap.h"
+#import "XCUIElement+FBForceTouch.h"
 #import "XCUIElement+FBUID.h"
 #import "XCUIApplication+FBQuiescence.h"
 #import "XCUIApplication+FBHelpers.h"
@@ -432,6 +433,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
             int msgLen = (int) nng_msg_len( nmsg );
             if( msgLen > 0 ) {
                 char *msg = (char *) nng_msg_body( nmsg );
+                //msg = strdup( msg );
                 [FBLogger logFmt:@"nng req %.*s", msgLen, msg ];
                 char buffer[20];
                 char *action = "";
@@ -522,6 +524,28 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     [dict removeObjectForKey:id2];
                     double forTime = node_hash__get_double( root, "time", 4 );
                     [element pressForDuration:forTime];
+                }
+                else if( !strncmp( action, "elForceTouch", 12 ) ) {
+                    char *elId = node_hash__get_str( root, "id", 2 );
+                    NSString *id2 = [NSString stringWithUTF8String:elId];
+                  
+                    XCUIElement *element = dict[id2];
+                    [dict removeObjectForKey:id2];
+                    
+                    //double forTime = node_hash__get_double( root, "time", 4 );
+                    double pressure = node_hash__get_double( root, "pressure", 8 );
+                    if( pressure < 0 ) pressure = -pressure; // bug
+                    //[element pressForDuration:forTime];
+                    //NSError *err;
+                    //[element fb_forceTouchWithPressure:pressure duration:forTime error:&err];
+                    CGRect frame = [element frame];
+                    CGFloat x = frame.origin.x;
+                    CGFloat y = frame.origin.y;
+                    CGFloat width = frame.size.width;
+                    CGFloat height = frame.size.height;
+                    x += width / 2;
+                    y += height / 2;
+                    [device cf_tapFirm:(int)x y:(int)y pressure:pressure];
                 }
                 else if( !strncmp( action, "getEl", 9 ) ) {
                     char *name = node_hash__get_str( root, "id", 2 );
@@ -657,14 +681,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     respText = success ? "{\"success\":true}" : "{\"success\":false}";
                 }
                 else if( !strncmp( action, "status", 6 ) ) {
-                    NSString *sessionId = @"fakesession";
-                    if( sessionId == nil ) {
-                        respText = "{sessionId:\"\"}";
-                    } else {
-                        const char *sid = [sessionId UTF8String];
-                        [FBLogger logFmt:@"status sid:%s", sid ];
-                        respTextA = strdup( sid );
-                    }
+                    respText = "{sessionId:\"fakesession\"}";
                 }
                 else if( !strncmp( action, "typeText", 8 ) ) {
                     char *text = node_hash__get_str( root, "text", 4 );
@@ -700,14 +717,14 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     respTextA = strdup( [str UTF8String] );
                 }
                 else if( !strncmp( action, "windowSize", 10 ) ) {
-                    CGRect frame = CGRectIntegral( app.frame );
+                    CGRect frame = CGRectIntegral( systemApp.frame );
                     
                     char output[100];
                     sprintf(output,
                             "{width:%d,height:%d}",
                             (int)frame.size.width,
                             (int)frame.size.height);
-                    respText = output;
+                    respTextA = strdup( output );
                 }
                 else if( !strncmp( action, "createSession", 13 ) ) {
                     //NSDictionary<NSString *, id> *requirements;
