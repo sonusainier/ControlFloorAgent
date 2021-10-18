@@ -429,6 +429,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
         if( nmsg ) {
             const char *respText = NULL;
             char *respTextA = NULL;
+            int respLen = 0;
             node_hash *root = NULL;
             int msgLen = (int) nng_msg_len( nmsg );
             if( msgLen > 0 ) {
@@ -758,24 +759,9 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     respTextA = strdup( output );
                 }
                 else if( !strncmp( action, "createSession", 13 ) ) {
-                    //NSDictionary<NSString *, id> *requirements;
-                    //NSError *error;
-                    
-                    [FBConfiguration setShouldUseTestManagerForVisibilityDetection:true];
-                    [FBConfiguration setShouldUseCompactResponses:false];
-                    
-                    //[FBConfiguration setElementResponseAttributes:elementResponseAttributes];
-                    [FBConfiguration setShouldUseSingletonTestManager:true];
-                    [FBConfiguration disableScreenshots];
-                    
-                    //[FBConfiguration setShouldTerminateApp:false];
-                    
-                    //NSNumber *delay = requirements[@"eventloopIdleDelaySec"];
                     //[XCUIApplicationProcessDelay setEventLoopHasIdledDelay:[delay doubleValue]];
                     //[XCUIApplicationProcessDelay disableEventLoopDelay];
-                  
-                    //FBConfiguration.waitForIdleTimeout = 0.2;
-                    
+                                     
                     char *bundleID = node_hash__get_str( root, "bundleId", 8 );
                                             
                     int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
@@ -783,7 +769,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     if( strlen(bundleID) ) {
                       app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bundleID]];
                       
-                      app.fb_shouldWaitForQuiescence = true; // or nil
+                      //app.fb_shouldWaitForQuiescence = true; // or nil
                       app.launchArguments = @[];
                       app.launchEnvironment = @{};
                       [app launch];
@@ -810,7 +796,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
             
             if( respTextA ) respText = respTextA;
             [FBLogger logFmt:@"sending back :%s", respText ];
-            if( respText ) nng_msg_append( respN, respText, strlen( respText ) );
+            if( respText ) nng_msg_append( respN, respText, respLen ? respLen : strlen( respText ) );
             int sendErr = nng_sendmsg( _replySocket, respN, 0 );
             if( sendErr ) {
                 [FBLogger logFmt:@"sending err :%d", sendErr ];

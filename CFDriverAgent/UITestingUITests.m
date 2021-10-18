@@ -14,6 +14,7 @@
 #import <CFAgentLib/FBFailureProofTestCase.h>
 #import <CFAgentLib/XCTestCase.h>
 #import "../CFAgentLib/Routing/NNGServer.h"
+#import "../CFAgentLib/Routing/NNGServer2.h"
 
 @interface UITestingUITests : FBFailureProofTestCase
 @end
@@ -38,8 +39,15 @@
  */
 - (void)testRunner
 {
+  NngThread2 *nngThreadInst2 = [[NngThread2 alloc] init:8102];
+  [NSThread detachNewThreadSelector:@selector(entry:) toTarget:nngThreadInst2 withObject:nil];
+  
   NngThread *nngThreadInst = [[NngThread alloc] init:8101];
+  //[NSThread detachNewThreadSelector:@selector(entry:) toTarget:nngThreadInst withObject:nil];
   [nngThreadInst entry:self];
+  //for( int i=0;i<3600;i++) {
+  //  sleep(1);
+  //}
 }
 
 @end

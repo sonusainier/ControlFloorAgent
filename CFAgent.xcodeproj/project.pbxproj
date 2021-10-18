@@ -444,6 +444,8 @@
 		CEA4753026ABF4A9006D60B5 /* red_black_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */; };
 		CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752E26ABF4A9006D60B5 /* ujsonin.c */; };
 		CEA4753226ABF4A9006D60B5 /* string-tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752F26ABF4A9006D60B5 /* string-tree.c */; };
+		CEAB72C4271A95BD00BB848B /* NNGServer2.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAB72C2271A95BD00BB848B /* NNGServer2.m */; };
+		CEAB72C5271A95BD00BB848B /* NNGServer2.h in Headers */ = {isa = PBXBuildFile; fileRef = CEAB72C3271A95BD00BB848B /* NNGServer2.h */; };
 		CEACE61126B21D4B0006AA5C /* NNGServer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE61026B21D4B0006AA5C /* NNGServer.m */; };
 		CEACE61226B21D4B0006AA5C /* NNGServer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE61026B21D4B0006AA5C /* NNGServer.m */; };
 		CEACE62526B220B70006AA5C /* XCUIDevice+CFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */; };
@@ -925,6 +927,8 @@
 		CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = red_black_tree.c; path = ujsonin/red_black_tree.c; sourceTree = SOURCE_ROOT; };
 		CEA4752E26ABF4A9006D60B5 /* ujsonin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ujsonin.c; path = ujsonin/ujsonin.c; sourceTree = SOURCE_ROOT; };
 		CEA4752F26ABF4A9006D60B5 /* string-tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "string-tree.c"; path = "ujsonin/string-tree.c"; sourceTree = SOURCE_ROOT; };
+		CEAB72C2271A95BD00BB848B /* NNGServer2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NNGServer2.m; path = CFAgentLib/Routing/NNGServer2.m; sourceTree = SOURCE_ROOT; };
+		CEAB72C3271A95BD00BB848B /* NNGServer2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NNGServer2.h; path = CFAgentLib/Routing/NNGServer2.h; sourceTree = SOURCE_ROOT; };
 		CEACE61026B21D4B0006AA5C /* NNGServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NNGServer.m; sourceTree = "<group>"; };
 		CEACE61B26B21D7F0006AA5C /* NNGServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NNGServer.h; sourceTree = "<group>"; };
 		CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XCUIDevice+CFHelpers.m"; sourceTree = "<group>"; };
@@ -1528,6 +1532,8 @@
 		EE9AB7741CAEDF0C008C271F /* Routing */ = {
 			isa = PBXGroup;
 			children = (
+				CEAB72C3271A95BD00BB848B /* NNGServer2.h */,
+				CEAB72C2271A95BD00BB848B /* NNGServer2.m */,
 				EE9AB7791CAEDF0C008C271F /* FBElement.h */,
 				EE9AB77B1CAEDF0C008C271F /* FBElementCache.h */,
 				EEC088E41CB56AC000B65968 /* FBElementCache.m */,
@@ -2209,6 +2215,7 @@
 				EE35AD3A1E3B77D600A02D78 /* XCSynthesizedEventRecord.h in Headers */,
 				EE35AD671E3B77D600A02D78 /* XCTWaiterDelegatePrivate-Protocol.h in Headers */,
 				EE35AD4D1E3B77D600A02D78 /* XCTestManager_IDEInterface-Protocol.h in Headers */,
+				CEAB72C5271A95BD00BB848B /* NNGServer2.h in Headers */,
 				711084441DA3AA7500F913D6 /* FBXPath.h in Headers */,
 				EE35AD771E3B77D600A02D78 /* XCUIRecorderTimingMessage.h in Headers */,
 				EE35AD271E3B77D600A02D78 /* XCApplicationMonitor.h in Headers */,
@@ -2528,7 +2535,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 91F9DAE41B99DBC2001349B2 /* Build configuration list for PBXProject "CFAgentLib" */;
+			buildConfigurationList = 91F9DAE41B99DBC2001349B2 /* Build configuration list for PBXProject "CFAgent" */;
 			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -2814,6 +2821,7 @@
 				EE158AE51CBD456F00A3E3F0 /* FBSession.m in Sources */,
 				71C9EAAE25E8415A00470CD8 /* FBScreenshot.m in Sources */,
 				EE7E271D1D06C69F001BEC7B /* FBDebugLogDelegateDecorator.m in Sources */,
+				CEAB72C4271A95BD00BB848B /* NNGServer2.m in Sources */,
 				71C8E55325399A6B008572C1 /* XCUIApplication+FBQuiescence.m in Sources */,
 				71F3E7D625417FF400E0C22B /* FBSettings.m in Sources */,
 				EE158AB31CBD456F00A3E3F0 /* XCUIElement+FBScrolling.m in Sources */,
@@ -3460,7 +3468,7 @@
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = NO;
@@ -3487,6 +3495,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dryark.CFAgentLib;
 				PRODUCT_NAME = CFAgentLib;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3771,9 +3780,9 @@
 			baseConfigurationReference = EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7628766FL2;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3789,6 +3798,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dryark.CFAgent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = dev3;
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				USES_XCTRUNNER = YES;
 				WARNING_CFLAGS = (
@@ -3824,6 +3834,7 @@
 			baseConfigurationReference = EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 7628766FL2;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = CFDriverAgent/Info.plist;
@@ -3839,6 +3850,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dryark.CFAgent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = dev3;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				USES_XCTRUNNER = YES;
 				WARNING_CFLAGS = (
 					"$(inherited)",
@@ -3898,7 +3911,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		91F9DAE41B99DBC2001349B2 /* Build configuration list for PBXProject "CFAgentLib" */ = {
+		91F9DAE41B99DBC2001349B2 /* Build configuration list for PBXProject "CFAgent" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91F9DB0A1B99DBC2001349B2 /* Debug */,
