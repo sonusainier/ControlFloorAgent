@@ -234,12 +234,12 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
     nng_rep_open(&_replySocket);
     
     char addr2[50];
-    sprintf( addr2, "tcp://127.0.0.1:%d", _nngPort );
+    sprintf( addr2, "tcp://*:%d", _nngPort );
     nng_setopt_int( _replySocket, NNG_OPT_SENDBUF, 100000);
     int listen_error = nng_listen( _replySocket, addr2, NULL, 0);
     if( listen_error != 0 ) {
-        NSLog( @"xxr error bindind on 127.0.0.1 : %d - %d", _nngPort, listen_error );
-        [FBLogger logFmt:@"xxr error bindind on 127.0.0.1 : %d - %d", _nngPort, listen_error ];
+        NSLog( @"xxr error bindind on * : %d - %d", _nngPort, listen_error );
+        [FBLogger logFmt:@"xxr error bindind on * : %d - %d", _nngPort, listen_error ];
     }
     [FBLogger logFmt:@"NNG Ready"];
 
@@ -507,6 +507,10 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     [device fb_pressButton:name2 error:&error];
                     free( name );
                     respText = "ok";
+                }
+                else if( !strncmp( action, "wifiIp", 6 ) ) {
+                    NSString *ip = [device fb_wifiIPAddress];
+                    respTextA = strdup( [ip UTF8String] );
                 }
                 else if( !strncmp( action, "elClick", 7 ) ) {
                     char *elId = node_hash__get_str( root, "id", 2 );
