@@ -509,8 +509,67 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     respText = "ok";
                 }
                 else if( !strncmp( action, "wifiIp", 6 ) ) {
-                    NSString *ip = [device fb_wifiIPAddress];
-                    respTextA = strdup( [ip UTF8String] );
+                  NSString *ip = [device fb_wifiIPAddress];
+                  if (ip == nil){
+                    ip = @"Not Found";
+                  }
+                  respTextA = strdup( [ip UTF8String] );
+                }
+                else if( !strncmp( action, "refresh", 6 ) ) {
+                  XCUIApplication *cfapp = nil;
+                  XCUIApplication *cf_systemApp = nil;
+                  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+                  cf_systemApp = [FBApplication applicationWithPID:pid];
+                  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.dryark.vidstream"]];
+                  
+                  //app.fb_shouldWaitForQuiescence = true; // or nil
+                  cfapp.launchArguments = @[];
+                  cfapp.launchEnvironment = @{};
+                  [cfapp launch];
+                  
+                  [NSThread sleepForTimeInterval:1.0];
+                  [cfapp.buttons[@"Broadcast Selector"] tap];
+                  [NSThread sleepForTimeInterval:1.0];
+                  [cf_systemApp.buttons[@"Stop Broadcast"] tap];
+                  [NSThread sleepForTimeInterval:1.0];
+                  [cf_systemApp.buttons[@"Start Broadcast"] tap];
+                  [NSThread sleepForTimeInterval:3.0];
+                  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
+                  
+                  [cfapp terminate];
+                  
+                  NSString *sessionId = @"Refresh";
+                  const char *sid = [sessionId UTF8String];
+                  [FBLogger logFmt:@"createSession sid:%s", sid ];
+                  respTextA = strdup( sid );
+                  
+                }
+                else if( !strncmp( action, "restart", 6 ) ) {
+                  XCUIApplication *cfapp = nil;
+                  XCUIApplication *cf_systemApp = nil;
+                  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+                  cf_systemApp = [FBApplication applicationWithPID:pid];
+                  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.dryark.vidstream"]];
+                  
+                  //app.fb_shouldWaitForQuiescence = true; // or nil
+                  cfapp.launchArguments = @[];
+                  cfapp.launchEnvironment = @{};
+                  [cfapp launch];
+                  
+                  [NSThread sleepForTimeInterval:1.0];
+                  [cfapp.buttons[@"Broadcast Selector"] tap];
+                  [NSThread sleepForTimeInterval:1.0];
+                  [cf_systemApp.buttons[@"Start Broadcast"] tap];
+                  [NSThread sleepForTimeInterval:3.0];
+                  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
+                  
+                  [cfapp terminate];
+                  
+                  NSString *sessionId = @"Restarted";
+                  const char *sid = [sessionId UTF8String];
+                  [FBLogger logFmt:@"createSession sid:%s", sid ];
+                  respTextA = strdup( sid );
+                  
                 }
                 else if( !strncmp( action, "elClick", 7 ) ) {
                     char *elId = node_hash__get_str( root, "id", 2 );
