@@ -555,14 +555,27 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                   cfapp.launchArguments = @[];
                   cfapp.launchEnvironment = @{};
                   [cfapp launch];
+                  NSLog(@"System Version is %@",[[UIDevice currentDevice] systemVersion]);
+                  NSString *ver = [[UIDevice currentDevice] systemVersion];
+                  int os = [ver intValue];
                   
                   [NSThread sleepForTimeInterval:1.0];
                   [cfapp.buttons[@"Broadcast Selector"] tap];
                   [NSThread sleepForTimeInterval:1.0];
-                  [cf_systemApp.buttons[@"Start Broadcast"] tap];
-                  [NSThread sleepForTimeInterval:3.0];
-                  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
                   
+                
+                  if (os >= 14){
+                    
+                    [cf_systemApp.buttons[@"Start Broadcast"] tap];
+                    [NSThread sleepForTimeInterval:3.0];
+                  }
+                  else{
+                    [cfapp.staticTexts[@"Start Broadcast"] tap];
+                    [NSThread sleepForTimeInterval:3.0];
+                  }
+                  
+                  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
+                  [NSThread sleepForTimeInterval:2.0];
                   [cfapp terminate];
                   
                   NSString *sessionId = @"Restarted";
