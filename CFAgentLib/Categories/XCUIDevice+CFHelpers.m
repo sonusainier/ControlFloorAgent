@@ -38,6 +38,31 @@
   [self runEventPath:path];
 }
 
+- (void)cf_mouseDown:(CGFloat)x
+  y:(CGFloat) y
+{
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                              initForMouseAtPoint:CGPointMake(x,y)
+                              offset:0];
+  [path pressButton:0 atOffset:0];
+  [self runEventPath:path];
+}
+
+- (void)cf_mouseUp:(CGFloat)x
+  y:(CGFloat) y
+{
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                              initForMouseAtPoint:CGPointMake(x,y)
+                              offset:0];
+  [path releaseButton:0 atOffset:0];
+  [self runEventPath:path];
+}
+
+- (void)cf_holdHomeButtonForDuration:(CGFloat)dur
+{
+  [self holdHomeButtonForDuration:dur];
+}
+
 - (void)cf_tapTime:(CGFloat)x
   y:(CGFloat) y
   time:(CGFloat) time

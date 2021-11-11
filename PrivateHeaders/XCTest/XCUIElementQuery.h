@@ -59,6 +59,7 @@
 - (id)_derivedExpressedIdentifiers;
 - (unsigned long long)_derivedExpressedType;
 - (id)initWithInputQuery:(id)arg1 queryDescription:(id)arg2 filter:(CDUnknownBlockType)arg3;
+- (void)setRootElementSnapshot:(XCElementSnapshot *)arg1;
 
 // Deprecated since Xcode 11.0
 - (XCElementSnapshot *)elementSnapshotForDebugDescription;

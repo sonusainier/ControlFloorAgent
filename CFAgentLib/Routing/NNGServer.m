@@ -18,8 +18,15 @@
 #import "XCUIElement+FBUID.h"
 #import "XCUIApplication+FBQuiescence.h"
 #import "XCUIApplication+FBHelpers.h"
+#import "XCUIDevice+FBHelpers.h"
+#import "XCUIApplication+FBTouchAction.h"
 #import "FBXCAXClientProxy.h"
 #import <objc/runtime.h>
+#import "XCTestPrivateSymbols.h"
+#import "FBXCodeCompatibility.h"
+#import "XCUIElementQuery.h"
+
+//#import <AXRuntime/AXUIElement.h>
 
 @implementation NngThread
 
@@ -86,6 +93,78 @@
     }
   
     if( cCount ) [str appendFormat:@"%@</el>\n", spaces ];
+}
+
+-(void) snapToJson:(XCElementSnapshot *)el
+               str:(NSMutableString *)str
+             depth:(int)depth
+               app:(XCUIApplication *)app {
+    NSString *spaces = [@"" stringByPaddingToLength:depth withString:@"  " startingAtIndex:0];
+    //horizontalSizeClass,enabled,elementType,frame,title,verticalSizeClass,identifier,label,hasFocus,selected,children
+    long elementType = el.elementType;
+    NSString *ident = el.identifier;
+    
+    NSString *typeStr = _typeMap[ elementType ];
+    
+    NSDictionary *atts = el.additionalAttributes;
+    
+    if( [typeStr isEqualToString:@"Other"] && [atts objectForKey:@5004] ) {
+        typeStr = [atts objectForKey:@5004];
+    }
+  
+    [str appendFormat:@"%@{ \"type\":\"%@\",", spaces, typeStr ];
+    if( [ident length] != 0 ) [str appendFormat:@" \"id\":\"%@\",", ident ];
+
+    NSString *label = el.label;
+    if( [label length] ) {
+      if( [label containsString:@"\""] ) {
+        label = [label stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+      }
+      [str appendFormat:@" \"label\":\"%@\",", label];
+    }
+    
+    /*if( [label isEqualToString:@"AssistiveTouch menu"]) {
+        XCAccessibilityElement *accEl = el.accessibilityElement;
+        accEl = [XCAccessibilityElement elementWithAXUIElement:accEl.AXUIElement];
+        NSArray *standardAttributes = FBStandardAttributeNames();
+        el = [app cf_snapshotForElement:accEl
+                             attributes:standardAttributes
+                             parameters:nil];
+    }*/
+    
+    /*if( atts[@"UIView"] ) {
+        UIView *uiview = atts[@"UIView"];
+        int count = 0;
+        for ( UIView *subview in uiview.subviews ) {
+            count++;
+        }
+      
+    }*/
+    
+    NSArray *children = el.children;
+    unsigned long cCount = [children count];
+
+    NSString *title = el.title;
+    if( [title length] ) [str appendFormat:@" \"title\":\"%@\",", title];
+
+    CGRect rect = el.frame;
+    [str
+     appendFormat:@" \"x\":%.0f, \"y\":%.0f, \"w\":%.0f, \"h\":%.0f",
+     rect.origin.x, rect.origin.y,
+     rect.size.width, rect.size.height];
+   
+    if( !cCount ) [str appendFormat:@"}\n" ];
+    else [str appendFormat:@",\"c\":[\n" ];
+    
+    for( unsigned long i = 0; i < cCount; i++) {
+        NSObject *child = [children objectAtIndex:i];
+        //const char *className = class_getName( [child class] );
+        //[str appendFormat:@"  i:%d className:%s\n",i,className ];
+        [self snapToJson:(XCElementSnapshot *)child str:str depth:(depth+2) app:app];
+        if( i != ( cCount -1 ) ) [str appendFormat:@",\n" ];
+    }
+
+    if( cCount ) [str appendFormat:@"%@]}\n", spaces ];
 }
 
 -(void) dictToJson:(NSDictionary *)dict str:(NSMutableString *)str depth:(int)depth
@@ -422,6 +501,8 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
     XCUIDevice *device = XCUIDevice.sharedDevice;
   
+    FBApplication *sbApp = [ [FBApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
+    
     ujsonin_init();
     while( 1 ) {
         nng_msg *nmsg = NULL;
@@ -460,6 +541,18 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     [device cf_tap:x y:y];
                     respText = "ok";
                 }
+                else if( !strncmp( action, "mouseDown", 9 ) && strlen( action ) == 9 ) {
+                    int x = node_hash__get_int( root, "x", 1 );
+                    int y = node_hash__get_int( root, "y", 1 );
+                    [device cf_mouseDown:x y:y];
+                    respText = "ok";
+                }
+                else if( !strncmp( action, "mouseUp", 7 ) && strlen( action ) == 7 ) {
+                    int x = node_hash__get_int( root, "x", 1 );
+                    int y = node_hash__get_int( root, "y", 1 );
+                    [device cf_mouseUp:x y:y];
+                    respText = "ok";
+                }
                 else if( !strncmp( action, "tapFirm" , 7 ) ) {
                     int x = node_hash__get_int( root, "x", 1 );
                     int y = node_hash__get_int( root, "y", 1 );
@@ -472,6 +565,11 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     int y = node_hash__get_int( root, "y", 1 );
                     double forTime = node_hash__get_double( root, "time", 4 );
                     [device cf_tapTime:x y:y time:forTime];
+                    respText = "ok";
+                }
+                else if( !strncmp( action, "toLauncher", 10 )) {
+                    if( [sbApp fb_state] < 2 ) [sbApp launch];
+                    else                       [sbApp fb_activate];
                     respText = "ok";
                 }
                 else if( !strncmp( action, "swipe", 5 ) ) {
@@ -508,6 +606,11 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     free( name );
                     respText = "ok";
                 }
+                else if( !strncmp( action, "homebtn", 7 ) ) {
+                    double duration = 0.1;
+                    [device cf_holdHomeButtonForDuration:duration];
+                    respText = "ok";
+                }
                 else if( !strncmp( action, "wifiIp", 6 ) ) {
                     NSString *ip = [device fb_wifiIPAddress];
                     respTextA = strdup( [ip UTF8String] );
@@ -519,7 +622,20 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     XCUIElement *element = dict[id2];
                     [dict removeObjectForKey:id2];
                     NSError *error = nil;
-                    [element fb_tapWithError:&error];
+                    if( element == nil ) {
+                        // todo error
+                    } else {
+                        /*if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
+                            [element tap];
+                        } else {
+                            XCElementSnapshot *snapshot = (XCElementSnapshot *) [element snapshotWithError:&error];
+                            int x = snapshot.frame.origin.x/2;
+                            int y = snapshot.frame.origin.y/2;
+                            NSLog( @"tapping a %d,%d", x+1, y+1 );
+                            [device cf_tap:x/2 y:y/2];
+                        }*/
+                        [element fb_tapWithError:&error];
+                    }
                 }
                 else if( !strncmp( action, "elTouchAndHold", 14 ) ) {
                     char *elId = node_hash__get_str( root, "id", 2 );
@@ -564,7 +680,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                         if( typeNumNS ) typeNum = [typeNumNS intValue];
                     }
                     
-                    int wait = node_hash__get_int( root, "wait", 4 );
+                    double wait = node_hash__get_double( root, "wait", 4 );
                   
                     XCUIElement *el = nil;
                   
@@ -685,6 +801,12 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     bool success = [device fb_unlockScreen:&error];
                     respText = success ? "{\"success\":true}" : "{\"success\":false}";
                 }
+                else if( !strncmp( action, "siri", 4 ) ) {
+                    NSError *error;
+                    char *text = node_hash__get_str( root, "text", 4 );
+                    NSString *text2 = [NSString stringWithUTF8String:text];
+                    [device fb_activateSiriVoiceRecognitionWithText:text2 error:&error];
+                }
                 else if( !strncmp( action, "status", 6 ) ) {
                     respText = "{sessionId:\"fakesession\"}";
                 }
@@ -716,6 +838,11 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     } else {
                         el = app;
                     }
+                  
+                    int pid = node_hash__get_int( root, "pid", 3 );
+                    if( pid != -1 ) {
+                        el = [FBApplication applicationWithPID:pid];
+                    }
                     
                     NSError *serror = nil;
                     XCElementSnapshot *snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
@@ -732,11 +859,54 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                 else if( !strncmp( action, "elementAtPoint", 14 ) ) {
                     int x = node_hash__get_int( root, "x", 1 );
                     int y = node_hash__get_int( root, "y", 1 );
+                    int json = node_hash__get_int( root, "json", 4 );
+                    int nopid = node_hash__get_int( root, "nopid", 5 );
+                    int top = node_hash__get_int( root, "top", 3 );
                     //XCUIElement *el = [XCUIApplication elementAtPoint:x y:y];
-                    XCUIElement *el = [FBXCAXClientProxy.sharedClient elementAtPoint:x y:y];
-                    XCUIApplication *app = [el application];
-                    NSString *bi = app.bundleID;
-                    respTextA = strdup( [bi UTF8String] );
+                    //instancetype *sharedClient = FBXCAXClientProxy.sharedClient;
+                    
+                    //XCUIElement *el = [FBXCAXClientProxy.sharedClient elementAtPoint:x y:y];
+                    //XCUIApplication *app = [el application];
+                    CGPoint point = CGPointMake(x,y);
+                    XCAccessibilityElement *el = [app cf_requestElementAtPoint:point];
+                    
+                    //AXUIElement *el2 = [AXUIElement uiElementWithAXElement:el.AXUIElement];
+                    
+                    NSArray *standardAttributes = FBStandardAttributeNames();
+                  
+                    XCElementSnapshot *snap = [app cf_snapshotForElement:el
+                                                              attributes:standardAttributes
+                                                              parameters:nil];
+                  
+                    if( top != -1 ) {
+                        while( snap.parent != nil ) {
+                            //XCAccessibilityElement *parentEl = snap.parentAccessibilityElement;
+                            //snap = [app cf_snapshotForElement:parentEl
+                            //                                        attributes:standardAttributes
+                            //                                        parameters:nil];
+                            snap = snap.parent;
+                        }
+                        snap = snap.rootElement;
+                    }
+                    
+                    int pid = el.processIdentifier;
+                                        
+                    /*char str[200];
+                    sprintf( str, "pid:%d", pid );
+                    respTextA = strdup( str );*/
+                  
+                    NSMutableString *str = [NSMutableString stringWithString:@""];
+                  
+                    if( nopid == -1 ) [str appendFormat:@"Pid:%d\n", pid];
+                    
+                    if( json != -1 ) {
+                        [self snapToJson:snap str:str depth: 0 app:app];
+                    } else {
+                        NSDictionary *sdict = [snap dictionaryRepresentation];
+                        
+                        [self dictToStr:sdict str:str depth: 0];
+                    }
+                    respTextA = strdup( [str UTF8String] );
                 }
                 else if( !strncmp( action, "elPos", 5 ) ) {
                     char *elId = node_hash__get_str( root, "id", 2 );
@@ -789,6 +959,81 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                     const char *sid = [sessionId UTF8String];
                     [FBLogger logFmt:@"createSession sid:%s", sid ];
                     respTextA = strdup( sid );
+                }
+                else if( !strncmp( action, "activeApps", 10 ) ) {
+                    NSArray<XCAccessibilityElement *> *apps = [FBXCAXClientProxy.sharedClient activeApplications];
+                    
+                    NSMutableString *ids = [[NSMutableString alloc] init];
+                    for( int i=0;i<[apps count];i++ ) {
+                        XCAccessibilityElement *app = [apps objectAtIndex:i];
+                        int pid = app.processIdentifier;
+                        [ids appendFormat:@"%d,", pid ];
+                    }
+                    const char *idsC = [ids UTF8String];
+                    respTextA = strdup( idsC );
+                }
+                else if( !strncmp( action, "elByPid", 7 ) ) {
+                    int pid = node_hash__get_int( root, "pid", 3 );
+                    int json = node_hash__get_int( root, "json", 4 );
+                    XCAccessibilityElement *el = [XCAccessibilityElement elementWithProcessIdentifier:pid];
+                    
+                    NSArray *standardAttributes = FBStandardAttributeNames();
+                  
+                    XCElementSnapshot *snap = [app cf_snapshotForElement:el
+                                                              attributes:standardAttributes
+                                                              parameters:nil];
+                    
+                    NSMutableString *str = [NSMutableString stringWithString:@""];
+                    
+                    if( json != -1 ) {
+                        [self snapToJson:snap str:str depth: 0 app:app];
+                    } else {
+                        NSDictionary *sdict = [snap dictionaryRepresentation];
+                        
+                        [self dictToStr:sdict str:str depth: 0];
+                    }
+                    respTextA = strdup( [str UTF8String] );
+                }
+                else if( !strncmp( action, "pidChildWithWidth", 17 ) ) {
+                    int pid = node_hash__get_int( root, "pid", 3 );
+                    int matchWidth = node_hash__get_int( root, "width", 5 );
+                  
+                    //XCUIApplication *app = [XCUIApplication applicationWithPID:0];
+                    //FBApplication *app = [FBApplication fb_applicationWithPID:pid];
+                    XCAccessibilityElement *el = [XCAccessibilityElement elementWithProcessIdentifier:pid];
+                    
+                    NSArray *standardAttributes = FBStandardAttributeNames();
+                  
+                    XCElementSnapshot *snap = [app cf_snapshotForElement:el
+                                                              attributes:standardAttributes
+                                                              parameters:nil];
+                  
+                    XCUIElement *app = [XCUIElement alloc];
+                    [app setLastSnapshot:snap];
+                  
+                    NSArray<XCElementSnapshot *> *children = [app descendantsMatchingType:XCUIElementTypeOther];
+                  
+                    XCUIElement *gotit = nil;
+                    for( int i=0;i<[children count];i++ ) {
+                        XCUIElement *el = [children objectAtIndex:i];
+                        CGRect frame = [el frame];
+                        int width = frame.size.width;
+                        if( width == matchWidth ) {
+                          gotit = el;
+                        }
+                    }
+                    if( gotit != nil ) {
+                        NSString *key;
+                        for( int i=0;i<20;i++ ) {
+                            key = createKey();
+                            if( dict[key] == nil ) break;
+                        }
+                        dict[key] = gotit;
+                        
+                        respTextA = strdup( [key UTF8String] );
+                    } else {
+                        respText = "could not find";
+                    }
                 }
             }
             else NSLog(@"xxr empty message");

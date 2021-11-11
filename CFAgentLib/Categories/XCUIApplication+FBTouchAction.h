@@ -10,6 +10,8 @@
 
 #import <XCTest/XCTest.h>
 #import "FBElementCache.h"
+#import "XCAccessibilityElement.h"
+#import "XCElementSnapshot.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -61,6 +63,12 @@ NS_ASSUME_NONNULL_BEGIN
  @return YES If the touch action has been successfully performed without errors
  */
 - (BOOL)fb_performW3CActions:(NSArray *)actions elementCache:(nullable FBElementCache *)elementCache error:(NSError * _Nullable*)error;
+
+- (XCUIElement *)cf_requestElementAtPoint:(CGPoint)point;
+
+- (XCElementSnapshot *)cf_snapshotForElement:(XCAccessibilityElement *)el
+                                  attributes:(NSArray *)atts
+                                  parameters:(NSDictionary *)params;
 
 @end
 
