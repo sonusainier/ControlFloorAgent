@@ -520,7 +520,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                   XCUIApplication *cf_systemApp = nil;
                   int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
                   cf_systemApp = [FBApplication applicationWithPID:pid];
-                  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.dryark.vidstream"]];
+                  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.LT.LTApp"]];
                   
                   //app.fb_shouldWaitForQuiescence = true; // or nil
                   cfapp.launchArguments = @[];
@@ -567,7 +567,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                   XCUIApplication *cf_systemApp = nil;
                   int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
                   cf_systemApp = [FBApplication applicationWithPID:pid];
-                  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.dryark.vidstream"]];
+                  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.LT.LTApp"]];
                   
                   //app.fb_shouldWaitForQuiescence = true; // or nil
                   cfapp.launchArguments = @[];
