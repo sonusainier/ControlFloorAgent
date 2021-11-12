@@ -10,6 +10,7 @@
 #import "XCUIScreen.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <objc/runtime.h>
+#import "FBMacros.h"
 
 @implementation NngThread2
 
@@ -47,6 +48,8 @@
     bool transformSet = false;
   
     id<XCTestManager_ManagerInterface> proxy = [FBXCTestDaemonsProxy testRunnerProxy];
+  
+    bool is15plus = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0");
   
     ujsonin_init();
     while( 1 ) {
@@ -194,16 +197,23 @@
                     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
                     
                     __block NSData *imgData = nil;
-                    [proxy _XCT_requestScreenshotOfScreenWithID:[screen displayID]
+                    unsigned int displayID = [screen displayID];
+                    if (is15plus) {
+                        XCUIScreenshot *shot = [screen screenshot];
+                        imgData = [shot PNGRepresentation];
+                    } else {
+                        [proxy _XCT_requestScreenshotOfScreenWithID:displayID
                                                      withRect:CGRectNull
                                                           uti:(__bridge id)kUTTypeJPEG
                                            compressionQuality:0.8
                                                     withReply:^(NSData *data, NSError *error) {
-                        if( error != nil ) return;
-                        imgData = data;
-                        dispatch_semaphore_signal(semaphore);
-                    }];
-                    dispatch_semaphore_wait(semaphore,dispatch_time(DISPATCH_TIME_NOW,NSEC_PER_SEC));
+                            if( error != nil ) return;
+                                imgData = data;
+                                dispatch_semaphore_signal(semaphore);
+                            }];
+                        dispatch_semaphore_wait(semaphore,dispatch_time(DISPATCH_TIME_NOW,NSEC_PER_SEC));
+                    }
+                    
                     @autoreleasepool {
                         CIImage *cImage = [CIImage imageWithData:imgData];
                         if( !transformSet ) {
