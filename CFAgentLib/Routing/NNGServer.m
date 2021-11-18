@@ -562,7 +562,7 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                   respTextA = strdup( sid );
                   
                 }
-                else if( !strncmp( action, "restart", 6 ) ) {
+                else if( !strncmp( action, "restart", 7) ) {
                   XCUIApplication *cfapp = nil;
                   XCUIApplication *cf_systemApp = nil;
                   int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
@@ -570,9 +570,9 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                   cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.LT.LTApp"]];
                   
                   //app.fb_shouldWaitForQuiescence = true; // or nil
-                  cfapp.launchArguments = @[];
-                  cfapp.launchEnvironment = @{};
-                  [cfapp launch];
+                //   cfapp.launchArguments = @[];
+                //   cfapp.launchEnvironment = @{};
+                //   [cfapp launch];
                   NSLog(@"System Version is %@",[[UIDevice currentDevice] systemVersion]);
                   NSString *ver = [[UIDevice currentDevice] systemVersion];
                   int os = [ver intValue];
