@@ -562,45 +562,13 @@ XCUIElementQuery *appElsTouchBar( XCUIApplication *app ) { return app.touchBars;
                   respTextA = strdup( sid );
                   
                 }
-                else if( !strncmp( action, "restart", 7) ) {
-                  XCUIApplication *cfapp = nil;
-                  XCUIApplication *cf_systemApp = nil;
-                  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
-                  cf_systemApp = [FBApplication applicationWithPID:pid];
-                  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.LT.LTApp"]];
-                  
-                  //app.fb_shouldWaitForQuiescence = true; // or nil
-                //   cfapp.launchArguments = @[];
-                //   cfapp.launchEnvironment = @{};
-                //   [cfapp launch];
-                  NSLog(@"System Version is %@",[[UIDevice currentDevice] systemVersion]);
-                  NSString *ver = [[UIDevice currentDevice] systemVersion];
-                  int os = [ver intValue];
-                  
-                  [NSThread sleepForTimeInterval:1.0];
-                  [cfapp.buttons[@"Broadcast Selector"] tap];
-                  [NSThread sleepForTimeInterval:1.0];
-                  
-                
-                  if (os >= 14){
-                    
-                    [cf_systemApp.buttons[@"Start Broadcast"] tap];
-                    [NSThread sleepForTimeInterval:3.0];
+                else if( !strncmp( action, "restart", 7 ) ) {
+    
+                  NSString *success = [device LT_startStream];
+                  if (success == nil){
+                    success = @"false";
                   }
-                  else{
-                    [cfapp.staticTexts[@"Start Broadcast"] tap];
-                    [NSThread sleepForTimeInterval:3.0];
-                  }
-                  
-                  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
-                  [NSThread sleepForTimeInterval:2.0];
-                  [cfapp terminate];
-                  
-                  NSString *sessionId = @"Restarted";
-                  const char *sid = [sessionId UTF8String];
-                  [FBLogger logFmt:@"createSession sid:%s", sid ];
-                  respTextA = strdup( sid );
-                  
+                  respTextA = strdup( [success UTF8String] );
                 }
                 else if( !strncmp( action, "elClick", 7 ) ) {
                     char *elId = node_hash__get_str( root, "id", 2 );
