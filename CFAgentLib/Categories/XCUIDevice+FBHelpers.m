@@ -22,7 +22,7 @@
 #import "FBXCodeCompatibility.h"
 #import "XCUIDevice.h"
 #import "XCDeviceEvent.h"
-
+#import "FBXCAXClientProxy.h"
 #import "XCPointerEventPath.h"
 
 static const NSTimeInterval FBHomeButtonCoolOffTime = 1.;
