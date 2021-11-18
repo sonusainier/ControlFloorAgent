@@ -116,6 +116,44 @@ static bool fb_isLocked;
   return notify_post(name) == NOTIFY_STATUS_OK;
 }
 
+- (NSString *)LT_startStream
+{
+  XCUIApplication *cfapp = nil;
+  XCUIApplication *cf_systemApp = nil;
+  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+  cf_systemApp = [FBApplication applicationWithPID:pid];
+  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.LT.LTApp"]];
+ 
+
+  NSLog(@"System Version is %@",[[UIDevice currentDevice] systemVersion]);
+  NSString *ver = [[UIDevice currentDevice] systemVersion];
+  int os = [ver intValue];
+  
+  [NSThread sleepForTimeInterval:1.0];
+  [cfapp.buttons[@"Broadcast Selector"] tap];
+  [NSThread sleepForTimeInterval:1.0];
+ 
+
+  if (os >= 14){
+    
+    [cf_systemApp.buttons[@"Start Broadcast"] tap];
+    [NSThread sleepForTimeInterval:3.0];
+    
+  }
+  else{
+    [cfapp.staticTexts[@"Start Broadcast"] tap];
+    [NSThread sleepForTimeInterval:3.0];
+    
+  }
+  
+  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
+
+  [NSThread sleepForTimeInterval:2.0];
+  [cfapp terminate];
+ 
+  return @"true";
+}
+
 - (NSString *)fb_wifiIPAddress
 {
   struct ifaddrs *interfaces = NULL;
