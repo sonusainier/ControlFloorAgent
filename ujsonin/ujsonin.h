@@ -4,9 +4,10 @@
 #ifndef __UJSONIN_H
 #define __UJSONIN_H
 #include"string-tree.h"
+#include<stdint.h>
 typedef struct jnode_s jnode;
 
-#define NODEBASE char type; jnode *parent;
+#define NODEBASE uint64_t type; jnode *parent;
 // type 1=hash, 2=str
 
 #define SAFE(x) if(pos>=len) { endstate=x; goto Done; }
@@ -21,13 +22,13 @@ typedef struct node_hash_s { NODEBASE
 
 typedef struct node_str_s { NODEBASE
     char *str;
-    int len;
+    long len;
 } node_str;
 
 typedef struct node_arr_s { NODEBASE
     jnode *head;
     jnode *tail;
-    int count;
+    long count;
 } node_arr;
 
 typedef struct parser_state_s {
@@ -35,10 +36,10 @@ typedef struct parser_state_s {
 } parser_state;
 
 node_hash *parse( char *data, long len, parser_state *beginState, int *err );
-jnode *node_hash__get( node_hash *self, char *key, int keyLen );
-int node_hash__get_int( node_hash *self, char *key, int keyLen );
-double node_hash__get_double( node_hash *self, char *key, int keyLen );
-char *node_hash__get_str( node_hash *self, char *key, int keyLen );
+jnode *node_hash__get( node_hash *self, char *key, long keyLen );
+int node_hash__get_int( node_hash *self, char *key, long keyLen );
+double node_hash__get_double( node_hash *self, char *key, long keyLen );
+char *node_hash__get_str( node_hash *self, char *key, long keyLen );
 void jnode__dump( jnode *self, int depth );
 char *slurp_file( char *filename, long *outlen );
 void ujsonin_init(void);
