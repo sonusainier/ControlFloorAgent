@@ -87,5 +87,17 @@
   return [FBXCTestDaemonsProxy synthesizeEventWithRecord:event error:error];
 }
 
+- (XCUIElement *)cf_requestElementAtPoint:(CGPoint)point
+{
+  return [FBXCTestDaemonsProxy requestElementAtPoint:point];
+}
+
+- (XCElementSnapshot *)cf_snapshotForElement:(XCAccessibilityElement *)el
+                                  attributes:(NSArray *)atts
+                                  parameters:(NSDictionary *)params
+{
+  return [FBXCTestDaemonsProxy snapshotForElement:el attributes:atts parameters:params];
+}
+
 @end
 #endif
