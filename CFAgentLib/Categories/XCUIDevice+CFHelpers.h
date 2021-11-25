@@ -14,9 +14,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XCUIDevice (CFHelpers)
 
+@property (readonly) id accessibilityInterface;
+
 - (void)runEventPath:(XCPointerEventPath*)path;
 
 - (void)cf_tap:(CGFloat)x
+  y:(CGFloat)y;
+
+- (void)cf_mouseDown:(CGFloat)x
+  y:(CGFloat)y;
+
+- (void)cf_mouseUp:(CGFloat)x
   y:(CGFloat)y;
 
 - (void)cf_tapTime:(CGFloat)x
@@ -38,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
                                type:(unsigned int)type
                             duration:(NSTimeInterval)duration
            error:(NSError **)error;
+
+- (void)cf_holdHomeButtonForDuration:(CGFloat)dur;
 
 @end
 

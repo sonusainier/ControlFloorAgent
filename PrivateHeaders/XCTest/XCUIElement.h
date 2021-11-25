@@ -31,6 +31,7 @@
 // Added since Xcode 11.0 (GM)
 @property(readonly, copy) XCUIElement *includingNonModalElements;
 
+//@property(readonly) CGRect frame;
 - (id)initWithElementQuery:(id)arg1;
 
 - (unsigned long long)traits;
