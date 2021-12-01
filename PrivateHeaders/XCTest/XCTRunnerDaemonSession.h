@@ -46,7 +46,7 @@
 - (void)updateDeviceOrientation:(long long)arg1 completion:(CDUnknownBlockType)arg2;
 - (void)performDeviceEvent:(id)arg1 completion:(CDUnknownBlockType)arg2;
 - (void)synthesizeEvent:(XCSynthesizedEventRecord *)arg1 completion:(void (^)(NSError *))arg2;
-- (void)requestElementAtPoint:(CGPoint)arg1 reply:(CDUnknownBlockType)arg2;
+- (void)requestElementAtPoint:(CGPoint)arg1 reply:(void (^)(XCUIElement *,NSError *))arg2;
 - (void)fetchParameterizedAttributeForElement:(id)arg1 attribute:(id)arg2 parameter:(id)arg3 reply:(CDUnknownBlockType)arg4;
 - (void)setAttribute:(id)arg1 value:(id)arg2 element:(id)arg3 reply:(CDUnknownBlockType)arg4;
 - (void)fetchAttributesForElement:(id)arg1 attributes:(id)arg2 reply:(CDUnknownBlockType)arg3;

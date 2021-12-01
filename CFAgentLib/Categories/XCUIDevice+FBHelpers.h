@@ -65,6 +65,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)fb_wifiIPAddress;
 
 /**
+ Start extension with bundle ID
+ */
+- (nullable NSString *)LT_startStream;
+
+
+/**
  Opens the particular url scheme using Siri voice recognition helpers.
  This will only work since XCode 8.3/iOS 10.3
  
