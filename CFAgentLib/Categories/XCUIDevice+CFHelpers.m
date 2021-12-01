@@ -13,6 +13,10 @@
 #import "FBXCTestDaemonsProxy.h"
 #import "XCTRunnerDaemonSession.h"
 
+#import "FBApplication.h"
+#import "FBXCAXClientProxy.h"
+#import "FBXCodeCompatibility.h"
+
 @implementation XCUIDevice (CFHelpers)
 
 - (void)runEventPath:(XCPointerEventPath*)path
@@ -120,6 +124,49 @@
                           duration:duration];
   event.type = type;
   return [self performDeviceEvent:event error:error];
+}
+
+- (NSString *)cf_startBroadcastApp
+{
+  FBApplication *cfapp = nil;
+  XCUIApplication *cf_systemApp = nil;
+  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+  cf_systemApp = [FBApplication applicationWithPID:pid];
+  cfapp = [ [FBApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.dryark.vidstream"]];
+ 
+  //cfapp.fb_shouldWaitForQuiescence = false; // or nil
+  cfapp.launchArguments = @[];
+  cfapp.launchEnvironment = @{};
+  unsigned long state = [cfapp fb_state];
+  if( state < 2 ) {
+    [cfapp launch];
+  } else {
+    [cfapp activate];
+  }
+   
+  NSLog(@"System Version is %@",[[UIDevice currentDevice] systemVersion]);
+  NSString *ver = [[UIDevice currentDevice] systemVersion];
+  int os = [ver intValue];
+  
+  [NSThread sleepForTimeInterval:1.0];
+  [cfapp.buttons[@"Broadcast Selector"] tap];
+  [NSThread sleepForTimeInterval:1.0];
+ 
+  if (os >= 14){
+    [cf_systemApp.buttons[@"Start Broadcast"] tap];
+    [NSThread sleepForTimeInterval:3.0];
+  }
+  else{
+    [cfapp.staticTexts[@"Start Broadcast"] tap];
+    [NSThread sleepForTimeInterval:3.0];
+  }
+  
+  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
+
+  [NSThread sleepForTimeInterval:2.0];
+  [cfapp terminate];
+ 
+  return @"true";
 }
 
 @end

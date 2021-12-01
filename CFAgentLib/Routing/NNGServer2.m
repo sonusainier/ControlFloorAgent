@@ -10,6 +10,7 @@
 #import "XCUIScreen.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <objc/runtime.h>
+#import "FBMacros.h"
 
 @implementation NngThread2
 
@@ -48,6 +49,8 @@
   
     id<XCTestManager_ManagerInterface> proxy = [FBXCTestDaemonsProxy testRunnerProxy];
   
+    bool is15plus = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0");
+  
     ujsonin_init();
     while( 1 ) {
         nng_msg *nmsg = NULL;
@@ -61,7 +64,7 @@
             if( msgLen > 0 ) {
                 char *msg = (char *) nng_msg_body( nmsg );
                 //msg = strdup( msg );
-                [FBLogger logFmt:@"nng req %.*s", msgLen, msg ];
+                //[FBLogger logFmt:@"nng req %.*s", msgLen, msg ];
                 char buffer[20];
                 char *action = "";
                 
@@ -72,11 +75,11 @@
                     if( actionJnode && actionJnode->type == 2 ) {
                         node_str *actionStrNode = (node_str *) actionJnode;
                         action = buffer;
-                        sprintf(buffer,"%.*s",actionStrNode->len,actionStrNode->str);
+                        sprintf(buffer,"%.*s",(int)actionStrNode->len,actionStrNode->str);
                     }
                 }
                 
-                int alen = strlen( action );
+                long alen = strlen( action );
                 if( !strncmp( action, "done", 4 ) ) break;
                 else if( !strncmp( action, "ping", 4 ) ) {
                     respText = "pong";
@@ -193,19 +196,31 @@
                 else if( !strncmp( action, "screenshot2", 11 ) && alen == 11 ) {
                     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
                     
-                    __block NSData *imgData = nil;
-                    [proxy _XCT_requestScreenshotOfScreenWithID:[screen displayID]
-                                                     withRect:CGRectNull
-                                                          uti:(__bridge id)kUTTypeJPEG
-                                           compressionQuality:0.8
-                                                    withReply:^(NSData *data, NSError *error) {
-                        if( error != nil ) return;
-                        imgData = data;
-                        dispatch_semaphore_signal(semaphore);
-                    }];
-                    dispatch_semaphore_wait(semaphore,dispatch_time(DISPATCH_TIME_NOW,NSEC_PER_SEC));
                     @autoreleasepool {
-                        CIImage *cImage = [CIImage imageWithData:imgData];
+                        __block NSData *imgData = nil;
+                        unsigned int displayID = [screen displayID];
+                        CIImage *cImage;
+                        if (is15plus) {
+                            XCUIScreenshot *shot = [screen screenshot];
+                            imgData = [shot PNGRepresentation];
+                            cImage = [CIImage imageWithData:imgData];
+                            //CGImageRef cgImage = [shot image].CGImage;
+                            //cImage = [[CIImage alloc] initWithCGImage:cgImage];
+                        } else {
+                            [proxy _XCT_requestScreenshotOfScreenWithID:displayID
+                                                         withRect:CGRectNull
+                                                              uti:(__bridge id)kUTTypeJPEG
+                                               compressionQuality:0.8
+                                                        withReply:^(NSData *data, NSError *error) {
+                                if( error != nil ) return;
+                                    imgData = data;
+                                    dispatch_semaphore_signal(semaphore);
+                                }];
+                            dispatch_semaphore_wait(semaphore,dispatch_time(DISPATCH_TIME_NOW,NSEC_PER_SEC));
+                            cImage = [CIImage imageWithData:imgData];
+                        }
+                     
+                        imgData = nil;
                         if( !transformSet ) {
                             transformSet = true;
                             CGSize size = cImage.extent.size;

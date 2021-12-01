@@ -5,12 +5,12 @@
 #define __STRING_TREE_H
 #include<stdint.h>
 
-uint32_t fnv1a_len( char *str, int strlen );
+uint32_t fnv1a_len( char *str, long strlen );
 
 struct snode_s {
 	char *str;
-	int strlen;
-	char dataType;
+	long strlen;
+	long dataType;
 	void *data;
 	struct snode_s *next;
 };
@@ -18,7 +18,7 @@ typedef struct snode_s snode;
 
 snode *snode__new( char *newstr, void *newdata, char dataType, snode *newnext );
 void snode__delete( snode *self );
-snode *snode__new_len( char *newstr, int strlen, void *newdata, char dataType, snode *newnext );
+snode *snode__new_len( char *newstr, long strlen, void *newdata, char dataType, snode *newnext );
 
 #define XJR_ARR_MAX 5
 typedef struct xjr_arr_s xjr_arr;
@@ -48,13 +48,13 @@ struct string_tree_s {
 	void *tree;
 };
 typedef struct string_tree_s string_tree;
-snode *string_tree__rawget_len( string_tree *self, char *key, int keylen );
+snode *string_tree__rawget_len( string_tree *self, char *key, long keylen );
 string_tree *string_tree__new(void);
 void string_tree__delete( string_tree *self );
-void *string_tree__get_len( string_tree *self, char *key, int keylen, char *dataType );
-void string_tree__delkey_len( string_tree *self, char *key, int keylen );
+void *string_tree__get_len( string_tree *self, char *key, long keylen, long *dataType );
+void string_tree__delkey_len( string_tree *self, char *key, long keylen );
 
-void string_tree__store_len( string_tree *self, char *key, int keylen, void *node, char dataType );
+void string_tree__store_len( string_tree *self, char *key, long keylen, void *node, char dataType );
 
 void IntDest(void *); int IntComp(const void *,const void *);
 void IntPrint(const void* a); void InfoPrint(void *); void InfoDest(void *);

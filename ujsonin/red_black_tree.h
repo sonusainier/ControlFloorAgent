@@ -4,11 +4,12 @@
 #ifndef __RED_BLACK_TREE_H
 #define __RED_BLACK_TREE_H
 #include<stdlib.h>
+#include<stdint.h>
 
 typedef struct rb_red_blk_node {
   void* key;
   void* info;
-  int red; /* if red=0 then the node is black */
+  uint64_t red; /* if red=0 then the node is black */
   struct rb_red_blk_node* left;
   struct rb_red_blk_node* right;
   struct rb_red_blk_node* parent;
