@@ -40,6 +40,7 @@ jnode *node_hash__get( node_hash *self, char *key, long keyLen );
 int node_hash__get_int( node_hash *self, char *key, long keyLen );
 double node_hash__get_double( node_hash *self, char *key, long keyLen );
 char *node_hash__get_str( node_hash *self, char *key, long keyLen );
+char *node_hash__get_str_escapes( node_hash *self, char *key, long keyLen );
 void jnode__dump( jnode *self, int depth );
 char *slurp_file( char *filename, long *outlen );
 void ujsonin_init(void);

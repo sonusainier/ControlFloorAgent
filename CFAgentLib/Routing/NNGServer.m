@@ -504,7 +504,7 @@ NSString *handleSiri( myData *my, node_hash *root, char **outVal ) {
 }
 
 NSString *handleTypeText( myData *my, node_hash *root, char **outVal ) {
-    char *text = node_hash__get_str( root, "text", 4 );
+    char *text = node_hash__get_str_escapes( root, "text", 4 );
     NSString *text2 = [NSString stringWithUTF8String:text];
     [my->app typeText: text2];
     return @"ok";

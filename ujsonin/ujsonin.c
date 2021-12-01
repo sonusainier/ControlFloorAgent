@@ -199,6 +199,55 @@ char *node_hash__get_str( node_hash *self, char *key, long keyLen ) {
     return buffer;
 }
 
+uint8_t hexlet( char let ) {
+    if( let >= '0' && let <= '9' ) return let - '0';
+    if( let >= 'A' && let <= 'F' ) return let - 'A' + 10;
+    if( let >= 'a' && let <= 'f' ) return let - 'a' + 10;
+    return 0;
+}
+
+char *node_hash__get_str_escapes( node_hash *self, char *key, long keyLen ) {
+    long type;
+    jnode *node = (jnode *) string_tree__get_len( self->tree, key, keyLen, &type );
+    if( !node ) return NULL;
+    if( node->type != 2 ) return NULL;
+    node_str *nodeStr = (node_str *) node;
+    long len = nodeStr->len;
+    char *str = nodeStr->str;
+    char *buffer = malloc( len + 1 );
+    int i=0;
+    int dest=0;
+    for( ;i<len;i++,dest++ ) {
+        char let = str[i];
+        if( let == '\\' ) {
+            char next = str[++i];
+            if( next == 'u' ) {
+                uint32_t byte = 0;
+                
+                byte += hexlet( str[++i] );
+                byte *= 16;
+                
+                byte += hexlet( str[++i] );
+                byte *= 16;
+                
+                byte += hexlet( str[++i] );
+                byte *= 16;
+                
+                byte += hexlet( str[++i] );
+                
+                if( byte < 256 ) {
+                    buffer[ dest ] = byte;
+                }
+            }
+            else buffer[dest]=next;
+            continue;
+        }
+        buffer[dest] = let;
+    }
+    buffer[dest] = 0x00;
+    return buffer;
+}
+
 int node_hash__get_int( node_hash *self, char *key, long keyLen ) {
     long type;
     jnode *node = string_tree__get_len( self->tree, key, keyLen, &type );
@@ -491,6 +540,7 @@ String1: SAFEGET(17)
         goto AfterVal; // Should never be reached
     }
     strStart = &data[pos-1];
+    if( let == '\\' ) pos++;
 StringX: SAFEGET(18)
     if( let == '"' ) {
        long strLen = &data[pos-1] - strStart;
@@ -505,6 +555,7 @@ StringX: SAFEGET(18)
        }
        goto AfterVal; // should never be reached
     }
+    if( let == '\\' ) pos++;
     goto StringX;   
 AfterVal: SAFE(19)
     // who cares about commas in between things; we can just ignore them :D
