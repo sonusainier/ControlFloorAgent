@@ -48,7 +48,8 @@
 - (void)handleAccessibilityNotification:(int)arg1 withPayload:(id)arg2;
 - (void)notifyOnNextOccurrenceOfUserTestingEvent:(id)arg1 handler:(CDUnknownBlockType)arg2;
 - (void)handleUserTestingNotification:(id)arg1;
-- (id)elementAtPoint:(CGPoint)arg1 error:(id *)arg2;
+- (id)remoteAXInterface;
+- (id)accessibilityElementForElementAtPoint:(CGPoint)arg1 error:(id *)arg2;
 - (BOOL)cachedAccessibilityLoadedValueForPID:(int)arg1;
 - (NSArray<XCAccessibilityElement *> *)activeApplications;
 - (id)systemApplication;

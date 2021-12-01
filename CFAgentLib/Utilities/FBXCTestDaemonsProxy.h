@@ -26,8 +26,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIInterfaceOrientation)orientationWithApplication:(XCUIApplication *)application;
 #endif
 
++ (XCAccessibilityElement *)requestElementAtPoint:(CGPoint)point;
+
 + (BOOL)synthesizeEventWithRecord:(XCSynthesizedEventRecord *)record
                             error:(NSError *__autoreleasing*)error;
+
++ (XCElementSnapshot *)snapshotForElement:(XCAccessibilityElement *)el
+                               attributes:(NSArray *)atts
+                               parameters:(NSDictionary *)params;
 
 @end
 

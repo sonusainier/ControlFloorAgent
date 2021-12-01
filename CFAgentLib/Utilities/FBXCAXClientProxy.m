@@ -84,7 +84,9 @@ static id FBAXClient = nil;
   CGPoint point = CGPointMake(x,y);
   //FBAXClient = [XCAXClient_iOS sharedClient];
   //XCUIRemoteAccessibilityInterface *remote = [FBAXClient remoteAccessibilityInterface];
-  return [FBAXClient elementAtPoint:point error:(id *)&err];
+  
+  return [FBAXClient accessibilityElementForElementAtPoint:point error:&err];
+  //return [FBAXClient requestElementAtPoint:point];// error:(id *)&err];
 }
 
 - (BOOL)setAXTimeout:(NSTimeInterval)timeout error:(NSError **)error

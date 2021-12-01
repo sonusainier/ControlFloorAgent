@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NngThread : NSObject
 -(NngThread *)init:(int)nngPort;// framePasser:(id)framePasser;
--(void)dictToStr:(NSDictionary *)dict str:(NSMutableString *)str depth:(int)depth;
 -(void)dealloc;
 -(void)entry:(id)param;
 @property int nngPort;
