@@ -9,7 +9,7 @@
 #include"ujsonin.h"
 
 node_hash *parse_with_default( char *file, char *def, char **d1, char **d2 ) {
-    int flen;
+    long flen;
     char *fdata = slurp_file( (char *) file, &flen );
     if( !fdata ) {
         printf("Could not open file '%s'\n", file );
@@ -17,7 +17,7 @@ node_hash *parse_with_default( char *file, char *def, char **d1, char **d2 ) {
     }
     int ferr;
     node_hash *froot = parse( fdata, flen, NULL, &ferr );
-    int dlen;
+    long dlen;
     char *ddata = NULL;
     int derr;
     
@@ -52,14 +52,14 @@ jnode *jnode__new( char type ) {
     return self;
 }
 
-node_hash *node_hash__new() {
+node_hash *node_hash__new(void) {
     node_hash *self = ( node_hash * ) calloc( sizeof( node_hash ), 1 );
     self->type = 1;
     self->tree = string_tree__new();
     return self;
 }
 
-node_str *node_str__new( char *str, int len, char type ) {
+node_str *node_str__new( char *str, long len, char type ) {
     node_str *self = ( node_str * ) calloc( sizeof( node_str ), 1 );
     self->type = type; // 2 is str, 4 is number, 5 is a negative number
     self->str = str;
@@ -67,7 +67,7 @@ node_str *node_str__new( char *str, int len, char type ) {
     return self;
 }
 
-node_arr *node_arr__new() {
+node_arr *node_arr__new(void) {
     node_arr *self = ( node_arr * ) calloc( sizeof( node_arr ), 1 );
     self->type = 3;
     return self;
@@ -141,72 +141,121 @@ void node_arr__dump( node_arr *self, int depth ) {
 
 void jnode__dump( jnode *self, int depth ) {
     if( self->type == 1 ) node_hash__dump( (node_hash *) self, depth+1 );
-    else if( self->type == 2 ) printf("\"%.*s\"\n", ( (node_str *) self )->len, ( (node_str *) self )->str );
+    else if( self->type == 2 ) printf("\"%.*s\"\n", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
     else if( self->type == 3 ) node_arr__dump( (node_arr *) self, depth+1 );
-    else if( self->type == 4 ) printf("%.*s\n", ( (node_str *) self )->len, ( (node_str *) self )->str );
-    else if( self->type == 5 ) printf("-%.*s\n", ( (node_str *) self )->len, ( (node_str *) self )->str );  
+    else if( self->type == 4 ) printf("%.*s\n", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
+    else if( self->type == 5 ) printf("-%.*s\n", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
     else if( self->type == 6 ) printf("true\n");
     else if( self->type == 7 ) printf("false\n");
     else if( self->type == 8 ) printf("false\n");
-    else if( self->type == 9 ) printf("%.*s\n", ( (node_str *) self )->len, ( (node_str *) self )->str );
+    else if( self->type == 9 ) printf("%.*s\n", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
 }
 
 void jnode__dump_to_makefile( jnode *self, char *prefix ) {
     if( self->type == 1 ) node_hash__dump_to_makefile( (node_hash *) self, prefix );
     else {
         printf("\"");
-        if( self->type == 2 ) printf("%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );
+        if( self->type == 2 ) printf("%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
         //else if( self->type == 3 ) node_arr__dump_to_makefile( (node_arr *) self, 0 );
-        else if( self->type == 4 ) printf("%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );
-        else if( self->type == 5 ) printf("-%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );  
+        else if( self->type == 4 ) printf("%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
+        else if( self->type == 5 ) printf("-%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
         else if( self->type == 6 ) printf("true");
         else if( self->type == 7 ) printf("false");
         else if( self->type == 8 ) printf("false");
-        else if( self->type == 9 ) printf("%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );
+        else if( self->type == 9 ) printf("%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
         printf("\"\n");
     }
 }
 
 void jnode__dump_env( jnode *self ) {
     printf("\"");
-    if( self->type == 2 ) printf("%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );
-    else if( self->type == 4 ) printf("%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );
-    else if( self->type == 5 ) printf("-%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );  
+    if( self->type == 2 ) printf("%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
+    else if( self->type == 4 ) printf("%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
+    else if( self->type == 5 ) printf("-%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
     else if( self->type == 6 ) printf("true");
     else if( self->type == 7 ) printf("false");
     else if( self->type == 8 ) printf("null");
-    else if( self->type == 9 ) printf("%.*s", ( (node_str *) self )->len, ( (node_str *) self )->str );
+    else if( self->type == 9 ) printf("%.*s", (int)( (node_str *) self )->len, ( (node_str *) self )->str );
     printf("\"");
 }
 
-void node_hash__store( node_hash *self, char *key, int keyLen, jnode *node ) {
+void node_hash__store( node_hash *self, char *key, long keyLen, jnode *node ) {
     string_tree__store_len( self->tree, key, keyLen, (void *) node, 0 );
 }
 
-jnode *node_hash__get( node_hash *self, char *key, int keyLen ) {
-    char type;
+jnode *node_hash__get( node_hash *self, char *key, long keyLen ) {
+    long type;
     return (jnode *) string_tree__get_len( self->tree, key, keyLen, &type );
 }
 
-char *node_hash__get_str( node_hash *self, char *key, int keyLen ) {
-    char type;
+char *node_hash__get_str( node_hash *self, char *key, long keyLen ) {
+    long type;
     jnode *node = (jnode *) string_tree__get_len( self->tree, key, keyLen, &type );
     if( !node ) return NULL;
     if( node->type != 2 ) return NULL;
     node_str *nodeStr = (node_str *) node;
     char *buffer = malloc( nodeStr->len + 1 );
-    sprintf( buffer, "%.*s", nodeStr->len, nodeStr->str );
+    sprintf( buffer, "%.*s", (int)nodeStr->len, nodeStr->str );
     return buffer;
 }
 
-int node_hash__get_int( node_hash *self, char *key, int keyLen ) {
-    char type;
+uint8_t hexlet( char let ) {
+    if( let >= '0' && let <= '9' ) return let - '0';
+    if( let >= 'A' && let <= 'F' ) return let - 'A' + 10;
+    if( let >= 'a' && let <= 'f' ) return let - 'a' + 10;
+    return 0;
+}
+
+char *node_hash__get_str_escapes( node_hash *self, char *key, long keyLen ) {
+    long type;
+    jnode *node = (jnode *) string_tree__get_len( self->tree, key, keyLen, &type );
+    if( !node ) return NULL;
+    if( node->type != 2 ) return NULL;
+    node_str *nodeStr = (node_str *) node;
+    long len = nodeStr->len;
+    char *str = nodeStr->str;
+    char *buffer = malloc( len + 1 );
+    int i=0;
+    int dest=0;
+    for( ;i<len;i++,dest++ ) {
+        char let = str[i];
+        if( let == '\\' ) {
+            char next = str[++i];
+            if( next == 'u' ) {
+                uint32_t byte = 0;
+                
+                byte += hexlet( str[++i] );
+                byte *= 16;
+                
+                byte += hexlet( str[++i] );
+                byte *= 16;
+                
+                byte += hexlet( str[++i] );
+                byte *= 16;
+                
+                byte += hexlet( str[++i] );
+                
+                if( byte < 256 ) {
+                    buffer[ dest ] = byte;
+                }
+            }
+            else buffer[dest]=next;
+            continue;
+        }
+        buffer[dest] = let;
+    }
+    buffer[dest] = 0x00;
+    return buffer;
+}
+
+int node_hash__get_int( node_hash *self, char *key, long keyLen ) {
+    long type;
     jnode *node = string_tree__get_len( self->tree, key, keyLen, &type );
     if( !node ) return -1;
     if( node->type == 2 || node->type == 4 || node->type == 5 ) {
         node_str *nodeStr = (node_str *) node;
         char buffer[50];
-        sprintf(buffer,"%.*s",nodeStr->len,nodeStr->str);
+        sprintf(buffer,"%.*s",(int)nodeStr->len,nodeStr->str);
         int val = atoi( buffer );
         if( node->type == 5 ) return -val;
         return val;
@@ -214,14 +263,14 @@ int node_hash__get_int( node_hash *self, char *key, int keyLen ) {
     return -1;
 }
 
-double node_hash__get_double( node_hash *self, char *key, int keyLen ) {
-    char type;
+double node_hash__get_double( node_hash *self, char *key, long keyLen ) {
+    long type;
     jnode *node = string_tree__get_len( self->tree, key, keyLen, &type );
     if( !node ) return -1;
     if( node->type == 9 || node->type == 10 ) {
         node_str *nodeStr = (node_str *) node;
         char buffer[50];
-        sprintf(buffer,"%.*s",nodeStr->len,nodeStr->str);
+        sprintf(buffer,"%.*s",(int)nodeStr->len,nodeStr->str);
         double val = atof( buffer );
         if( node->type == 10 ) return -val;
         return val;
@@ -232,11 +281,11 @@ double node_hash__get_double( node_hash *self, char *key, int keyLen ) {
 char nullStr[2] = { 0, 0 };
 
 typedef struct handle_res_s {
-    int dest;
+    long dest;
     jnode *node;
 } handle_res;
 
-handle_res *handle_res__new() {
+handle_res *handle_res__new(void) {
     handle_res *self = ( handle_res * ) calloc( sizeof( handle_res ), 1 );
     return self;
 }
@@ -406,7 +455,7 @@ TypeX: SAFEGET(11)
     // Type name is done
     long typeLen = pos - typeStart;
     // do something with the type
-    char htype;
+    long htype;
     ahandler handler = (ahandler) string_tree__get_len( handlers, &data[ typeStart ], typeLen, &htype );
     if( handler == NULL ) {
         printf("disaster");
@@ -465,7 +514,7 @@ NumberX: SAFEGET(16)
     goto NumberX;
 AfterDot: SAFEGET(20)
     if( let < '0' || let > '9' ) {
-        int strLen = &data[pos-1] - strStart;
+        long strLen = &data[pos-1] - strStart;
         jnode *newStr = (jnode *) node_str__new( strStart, strLen, neg ? 10 : 9 );
         if( cur->type == 1 ) {
             node_hash__store( (node_hash *) cur, keyStart, keyLen, newStr );
@@ -491,6 +540,7 @@ String1: SAFEGET(17)
         goto AfterVal; // Should never be reached
     }
     strStart = &data[pos-1];
+    if( let == '\\' ) pos++;
 StringX: SAFEGET(18)
     if( let == '"' ) {
        long strLen = &data[pos-1] - strStart;
@@ -505,6 +555,7 @@ StringX: SAFEGET(18)
        }
        goto AfterVal; // should never be reached
     }
+    if( let == '\\' ) pos++;
     goto StringX;   
 AfterVal: SAFE(19)
     // who cares about commas in between things; we can just ignore them :D

@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)fb_performW3CActions:(NSArray *)actions elementCache:(nullable FBElementCache *)elementCache error:(NSError * _Nullable*)error;
 
-- (XCUIElement *)cf_requestElementAtPoint:(CGPoint)point;
+- (XCAccessibilityElement *)cf_requestElementAtPoint:(CGPoint)point;
 
 - (XCElementSnapshot *)cf_snapshotForElement:(XCAccessibilityElement *)el
                                   attributes:(NSArray *)atts

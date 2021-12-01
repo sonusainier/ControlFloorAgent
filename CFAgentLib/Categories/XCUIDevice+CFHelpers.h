@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cf_holdHomeButtonForDuration:(CGFloat)dur;
 
+- (NSString *)cf_startBroadcastApp;
+
 @end
 
 NS_ASSUME_NONNULL_END
