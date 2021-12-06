@@ -223,6 +223,13 @@ NSString *handleTap( myData *my, node_hash *root, char **outVal ) {
     return @"ok";
 }
 
+NSString *handleDoubletap( myData *my, node_hash *root, char **outVal ) {
+    int x = node_hash__get_int( root, "x", 1 );
+    int y = node_hash__get_int( root, "y", 1 );
+    [my->device cf_doubletap:my->app x:x y:y];
+    return @"ok";
+}
+
 NSString *handleMouseDown( myData *my, node_hash *root, char **outVal ) {
     int x = node_hash__get_int( root, "x", 1 );
     int y = node_hash__get_int( root, "y", 1 );
@@ -241,7 +248,7 @@ NSString *handleTapFirm( myData *my, node_hash *root, char **outVal ) {
     int x = node_hash__get_int( root, "x", 1 );
     int y = node_hash__get_int( root, "y", 1 );
     double pressure = node_hash__get_double( root, "pressure", 8 );
-    [my->device cf_tapFirm:x y:y pressure:pressure];
+    [my->device cf_tapFirm:x y:y pressure:(CGFloat)pressure];
     return @"ok";
 }
 
@@ -249,7 +256,8 @@ NSString *handleTapTime( myData *my, node_hash *root, char **outVal ) {
     int x = node_hash__get_int( root, "x", 1 );
     int y = node_hash__get_int( root, "y", 1 );
     double forTime = node_hash__get_double( root, "time", 4 );
-    [my->device cf_tapTime:x y:y time:forTime];
+    [my->device cf_tapTime:x y:y time:(CGFloat)forTime];
+    [NSThread sleepForTimeInterval:forTime];
     return @"ok";
 }
             
@@ -260,7 +268,8 @@ NSString *handleSwipe( myData *my, node_hash *root, char **outVal ) {
     int y2 = node_hash__get_int( root, "y2", 2 );
     double delay = node_hash__get_double( root, "delay", 5 );
     [FBLogger logFmt:@"swipe x1:%d y1:%d x2:%d y2:%d delay:%f",x1,y1,x2,y2,delay];
-    [my->device cf_swipe:x1 y1:y1 x2:x2 y2:y2 delay:delay];
+    [my->device cf_swipe:x1 y1:y1 x2:x2 y2:y2 delay:(CGFloat)delay];
+    [NSThread sleepForTimeInterval:delay];
     return @"ok";
 }
 
@@ -877,6 +886,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     CHANDLE(startBroadcastApp,StartBroadcastApp);
     CHANDLE(swipe,Swipe);
     CHANDLE(tap,Tap);
+    CHANDLE(doubletap,Doubletap);
     CHANDLE(tapFirm,TapFirm);
     CHANDLE(tapTime,TapTime);
     CHANDLE(toLauncher,ToLauncher);

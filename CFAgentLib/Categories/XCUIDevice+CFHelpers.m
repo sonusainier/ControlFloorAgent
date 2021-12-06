@@ -16,6 +16,7 @@
 #import "FBApplication.h"
 #import "FBXCAXClientProxy.h"
 #import "FBXCodeCompatibility.h"
+#import "XCTest/XCUICoordinate.h"
 
 @implementation XCUIDevice (CFHelpers)
 
@@ -40,6 +41,15 @@
                               offset:0];
   [path liftUpAtOffset:0.05];
   [self runEventPath:path];
+}
+
+- (void)cf_doubletap:(XCUIElement *)el
+  x:(CGFloat)x
+  y:(CGFloat) y
+{
+  XCUICoordinate *base = [el coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
+  XCUICoordinate *coord = [base coordinateWithOffset:CGVectorMake(x, y)];
+  [coord doubleTap];
 }
 
 - (void)cf_mouseDown:(CGFloat)x
