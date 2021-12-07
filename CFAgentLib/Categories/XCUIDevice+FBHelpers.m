@@ -161,13 +161,14 @@ static bool fb_isLocked;
   int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
   cf_systemApp = [FBApplication applicationWithPID:pid];
   cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.apple.mobilesafari"]];
+  NSString *urlStr = [NSString stringWithFormat:@"%@\n", url];
   if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0")){
     [cfapp.textFields[@"TabBarItemTitle"] tap];
-    [cfapp typeText: url];
+    [cfapp typeText: urlStr];
 
   } else{
     [cfapp.buttons[@"URL"] tap];
-    [cfapp typeText: url];
+    [cfapp typeText: urlStr];
   }
   return @"true";
   
