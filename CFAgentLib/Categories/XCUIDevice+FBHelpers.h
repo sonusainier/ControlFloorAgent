@@ -69,6 +69,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable NSString *)LT_startStream;
 
+/**
+ Open URL in Browser
+ */
+- (nullable NSString *)LT_openUrl:(NSString *)url;
+
 
 /**
  Opens the particular url scheme using Siri voice recognition helpers.

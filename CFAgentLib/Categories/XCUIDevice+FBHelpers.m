@@ -124,7 +124,7 @@ static bool fb_isLocked;
   cf_systemApp = [FBApplication applicationWithPID:pid];
   cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.LT.LTApp"]];
  
-
+  
   NSLog(@"System Version is %@",[[UIDevice currentDevice] systemVersion]);
   NSString *ver = [[UIDevice currentDevice] systemVersion];
   int os = [ver intValue];
@@ -152,6 +152,25 @@ static bool fb_isLocked;
   [cfapp terminate];
  
   return @"true";
+}
+
+- (NSString *)LT_openUrl:(NSString *)url
+{
+  XCUIApplication *cfapp = nil;
+  XCUIApplication *cf_systemApp = nil;
+  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+  cf_systemApp = [FBApplication applicationWithPID:pid];
+  cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.apple.mobilesafari"]];
+  if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0")){
+    [cfapp.textFields[@"TabBarItemTitle"] tap];
+    [cfapp typeText: url];
+
+  } else{
+    [cfapp.buttons[@"URL"] tap];
+    [cfapp typeText: url];
+  }
+  return @"true";
+  
 }
 
 - (NSString *)fb_wifiIPAddress
