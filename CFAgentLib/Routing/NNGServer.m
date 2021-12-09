@@ -328,7 +328,7 @@ NSString *handleStartLTStream( myData *my, node_hash *root, char **outVal ) {
 }
 
 NSString *handleOpenSafari( myData *my, node_hash *root, char **outVal ) {
-    char *text = node_hash__get_str( root, "url", 3 );
+    char *text = node_hash__get_str_escapes( root, "url", 3 );
     NSString *text2 = [NSString stringWithUTF8String:text];
     [my->device LT_openUrl:text2];
     return @"ok";
