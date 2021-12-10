@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cf_tap:(CGFloat)x
   y:(CGFloat)y;
 
+- (void)cf_doubletap:(XCUIElement *)el
+  x:(CGFloat)x
+  y:(CGFloat)y;
+
 - (void)cf_mouseDown:(CGFloat)x
   y:(CGFloat)y;
 
