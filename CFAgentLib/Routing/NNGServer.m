@@ -334,6 +334,13 @@ NSString *handleOpenSafari( myData *my, node_hash *root, char **outVal ) {
     return @"ok";
 }
 
+NSString *handleCleanBrowser( myData *my, node_hash *root, char **outVal ) {
+    char *text = node_hash__get_str_escapes( root, "bid", 3 );
+    NSString *text2 = [NSString stringWithUTF8String:text];
+    bool success = [my->device LT_cleanBrowser:text2];
+    return success ? @"{\"success\":true}" : @"{\"success\":false}";
+}
+
 NSString *handleElClick( myData *my, node_hash *root, char **outVal ) {
     char *elId = node_hash__get_str( root, "id", 2 );
     NSString *id2 = [NSString stringWithUTF8String:elId];
@@ -910,6 +917,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     CHANDLE(wifiIp,WifiIp);
     CHANDLE(restart,StartLTStream);
     CHANDLE(launchsafariurl,OpenSafari);
+    CHANDLE(cleanbrowser,CleanBrowser);
     CHANDLE(windowSize,WindowSize);
     
     /*cmdFuncs[@"ping"] = [NSValue valueWithPointer:(const void * _Nullable)&handlePing];

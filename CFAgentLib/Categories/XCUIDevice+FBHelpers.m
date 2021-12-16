@@ -174,6 +174,144 @@ static bool fb_isLocked;
   
 }
 
+- (BOOL) LT_cleanBrowser:(NSString *)bid
+{
+  XCUIApplication *app = nil;
+  XCUIApplication *cf_systemApp = nil;
+  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+  cf_systemApp = [FBApplication applicationWithPID:pid];
+  app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bid.UTF8String]];
+  NSString *ver = [[UIDevice currentDevice] systemVersion];
+  int os = [ver intValue];
+  if ([bid isEqualToString:@"com.apple.Preferences"]){
+    if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad){
+          if(!app.tables.cells.staticTexts[@"Sign in to your iPad"].exists){
+              if(app.tables.cells.staticTexts[@"APPLE_ACCOUNT"].exists){
+                [app.tables.cells.staticTexts[@"APPLE_ACCOUNT"] tap];
+                [NSThread sleepForTimeInterval:1.0];
+              if(app.staticTexts[@"Sign Out"].exists)
+              {
+                [app.staticTexts[@"Sign Out"] tap];
+              }
+                [NSThread sleepForTimeInterval:1.0];
+              }
+          }
+        }else{
+          if(!app.tables.cells.staticTexts[@"Sign in to your iPhone"].exists){
+              if(app.tables.cells.staticTexts[@"APPLE_ACCOUNT"].exists){
+                [app.tables.cells.staticTexts[@"APPLE_ACCOUNT"] tap];
+                [NSThread sleepForTimeInterval:1.0];
+              if(app.staticTexts[@"Sign Out"].exists)
+              {
+                [app.staticTexts[@"Sign Out"] tap];
+              }
+                [NSThread sleepForTimeInterval:1.0];
+              }
+          }
+        }
+        if(app.tables.cells.staticTexts[@"Off"].exists){
+          [app.tables.cells.staticTexts[@"Wi-Fi"] tap];
+          XCUIElement *mySwitch = app.switches[@"Wi-Fi"];
+          if (![(NSString *)mySwitch.value isEqualToString:@"1"])
+                  [mySwitch tap];
+          if ([UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad){
+            [app.buttons[@"Settings"] tap];
+            }
+        }
+        [NSThread sleepForTimeInterval:0.5];
+        
+        if(app.tables.cells.staticTexts[@"Safari"].exists){
+          [NSThread sleepForTimeInterval:0.5];
+          [app.tables.cells.staticTexts[@"Safari"] tap];
+          [NSThread sleepForTimeInterval:0.5];
+          XCUIElement *mySwitch = app.switches[@"Block Pop-ups"];
+          if ([(NSString *)mySwitch.value isEqualToString:@"1"])
+                  [mySwitch tap];
+            if(app.staticTexts[@"Clear History and Website Data"].exists)
+            {
+                [app.staticTexts[@"Clear History and Website Data"] tap];
+              [NSThread sleepForTimeInterval:1.0];
+                if(app.buttons[@"Clear"].exists){
+                    [app.buttons[@"Clear"] tap];
+                }
+                else{
+                    [app.buttons[@"Clear History and Data"] tap];
+                }
+            
+            }
+          [NSThread sleepForTimeInterval:1.0];
+            if(app.staticTexts[@"Advanced"].exists){
+                [app.staticTexts[@"Advanced"] tap];
+                if(app.staticTexts[@"Experimental Features"].exists){
+                  [app.staticTexts[@"Experimental Features"] tap];
+                    if(app.staticTexts[@"NSURLSession WebSocket"].exists){
+                      XCUIElement *NsWsSwitch = app.switches[@"NSURLSession WebSocket"];
+                      if (![(NSString *)NsWsSwitch.value isEqualToString:@"1"])
+                              [NsWsSwitch tap];
+                    }
+                 }
+            }
+        }
+  }
+  else if ([bid isEqualToString:@"com.google.chrome.ios"]){
+    if(app.buttons[@"Accept and Continue"].exists){
+            NSLog(@"Chrome on Welcome screen");
+          }
+          else if (app/*@START_MENU_TOKEN@*/.buttons[@"kToolbarStackButtonIdentifier"]/*[[".windows[\"0\"]",".buttons[\"Show Tabs\"]",".buttons[\"kToolbarStackButtonIdentifier\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/.exists){
+            [app/*@START_MENU_TOKEN@*/.buttons[@"kToolbarStackButtonIdentifier"]/*[[".windows[\"0\"]",".buttons[\"Show Tabs\"]",".buttons[\"kToolbarStackButtonIdentifier\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/ tap];
+          
+            XCUIElement *toolbarToolbarsQuery = app/*@START_MENU_TOKEN@*/.toolbars[@"Toolbar"]/*[[".windows[@\"0\"].toolbars[@\"Toolbar\"]",".toolbars[@\"Toolbar\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/;
+            if(toolbarToolbarsQuery/*@START_MENU_TOKEN@*/.buttons[@"TabGridIncognitoTabsPageButtonIdentifier"]/*[[".buttons[\"Incognito Tabs\"]",".buttons[\"TabGridIncognitoTabsPageButtonIdentifier\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.exists){
+              [toolbarToolbarsQuery/*@START_MENU_TOKEN@*/.buttons[@"TabGridIncognitoTabsPageButtonIdentifier"]/*[[".buttons[\"Incognito Tabs\"]",".buttons[\"TabGridIncognitoTabsPageButtonIdentifier\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/ tap ];
+              if(app.buttons[@"Edit"].exists){
+                [app.buttons[@"Edit"] tap ];
+                  if(app.buttons[@"Close All Tabs"].exists){
+                  [app.buttons[@"Close All Tabs"] tap];
+                  }
+              }else{
+                [toolbarToolbarsQuery/*@START_MENU_TOKEN@*/.buttons[@"TabGridCloseAllButtonIdentifier"]/*[[".buttons[\"Close All\"]",".buttons[\"TabGridCloseAllButtonIdentifier\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/ tap];
+              }
+          }
+            if(toolbarToolbarsQuery/*@START_MENU_TOKEN@*/.buttons[@"TabGridRegularTabsPageButtonIdentifier"]/*[[".buttons[\"Open Tabs\"]",".buttons[\"TabGridRegularTabsPageButtonIdentifier\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.exists){
+              [toolbarToolbarsQuery/*@START_MENU_TOKEN@*/.buttons[@"TabGridRegularTabsPageButtonIdentifier"]/*[[".buttons[\"Open Tabs\"]",".buttons[\"TabGridRegularTabsPageButtonIdentifier\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/ tap];
+              [NSThread sleepForTimeInterval:0.5];
+              if(app.buttons[@"Edit"].exists){
+                [app.buttons[@"Edit"] tap ];
+                if(app.buttons[@"Close All Tabs"].exists){
+                  [app.buttons[@"Close All Tabs"] tap];
+                  }
+              }else{
+                [toolbarToolbarsQuery.buttons[@"TabGridCloseAllButtonIdentifier"] tap];
+              }
+          }
+          
+            [app.buttons[@"Create new tab."] tap ];
+            [app/*@START_MENU_TOKEN@*/.buttons[@"kToolbarToolsMenuButtonIdentifier"]/*[[".windows[\"0\"]",".buttons[\"Menu\"]",".buttons[\"kToolbarToolsMenuButtonIdentifier\"]"],[[[-1,2],[-1,1],[-1,0,1]],[[-1,2],[-1,1]]],[0]]@END_MENU_TOKEN@*/tap];
+            [app/*@START_MENU_TOKEN@*/.tables[@"kPopupMenuToolsMenuTableViewId"].staticTexts[@"History"]/*[[".windows[\"0\"].tables[\"kPopupMenuToolsMenuTableViewId\"]",".cells[\"History\"].staticTexts[\"History\"]",".cells[\"kToolsMenuHistoryId\"].staticTexts[\"History\"]",".staticTexts[\"History\"]",".tables[\"kPopupMenuToolsMenuTableViewId\"]"],[[[-1,4,1],[-1,0,1]],[[-1,3],[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/ tap];
+          
+            XCUIElement *toolbar = app/*@START_MENU_TOKEN@*/.toolbars[@"Toolbar"]/*[[".windows[\"0\"].toolbars[\"Toolbar\"]",".toolbars[\"Toolbar\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/;
+            [toolbar/*@START_MENU_TOKEN@*/.buttons[@"kHistoryToolbarClearBrowsingButtonIdentifier"]/*[[".buttons[\"Clear Browsing Data…\"]",".buttons[\"kHistoryToolbarClearBrowsingButtonIdentifier\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/ tap];
+            //[app.tables[@"kClearBrowsingDataViewAccessibilityIdentifier"].staticTexts[@"All Time"] tap]
+            [app.tables[@"kClearBrowsingDataViewAccessibilityIdentifier"].staticTexts[@"Time Range"] tap ];
+            [app/*@START_MENU_TOKEN@*/.tables.staticTexts[@"All Time"]/*[[".windows[\"0\"].tables",".cells[\"All Time\"].staticTexts[\"All Time\"]",".staticTexts[\"All Time\"]",".tables"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/ tap];
+            [app/*@START_MENU_TOKEN@*/.navigationBars[@"Time Range"]/*[[".windows[\"0\"].navigationBars[\"Time Range\"]",".navigationBars[\"Time Range\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.buttons[@"Clear Browsing Data"] tap];
+            [toolbar/*@START_MENU_TOKEN@*/.buttons[@"kClearBrowsingDataButtonIdentifier"]/*[[".buttons[\"Clear Browsing Data\"]",".buttons[\"kClearBrowsingDataButtonIdentifier\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/ tap];
+            [NSThread sleepForTimeInterval:1.0];
+            [app/*@START_MENU_TOKEN@*/.sheets[@"The items you selected will be removed."]/*[[".windows[\"0\"].sheets[\"The items you selected will be removed.\"]",".sheets[\"The items you selected will be removed.\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.otherElements.buttons[@"Clear Browsing Data"] tap];
+            //[app/*@START_MENU_TOKEN@*/.sheets[@"The items you selected will be removed."]/*[[".windows[@\"0\"].sheets[@\"The items you selected will be removed.\"]",".sheets[@\"The items you selected will be removed.\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.scrollViews.otherElements.buttons[@"Clear Browsing Data"] tap];
+            [app/*@START_MENU_TOKEN@*/.navigationBars[@"Clear Browsing Data"].buttons[@"kSettingsDoneButtonId"]/*[[".windows[\"0\"].navigationBars[\"Clear Browsing Data\"]",".buttons[\"Done\"]",".buttons[\"kSettingsDoneButtonId\"]",".navigationBars[\"Clear Browsing Data\"]"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/ tap];
+            [app/*@START_MENU_TOKEN@*/.navigationBars[@"History"].buttons[@"kHistoryNavigationControllerDoneButtonIdentifier"]/*[[".windows[\"0\"].navigationBars[\"History\"]",".buttons[\"Done\"]",".buttons[\"kHistoryNavigationControllerDoneButtonIdentifier\"]",".navigationBars[\"History\"]"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/ tap];
+          }
+  }
+  else{
+    return false;
+  }
+  
+  
+  return true;
+  
+}
+
 - (NSString *)fb_wifiIPAddress
 {
   struct ifaddrs *interfaces = NULL;
