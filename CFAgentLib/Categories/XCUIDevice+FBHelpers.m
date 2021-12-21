@@ -163,13 +163,18 @@ static bool fb_isLocked;
   cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.apple.mobilesafari"]];
   NSString *urlStr = [NSString stringWithFormat:@"%@\n", url];
   if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0")){
-    [cfapp.textFields[@"TabBarItemTitle"] tap];
-    [cfapp typeText: urlStr];
+      if (cfapp.textFields[@"TabBarItemTitle"].exists){
+      [cfapp.textFields[@"TabBarItemTitle"] tap];
+      }
+      else{
+        [cfapp.buttons[@"UnifiedTabBarItemView?isSelected=true"] tap];
+      }
+      [cfapp typeText: urlStr];
 
-  } else{
-    [cfapp.buttons[@"URL"] tap];
-    [cfapp typeText: urlStr];
-  }
+    } else{
+      [cfapp.buttons[@"URL"] tap];
+      [cfapp typeText: urlStr];
+    }
   return @"true";
   
 }
