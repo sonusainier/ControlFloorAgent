@@ -74,6 +74,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable NSString *)LT_openUrl:(NSString *)url;
 
+/**
+ Clean Safari Data
+ */
+- (BOOL)LT_cleanBrowser:(NSString *)bid;
+
 
 /**
  Opens the particular url scheme using Siri voice recognition helpers.
