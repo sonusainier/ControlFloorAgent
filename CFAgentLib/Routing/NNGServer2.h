@@ -1,5 +1,5 @@
 //  Copyright © 2021 DryArk LLC. All rights reserved.
-//  Anti-Corruption License ( AC_LICENSE.TXT )
+//  Cooperative License ( LICENSE_DRYARK )
 
 #ifndef NNGServer2_h
 #define NNGServer2_h

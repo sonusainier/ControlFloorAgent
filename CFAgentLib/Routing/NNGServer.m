@@ -1,5 +1,5 @@
 //  Copyright © 2021 DryArk LLC. All rights reserved.
-//  Anti-Corruption License ( AC_LICENSE.TXT )
+//  Cooperative License ( LICENSE_DRYARK )
 
 #import "NNGServer.h"
 #import "XCElementSnapshot-XCUIElementSnapshot.h"
@@ -63,6 +63,7 @@ struct myData_s {
     char *action;
     NSArray *typeMap;
     FBApplication *sbApp;
+    NngThread *nngServer;
 };
 typedef struct myData_s myData;
 
@@ -522,6 +523,7 @@ NSString *handleTypeText( myData *my, node_hash *root, char **outVal ) {
 NSString *handleUpdateApplication( myData *my, node_hash *root, char **outVal ) {
     char *bi = node_hash__get_str( root, "bundleId", 8 );
     my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bi]];
+    
     return @"ok";
 }
 
@@ -623,6 +625,13 @@ NSString *handleElPos( myData *my, node_hash *root, char **outVal ) {
     sprintf( json, "{x:%d,y:%d,w:%d,h:%d}", x, y, width, height );
     *outVal = (char *) strdup( json );
     return nil;
+}
+
+NSString *handleNslog( myData *my, node_hash *root, char **outVal ) {
+    char *msg = node_hash__get_str( root, "msg", 3 );
+    NSString *msg2 = [NSString stringWithUTF8String:msg];
+    NSLog( @"%@", msg2 );
+    return @"ok";
 }
 
 NSString *handleWindowSize( myData *my, node_hash *root, char **outVal ) {
@@ -748,6 +757,14 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     return nil;
 }*/
 
+-(void) onKbShow:(NSNotification *)note {
+    NSLog( @"keyxr show");
+}
+
+-(void) onKbHide:(NSNotification *)note {
+    NSLog( @"keyxr hide");
+}
+
 -(void) entry:(id)param {
     nng_rep_open(&_replySocket);
     
@@ -849,7 +866,23 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     ];
   
     XCUIApplication *app = nil;
+    
     XCUIApplication *systemApp = nil;
+    int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+    systemApp = [FBApplication applicationWithPID:pid];
+    
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+        selector:@selector(onKbShow:)
+        name:UIKeyboardDidShowNotification
+        object:nil ];
+        
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+        selector:@selector(onKbHide:)
+        name:UIKeyboardDidHideNotification
+        object:nil ];
+    
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
     XCUIDevice *device = XCUIDevice.sharedDevice;
   
@@ -879,6 +912,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     CHANDLE(lock,Lock);
     CHANDLE(mouseDown,MouseDown);
     CHANDLE(mouseUp,MouseUp);
+    CHANDLE(nslog,Nslog);
     CHANDLE(ping,Ping);
     CHANDLE(siri,Siri);
     CHANDLE(source,Source);
@@ -920,6 +954,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     data.typeMap = _typeMap;
     data.sbApp = sbApp;
     data.types = types;
+    data.nngServer = self;
     
     ujsonin_init();
     while( 1 ) {

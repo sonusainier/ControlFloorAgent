@@ -1,5 +1,5 @@
-// Copyright (C) 2020 David Helkowski
-// Anti-Corruption License
+// Copyright (C) 2021 Dry Ark LLC
+// Cooperative License ( LICENSE_DRYARK )
 
 #ifndef __STRING_TREE_H
 #define __STRING_TREE_H

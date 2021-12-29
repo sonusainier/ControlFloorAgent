@@ -1,8 +1,5 @@
-//
-//  XCUIDevice+CFHelpers.m
 //  Copyright © 2021 DryArk LLC. All rights reserved.
-//  Anti-Corruption License ( AC_LICENSE.TXT )
-//
+//  Cooperative License ( LICENSE_DRYARK )
 
 #import <Foundation/Foundation.h>
 #import "XCUIDevice.h"
@@ -27,6 +24,20 @@
                                      interfaceOrientation:0];
   //XCSynthesizedEventRecord *event = [[XCSynthesizedEventRecord alloc] init];
   [event addPointerEventPath:path];
+  
+  [[self eventSynthesizer]
+    synthesizeEvent:event
+    completion:(id)^(BOOL result, NSError *invokeError) {} ];
+}
+
+- (void)runEventPaths:(XCPointerEventPath* __strong [])paths count:(int)count
+{
+  XCSynthesizedEventRecord *event = [[XCSynthesizedEventRecord alloc]
+                                     initWithName:nil
+                                     interfaceOrientation:0];
+  for( int i=0;i<count;i++ ) {
+    [event addPointerEventPath:paths[i]];
+  }
   
   [[self eventSynthesizer]
     synthesizeEvent:event
@@ -98,6 +109,33 @@
   [path pressDownWithPressure:pressure atOffset:0];
   [path liftUpAtOffset:0.05];
   [self runEventPath:path];
+}
+
+- (void)cf_fingerPaste:(CGFloat)x y:(CGFloat) y {
+  CGFloat time = 0.1;
+  
+  XCPointerEventPath *paths[3] = { nil, nil, nil };
+  
+  paths[0] = [[XCPointerEventPath alloc]
+                              initForTouchAtPoint:CGPointMake(x,y)
+                              offset:0];
+  [paths[0] liftUpAtOffset:time];
+  
+  paths[1] = [[XCPointerEventPath alloc]
+                              initForTouchAtPoint:CGPointMake(x-10,y)
+                              offset:0];
+  [paths[1] moveToPoint:CGPointMake(x-20,y) atOffset:time];
+  [paths[1] liftUpAtOffset:time];
+  
+  paths[2] = [[XCPointerEventPath alloc]
+                              initForTouchAtPoint:CGPointMake(x+10,y)
+                              offset:0];
+  [paths[2] moveToPoint:CGPointMake(x+20,y) atOffset:time];
+  [paths[2] liftUpAtOffset:time];
+  
+  //XCPointerEventPath *paths[3] = { path1, path2, path3 };
+  
+  [self runEventPaths:paths count:3];
 }
 
 - (void)cf_swipe:(CGFloat)x1

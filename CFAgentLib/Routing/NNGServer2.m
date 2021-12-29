@@ -1,5 +1,5 @@
-//  Copyright © 2021 DryArk LLC. All rights reserved.
-//  Anti-Corruption License ( AC_LICENSE.TXT )
+// Copyright (C) 2021 Dry Ark LLC
+// Cooperative License ( LICENSE_DRYARK )
 
 #import "NNGServer2.h"
 #import "FBLogger.h"

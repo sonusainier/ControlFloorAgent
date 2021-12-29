@@ -1,0 +1,64 @@
+DryArk Cooperative License
+--------------------------------------------------------------------------------------------------------------------
+
+The intent of this license is to enable individual developers and small companies to learn from and use the software
+freely, while simultaneously restricting companies from taking the software and using it for their own profit
+without contributing funds back to the owners so as to enable them to maintain the project and to continue to add
+more features to it.
+
+This intent is provided to aid in understanding and does not give any permissions in and of itself to any specific
+use of the code.
+
+--------------------------------------------------------------------------------------------------------------------
+
+Definitions:
+
+USER: Anyone who makes use of this license by doing something with the CONTENT.
+
+CODE: Any content of this repository. This includes non-code content.
+
+IP: Any representation of ideas encoded within the CODE that are not otherwise publicly available.
+
+CONTENT: CODE or IP
+
+FOR PROFIT: Any activity that causes the USER or USER's company to make money as a result of that activity.
+
+IOS: Any version of Apple iOS or iPadOS. This includes modified versions.
+
+DEVICE/DEVICES: IOS devices, simulators running IOS, or any virtual machine running IOS.
+
+SEAT/SEATS: A time bound license for the CONTENT purchased by a USER that grants use beyond this license for a time.
+A single SEAT applies to a single DEVICE. ( see PURCHASING file for more details )
+
+COMPETITORS: Anyone working for or advising the following companies in any capacity:
+Amazon, BrowserStack, EQT Partners, Headspin, Kobiton, Micro Focus, Perfecto, Sauce Labs, Smartbear, SUSE
+
+--------------------------------------------------------------------------------------------------------------------
+
+The following are restricted activities. If any of these restricted activities are engaged in by the USER, then none
+of the permissions granted by this license shall apply.
+
+Restrictions:
+
+- Using the CONTENT FOR PROFIT
+- Sharing the CONTENT to anyone intending to utilize it FOR PROFIT
+- Sharing the CONTENT to COMPETITORS
+- Using the CONTENT with intent to compete with business offerings by the Copyright holder.
+- Use of the CONTENT with more than 10 IOS DEVICES for a single company.
+- Removing this license from any portion of the CODE
+- Creating and selling information based on the CONTENT
+- Any attempt to replicate the CONTENT so as to avoid paying for a SEAT
+- Publishing the CONTENT openly on the internet.
+
+--------------------------------------------------------------------------------------------------------------------
+
+The following are the permissions granted so long as none of the Restrictions apply:
+
+- Permission to view, clone, install, setup, configure, or deploy the CODE.
+- Permission to use and modify the CODE for the purpose of evaluating whether to purchase SEATS for the CODE.
+
+USER understands and agrees that the CONTENT is provided "as is", without warranty of any kind, express or implied,
+including but not limited to the warranties of merchantability, fitness for a particular purpose and
+noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other
+liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the
+CONTENT or the use or other dealings of it.

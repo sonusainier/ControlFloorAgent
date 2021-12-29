@@ -1,8 +1,5 @@
-//
-//  XCUIDevice+CFHelpers.h
 //  Copyright © 2021 DryArk LLC. All rights reserved.
-//  Anti-Corruption License ( AC_LICENSE.TXT )
-//
+//  Cooperative License ( LICENSE_DRYARK )
 
 #ifndef XCUIDevice_CFHelpers_h
 #define XCUIDevice_CFHelpers_h
