@@ -319,7 +319,7 @@ NSString *handleElClick( myData *my, node_hash *root, char **outVal ) {
   
     XCUIElement *element = my->dict[id2];
     [my->dict removeObjectForKey:id2];
-    NSError *error = nil;
+    //NSError *error = nil;
     if( element == nil ) {
         // todo error
     } else {
@@ -516,10 +516,9 @@ NSString *handleUnlock( myData *my, node_hash *root, char **outVal ) {
 }*/
 
 NSString *handleSiri( myData *my, node_hash *root, char **outVal ) {
-    NSError *error;
     char *text = node_hash__get_str( root, "text", 4 );
     NSString *text2 = [NSString stringWithUTF8String:text];
-    [my->device fb_activateSiriVoiceRecognitionWithText:text2 error:&error];
+    [my->device.siriService activateWithVoiceRecognitionText:text2];
     return @"ok";
 }
 

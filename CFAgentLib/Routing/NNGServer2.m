@@ -42,7 +42,7 @@
     XCUIScreen *screen = [XCUIScreen mainScreen];
     NSDictionary *jpegOptions = @{(NSString *)kCGImageDestinationLossyCompressionQuality:[NSNumber numberWithFloat:(float)0.8]};
     CGColorSpaceRef colorSpace = nil;
-    CGAffineTransform resizeTransform;
+    CGAffineTransform resizeTransform = CGAffineTransformMakeScale( 1, 1 );
     bool transformSet = false;
   
     id<XCTestManager_ManagerInterface> proxy = [FBXCTestDaemonsProxy testRunnerProxy];

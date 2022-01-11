@@ -179,7 +179,7 @@
   XCUIApplication *cf_systemApp = nil;
   int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
   cf_systemApp = [FBApplication applicationWithPID:pid];
-  cfapp = [ [FBApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:"com.dryark.vidstream"]];
+  cfapp = [ [FBApplication alloc] initWithBundleIdentifier:@"com.dryark.vidstream"];
  
   //cfapp.fb_shouldWaitForQuiescence = false; // or nil
   cfapp.launchArguments = @[];

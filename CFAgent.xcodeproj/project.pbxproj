@@ -161,10 +161,6 @@
 		715AFAC21FFA29180053896D /* FBScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 715AFAC01FFA29180053896D /* FBScreen.m */; };
 		716C9346224D540C004B8542 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 716C9345224D540C004B8542 /* libxml2.tbd */; };
 		716C9347224D540C004B8542 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 716C9345224D540C004B8542 /* libxml2.tbd */; };
-		717C0D712518ED2800CAA6EC /* TVOSSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 717C0D702518ED2800CAA6EC /* TVOSSettings.xcconfig */; };
-		717C0D722518ED2800CAA6EC /* TVOSSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 717C0D702518ED2800CAA6EC /* TVOSSettings.xcconfig */; };
-		717C0D872518ED7000CAA6EC /* TVOSTestSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 717C0D862518ED7000CAA6EC /* TVOSTestSettings.xcconfig */; };
-		717C0D882518ED7000CAA6EC /* TVOSTestSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 717C0D862518ED7000CAA6EC /* TVOSTestSettings.xcconfig */; };
 		AD35D06C1CF1C35500870A75 /* CFAgentLib.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AD6C26981CF2481700F8B5FF /* XCUIDevice+FBHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = AD6C26961CF2481700F8B5FF /* XCUIDevice+FBHelpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AD6C26991CF2481700F8B5FF /* XCUIDevice+FBHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = AD6C26971CF2481700F8B5FF /* XCUIDevice+FBHelpers.m */; };
@@ -173,7 +169,6 @@
 		C8FB547422D3949C00B69954 /* LSApplicationWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = C8FB547322D3949C00B69954 /* LSApplicationWorkspace.h */; };
 		CE02CBC0270D52F100A394A4 /* CFAgentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE02CBBE270D52F100A394A4 /* CFAgentTests.m */; };
 		CE02CBC1270D52F100A394A4 /* CFAgentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CE02CBBE270D52F100A394A4 /* CFAgentTests.m */; };
-		CE02CBC3270D52F100A394A4 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE02CBBF270D52F100A394A4 /* Info.plist */; };
 		CE6C268A278D148F00A0DD3A /* FBRuntimeUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = CE6C2688278D148E00A0DD3A /* FBRuntimeUtils.h */; };
 		CE6C268B278D148F00A0DD3A /* FBRuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6C2689278D148E00A0DD3A /* FBRuntimeUtils.m */; };
 		CEA4750326AB82E2006D60B5 /* libnng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA4750226AB82CF006D60B5 /* libnng.a */; };
@@ -513,7 +508,7 @@
 		EEE3763D1D59F81400ED88DD /* XCUIDevice+FBRotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+FBRotation.h"; sourceTree = "<group>"; };
 		EEE3763E1D59F81400ED88DD /* XCUIDevice+FBRotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "XCUIDevice+FBRotation.m"; sourceTree = "<group>"; };
 		EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = IOSSettings.xcconfig; sourceTree = "<group>"; };
-		EEF9882A1C486603005CA669 /* CFAgent.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CFAgent.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEF9882A1C486603005CA669 /* CFAgent-Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CFAgent-Runner.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -625,7 +620,7 @@
 		91F9DAEA1B99DBC2001349B2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EEF9882A1C486603005CA669 /* CFAgent.xctest */,
+				EEF9882A1C486603005CA669 /* CFAgent-Runner.app */,
 				EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */,
 				641EE2DA2240BBE300173FCB /* CFAgent_tvOS.xctest */,
 				641EE6F82240C5CA00173FCB /* CFAgentLib_tvOS.framework */,
@@ -1201,7 +1196,7 @@
 			);
 			name = CFAgent;
 			productName = XCTUITestRunner;
-			productReference = EEF9882A1C486603005CA669 /* CFAgent.xctest */;
+			productReference = EEF9882A1C486603005CA669 /* CFAgent-Runner.app */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -1211,7 +1206,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					641EE2D92240BBE300173FCB = {
@@ -1254,9 +1249,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				717C0D722518ED2800CAA6EC /* TVOSSettings.xcconfig in Resources */,
-				717C0D882518ED7000CAA6EC /* TVOSTestSettings.xcconfig in Resources */,
-				CE02CBC3270D52F100A394A4 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1264,8 +1256,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				717C0D712518ED2800CAA6EC /* TVOSSettings.xcconfig in Resources */,
-				717C0D872518ED7000CAA6EC /* TVOSTestSettings.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1640,6 +1630,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1706,6 +1697,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

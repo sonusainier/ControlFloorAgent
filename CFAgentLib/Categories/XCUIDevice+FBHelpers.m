@@ -19,9 +19,6 @@
 #import "XCDeviceEvent.h"
 #import "XCPointerEventPath.h"
 
-static const NSTimeInterval FBHomeButtonCoolOffTime = 1.;
-static const NSTimeInterval FBScreenLockTimeout = 5.;
-
 @implementation XCUIDevice (FBHelpers)
 
 static bool fb_isLocked;
@@ -87,28 +84,6 @@ static bool fb_isLocked;
   }
   freeifaddrs(interfaces);
   return address;
-}
-
-- (BOOL)fb_activateSiriVoiceRecognitionWithText:(NSString *)text error:(NSError **)error
-{
-  id siriService = [self valueForKey:@"siriService"];
-  /*if (nil == siriService) {
-    return [[[FBErrorBuilder builder]
-             withDescription:@"Siri service is not available on the device under test"]
-            buildError:error];
-  }*/
-  @try {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    [siriService performSelector:NSSelectorFromString(@"activateWithVoiceRecognitionText:")
-                      withObject:text];
-#pragma clang diagnostic pop
-    return YES;
-  } @catch (NSException *e) {
-    /*return [[[FBErrorBuilder builder]
-             withDescriptionFormat:@"%@", e.reason]
-            buildError:error];*/
-  }
 }
 
 #if TARGET_OS_TV

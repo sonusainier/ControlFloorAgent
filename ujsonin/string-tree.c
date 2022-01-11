@@ -36,7 +36,7 @@ void string_tree__delkey_len( string_tree *self, char *key, long keylen ) {
 			if( keylen == node->strlen && !strncmp( node->str, key, node->strlen ) ) delete = 1;
 		}
 		else {
-			unsigned long nslen = strlen( node->str );
+			long nslen = strlen( node->str );
 			if( nslen == keylen && !strncmp( node->str, key, keylen ) ) delete = 1;
 		}
 		if( delete ) {
@@ -92,7 +92,7 @@ snode *string_tree__rawget_len( string_tree *self, char *key, long keylen ) {
 			if( keylen == node->strlen && !strncmp( node->str, key, node->strlen ) ) return node;
 		}
 		else {
-			unsigned long nslen = strlen( node->str );
+			long nslen = strlen( node->str );
 			if( nslen == keylen && !strncmp( node->str, key, keylen ) ) return node;
 		}
 		node = node->next;

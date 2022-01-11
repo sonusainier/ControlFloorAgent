@@ -19,9 +19,7 @@
 #import "XCTestPrivateSymbols.h"
 #import "XCTRunnerDaemonSession.h"
 
-const static NSTimeInterval FBMinimumAppSwitchWait = 3.0;
 static NSString* const FBUnknownBundleId = @"unknown";
-
 
 @implementation XCUIApplication (FBHelpers)
 
