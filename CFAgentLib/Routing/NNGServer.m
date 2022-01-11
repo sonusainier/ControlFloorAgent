@@ -398,7 +398,7 @@ NSString *handleGetEl( myData *my, node_hash *root, char **outVal ) {
             el = [query elementMatchingType:typeNum identifier:name2];
         }
       
-        if( wait != -1 ) {
+        if( wait < 0 ) {
             bool exists = [el waitForExistenceWithTimeout:wait];
             if( !exists ) el = nil;
         }
@@ -531,7 +531,8 @@ NSString *handleTypeText( myData *my, node_hash *root, char **outVal ) {
 
 NSString *handleUpdateApplication( myData *my, node_hash *root, char **outVal ) {
     char *bi = node_hash__get_str( root, "bundleId", 8 );
-    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bi]];
+    NSString *biNS = [NSString stringWithUTF8String:bi];
+    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
     
     return @"ok";
 }
@@ -664,7 +665,8 @@ NSString *handleCreateSession( myData *my, node_hash *root, char **outVal ) {
     int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
     my->systemApp = [FBApplication applicationWithPID:pid];
     if( strlen(bundleID) ) {
-      my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:[NSString stringWithUTF8String:bundleID]];
+      NSString *biNS = [NSString stringWithUTF8String:bundleID];
+      my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
       
       //app.fb_shouldWaitForQuiescence = true; // or nil
       my->app.launchArguments = @[];
@@ -989,7 +991,9 @@ NSString *handleActiveApps( myData *my, node_hash *root, char **outVal ) {
                 
                 NSValue *funcValue = cmdFuncs[actionNs];
                 if( funcValue != nil ) {
-                    NSString * (*func)(myData *, node_hash *root, char **) = [funcValue pointerValue];
+                    void *funcPtr = [funcValue pointerValue];
+                    NSString * (*func)(myData *, node_hash *root, char **) =
+                              ( NSString * (*)(myData *, node_hash *root, char **) ) funcPtr;
                     data.action = action;
                     respString = func( &data, root, &outVal );
                 } else {

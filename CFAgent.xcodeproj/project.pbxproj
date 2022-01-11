@@ -174,7 +174,7 @@
 		CEA4750326AB82E2006D60B5 /* libnng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA4750226AB82CF006D60B5 /* libnng.a */; };
 		CEA4752426ABF477006D60B5 /* libnng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA4750226AB82CF006D60B5 /* libnng.a */; };
 		CEA4753026ABF4A9006D60B5 /* red_black_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */; };
-		CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752E26ABF4A9006D60B5 /* ujsonin.c */; };
+		CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752E26ABF4A9006D60B5 /* ujsonin.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CEA4753226ABF4A9006D60B5 /* string-tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752F26ABF4A9006D60B5 /* string-tree.c */; };
 		CEAB72C4271A95BD00BB848B /* NNGServer2.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAB72C2271A95BD00BB848B /* NNGServer2.m */; };
 		CEAB72C5271A95BD00BB848B /* NNGServer2.h in Headers */ = {isa = PBXBuildFile; fileRef = CEAB72C3271A95BD00BB848B /* NNGServer2.h */; };
@@ -182,6 +182,7 @@
 		CEACE61226B21D4B0006AA5C /* NNGServer.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE61026B21D4B0006AA5C /* NNGServer.m */; };
 		CEACE62526B220B70006AA5C /* XCUIDevice+CFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */; };
 		CEACE62626B220B70006AA5C /* XCUIDevice+CFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */; };
+		CEDCA993278D28EF0049085C /* ujsonin.h in Headers */ = {isa = PBXBuildFile; fileRef = CEDCA992278D28EF0049085C /* ujsonin.h */; };
 		EE158AF51CBD456F00A3E3F0 /* FBApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = EE9AB7661CAEDF0C008C271F /* FBApplication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE158AF61CBD456F00A3E3F0 /* FBApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = EE9AB7671CAEDF0C008C271F /* FBApplication.m */; };
 		EE158B5A1CBD462100A3E3F0 /* CFAgentLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */; };
@@ -389,6 +390,7 @@
 		CEACE62426B220B70006AA5C /* XCUIDevice+CFHelpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XCUIDevice+CFHelpers.m"; sourceTree = "<group>"; };
 		CEACE62F26B220C90006AA5C /* XCUIDevice+CFHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+CFHelpers.h"; sourceTree = "<group>"; };
 		CEACE63826B238480006AA5C /* XCElementSnapshot-XCUIElementSnapshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCElementSnapshot-XCUIElementSnapshot.h"; sourceTree = "<group>"; };
+		CEDCA992278D28EF0049085C /* ujsonin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ujsonin.h; path = ujsonin/ujsonin.h; sourceTree = SOURCE_ROOT; };
 		EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CFAgentLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE158B5D1CBD479000A3E3F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = CFAgentLib/Info.plist; sourceTree = SOURCE_ROOT; };
 		EE158B5E1CBD47A000A3E3F0 /* CFAgentLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CFAgentLib.h; path = CFAgentLib/CFAgentLib.h; sourceTree = SOURCE_ROOT; };
@@ -723,6 +725,7 @@
 		EEC288F81BF0ED2500B4DC79 /* CFAgentLib */ = {
 			isa = PBXGroup;
 			children = (
+				CEDCA992278D28EF0049085C /* ujsonin.h */,
 				CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */,
 				CEA4752F26ABF4A9006D60B5 /* string-tree.c */,
 				CEA4752E26ABF4A9006D60B5 /* ujsonin.c */,
@@ -1081,6 +1084,7 @@
 				EE35AD481E3B77D600A02D78 /* XCTestDriverInterface-Protocol.h in Headers */,
 				648C10AF22AAAE4000B81B9A /* TIPreferencesController.h in Headers */,
 				EE35AD111E3B77D600A02D78 /* _XCTestSuiteImplementation.h in Headers */,
+				CEDCA993278D28EF0049085C /* ujsonin.h in Headers */,
 				EE35AD731E3B77D600A02D78 /* XCUIElementQuery.h in Headers */,
 				EE35AD331E3B77D600A02D78 /* XCPointerEvent.h in Headers */,
 				CE6C268A278D148F00A0DD3A /* FBRuntimeUtils.h in Headers */,
