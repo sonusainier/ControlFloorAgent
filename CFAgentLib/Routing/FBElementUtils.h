@@ -37,7 +37,7 @@ extern NSString *const FBUnknownAttributeException;
  @param elements array of elements
  @return set of unique element types (XCUIElementType items) or an empty set in case the input is empty
  */
-+ (NSSet<NSNumber *> *)uniqueElementTypesWithElements:(NSArray<id<FBElement>> *)elements;
+//+ (NSSet<NSNumber *> *)uniqueElementTypesWithElements:(NSArray<id<FBElement>> *)elements;
 
 /**
  Returns mapping of all possible FBElement protocol properties aliases

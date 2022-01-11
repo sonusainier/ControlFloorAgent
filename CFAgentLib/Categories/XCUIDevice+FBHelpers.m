@@ -14,11 +14,11 @@
 #include <notify.h>
 #import <objc/runtime.h>
 
-#import "FBErrorBuilder.h"
-#import "FBImageUtils.h"
+//#import "FBErrorBuilder.h"
+#//import "FBImageUtils.h"
 #import "FBMacros.h"
 #import "FBMathUtils.h"
-#import "FBScreenshot.h"
+//#import "FBScreenshot.h"
 #import "FBXCodeCompatibility.h"
 #import "XCUIDevice.h"
 #import "XCDeviceEvent.h"
@@ -50,59 +50,14 @@ static bool fb_isLocked;
 #pragma clang diagnostic pop
 }
 
-- (BOOL)fb_goToHomescreenWithError:(NSError **)error
+/*- (BOOL)fb_goToHomescreenWithError:(NSError **)error
 {
   return [FBApplication fb_switchToSystemApplicationWithError:error];
-}
-
-- (BOOL)fb_lockScreen:(NSError **)error
-{
-  if (fb_isLocked) {
-    return YES;
-  }
-  [self pressLockButton];
-  return [[[[FBRunLoopSpinner new]
-            timeout:FBScreenLockTimeout]
-           timeoutErrorMessage:@"Timed out while waiting until the screen gets locked"]
-          spinUntilTrue:^BOOL{
-            return fb_isLocked;
-          } error:error];
-}
+}*/
 
 - (BOOL)fb_isScreenLocked
 {
   return fb_isLocked;
-}
-
-- (BOOL)fb_unlockScreen:(NSError **)error
-{
-  if (!fb_isLocked) {
-    return YES;
-  }
-  [self pressButton:XCUIDeviceButtonHome];
-  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:FBHomeButtonCoolOffTime]];
-#if !TARGET_OS_TV
-  if (SYSTEM_VERSION_LESS_THAN(@"10.0")) {
-    [[FBApplication fb_activeApplication] swipeRight];
-  } else {
-    [self pressButton:XCUIDeviceButtonHome];
-  }
-#else
-  [self pressButton:XCUIDeviceButtonHome];
-#endif
-  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:FBHomeButtonCoolOffTime]];
-  return [[[[FBRunLoopSpinner new]
-            timeout:FBScreenLockTimeout]
-           timeoutErrorMessage:@"Timed out while waiting until the screen gets unlocked"]
-          spinUntilTrue:^BOOL{
-            return !fb_isLocked;
-          } error:error];
-}
-
-- (NSData *)fb_screenshotWithError:(NSError*__autoreleasing*)error
-{
-  return [FBScreenshot takeInOriginalResolutionWithQuality:FBConfiguration.screenshotQuality
-                                                     error:error];
 }
 
 - (BOOL)fb_fingerTouchShouldMatch:(BOOL)shouldMatch
@@ -145,39 +100,14 @@ static bool fb_isLocked;
   return address;
 }
 
-- (BOOL)fb_openUrl:(NSString *)url error:(NSError **)error
-{
-  NSURL *parsedUrl = [NSURL URLWithString:url];
-  if (nil == parsedUrl) {
-    return [[[FBErrorBuilder builder]
-             withDescriptionFormat:@"'%@' is not a valid URL", url]
-            buildError:error];
-  }
-
-  id siriService = [self valueForKey:@"siriService"];
-  if (nil != siriService) {
-    return [self fb_activateSiriVoiceRecognitionWithText:[NSString stringWithFormat:@"Open {%@}", url] error:error];
-  }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  // The link never gets opened by this method: https://forums.developer.apple.com/thread/25355
-  if (![[UIApplication sharedApplication] openURL:parsedUrl]) {
-#pragma clang diagnostic pop
-    return [[[FBErrorBuilder builder]
-             withDescriptionFormat:@"The URL %@ cannot be opened", url]
-            buildError:error];
-  }
-  return YES;
-}
-
 - (BOOL)fb_activateSiriVoiceRecognitionWithText:(NSString *)text error:(NSError **)error
 {
   id siriService = [self valueForKey:@"siriService"];
-  if (nil == siriService) {
+  /*if (nil == siriService) {
     return [[[FBErrorBuilder builder]
              withDescription:@"Siri service is not available on the device under test"]
             buildError:error];
-  }
+  }*/
   @try {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
@@ -186,9 +116,9 @@ static bool fb_isLocked;
 #pragma clang diagnostic pop
     return YES;
   } @catch (NSException *e) {
-    return [[[FBErrorBuilder builder]
+    /*return [[[FBErrorBuilder builder]
              withDescriptionFormat:@"%@", e.reason]
-            buildError:error];
+            buildError:error];*/
   }
 }
 
@@ -276,9 +206,9 @@ static bool fb_isLocked;
 #endif
 
   if (dstButton == 0) {
-    return [[[FBErrorBuilder builder]
+    /*return [[[FBErrorBuilder builder]
              withDescriptionFormat:@"The button '%@' is unknown. Only the following button names are supported: %@", buttonName, supportedButtonNames]
-            buildError:error];
+            buildError:error];*/
   }
   [self pressButton:dstButton];
   return YES;

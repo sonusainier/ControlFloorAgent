@@ -9,7 +9,7 @@
 
 #import "FBScreen.h"
 #import "FBApplication.h"
-#import "XCUIElement+FBIsVisible.h"
+//#import "XCUIElement+FBIsVisible.h"
 #import "FBXCodeCompatibility.h"
 #import "XCUIScreen.h"
 
@@ -31,11 +31,12 @@
     expectVisibleBar = NO;
   }
 
-  XCUIElement *mainStatusBar = app.statusBars.fb_firstMatch;
-  if (!mainStatusBar || (expectVisibleBar && !mainStatusBar.fb_isVisible)) {
+  //XCUIElement *mainStatusBar = app.statusBars.fb_firstMatch;
+  /*if (!mainStatusBar || (expectVisibleBar && !mainStatusBar.fb_isVisible)) {
     return CGSizeZero;
-  }
-  return mainStatusBar.frame.size;
+  }*/
+  //return mainStatusBar.frame.size;
+  return CGSizeZero;
 }
 
 @end

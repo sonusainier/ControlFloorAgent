@@ -11,14 +11,11 @@
 
 #import <objc/runtime.h>
 
-#import "FBConfiguration.h"
-#import "FBLogger.h"
-#import "FBRunLoopSpinner.h"
 #import "XCTestDriver.h"
-#import "XCTRunnerDaemonSession.h"
 #import "XCUIApplication.h"
 #import "XCUIDevice.h"
 #import "FBXCAXClientProxy.h"
+#import "XCTRunnerDaemonSession.h"
 
 @implementation FBXCTestDaemonsProxy
 
@@ -35,16 +32,16 @@ static dispatch_once_t onceTestRunnerDaemonClass;
 + (id<XCTestManager_ManagerInterface>)testRunnerProxy
 {
   static id<XCTestManager_ManagerInterface> proxy = nil;
-  if ([FBConfiguration shouldUseSingletonTestManager]) {
+  //if ([FBConfiguration shouldUseSingletonTestManager]) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      [FBLogger logFmt:@"Using singleton test manager"];
+      //[FBLogger logFmt:@"Using singleton test manager"];
       proxy = [self.class retrieveTestRunnerProxy];
     });
-  } else {
-    [FBLogger logFmt:@"Using general test manager"];
+  /*} else {
+    //[FBLogger logFmt:@"Using general test manager"];
     proxy = [self.class retrieveTestRunnerProxy];
-  }
+  }*/
   NSAssert(proxy != NULL, @"Could not determine testRunnerProxy", proxy);
   return proxy;
 }
@@ -59,7 +56,7 @@ static dispatch_once_t onceTestRunnerDaemonClass;
   }
 }
 
-#if !TARGET_OS_TV
+/*#if !TARGET_OS_TV
 + (UIInterfaceOrientation)orientationWithApplication:(XCUIApplication *)application
 {
   if (nil == FBXCTRunnerDaemonSessionClass ||
@@ -88,7 +85,7 @@ static dispatch_once_t onceTestRunnerDaemonClass;
 + (XCElementSnapshot *)snapshotForElement:(XCAccessibilityElement *)el
                                attributes:(NSArray *)atts
                                parameters:(NSDictionary *)params {
-  /*__block XCElementSnapshot *returnSnap = nil;
+  __block XCElementSnapshot *returnSnap = nil;
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
   //[[FBXCTRunnerDaemonSessionClass sharedSession] requestElementAtPoint:point reply:^(XCUIElement *el, NSError *error) {
   [[self testRunnerProxy] _XCT_snapshotForElement:el
@@ -101,19 +98,19 @@ static dispatch_once_t onceTestRunnerDaemonClass;
     dispatch_semaphore_signal(sem);
   }];
   dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
-  return returnSnap;*/
+  return returnSnap;
   NSError *err;
   XCElementSnapshot *snapshot = [FBXCAXClientProxy.sharedClient snapshotForElement:el
                                                                         attributes:atts
                                                                           maxDepth:@4
                                                                              error:&err];
   return snapshot;
-}
+}*/
 
-+ (BOOL)synthesizeEventWithRecord:(XCSynthesizedEventRecord *)record error:(NSError *__autoreleasing*)error
+/*+ (BOOL)synthesizeEventWithRecord:(XCSynthesizedEventRecord *)record error:(NSError *__autoreleasing*)error
 {
   __block BOOL didSucceed = NO;
-  [FBRunLoopSpinner spinUntilCompletion:^(void(^completion)(void)){
+  //[FBRunLoopSpinner spinUntilCompletion:^(void(^completion)(void)){
     void (^errorHandler)(NSError *) = ^(NSError *invokeError) {
       if (error) {
         *error = invokeError;
@@ -138,8 +135,8 @@ static dispatch_once_t onceTestRunnerDaemonClass;
         }];
       }
     }
-  }];
+  //}];
   return didSucceed;
-}
+}*/
 
 @end

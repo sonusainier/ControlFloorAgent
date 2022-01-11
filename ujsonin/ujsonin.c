@@ -236,7 +236,7 @@ char *node_hash__get_str_escapes( node_hash *self, char *key, long keyLen ) {
                 byte += hexlet( str[++i] );
                 
                 if( byte < 256 ) {
-                    buffer[ dest ] = byte;
+                    buffer[ dest ] = (char) byte;
                 }
             }
             else buffer[dest]=next;

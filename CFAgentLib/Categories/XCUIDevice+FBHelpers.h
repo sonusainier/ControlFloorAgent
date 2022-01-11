@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return YES if the operation succeeds, otherwise NO.
  */
-- (BOOL)fb_goToHomescreenWithError:(NSError **)error;
+//- (BOOL)fb_goToHomescreenWithError:(NSError **)error;
 
 /**
  Checks if the screen is locked or not.
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return YES if the operation succeeds, otherwise NO.
  */
-- (BOOL)fb_lockScreen:(NSError **)error;
+//- (BOOL)fb_lockScreen:(NSError **)error;
 
 /**
  Forces the device under test to unlock. An immediate return will happen if the device is already unlocked and an error is going to be thrown if the screen has not been unlocked after the timeout.
@@ -50,14 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return YES if the operation succeeds, otherwise NO.
  */
-- (BOOL)fb_unlockScreen:(NSError **)error;
+//- (BOOL)fb_unlockScreen:(NSError **)error;
 
 /**
  Returns screenshot
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return Device screenshot as PNG-encoded data or nil in case of failure
  */
-- (nullable NSData *)fb_screenshotWithError:(NSError*__autoreleasing*)error;
+//- (nullable NSData *)fb_screenshotWithError:(NSError*__autoreleasing*)error;
 
 /**
  Returns device current wifi ip4 address
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return YES if the operation was successful
  */
-- (BOOL)fb_openUrl:(NSString *)url error:(NSError **)error;
+//- (BOOL)fb_openUrl:(NSString *)url error:(NSError **)error;
 
 /**
  Presses the corresponding hardware button on the device

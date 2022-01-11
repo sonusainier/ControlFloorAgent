@@ -11,8 +11,8 @@
 
 #import <objc/runtime.h>
 
-#import "FBConfiguration.h"
-#import "FBLogger.h"
+//#import "FBConfiguration.h"
+//#import "FBLogger.h"
 #import "XCAXClient_iOS.h"
 #import "XCUIDevice.h"
 
@@ -25,14 +25,14 @@ static id FBAXClient = nil;
 
  @return dictionary with parameters for element's snapshot request
  */
-- (NSDictionary *)fb_getParametersForElementSnapshot
+/*- (NSDictionary *)fb_getParametersForElementSnapshot
 {
   return FBConfiguration.snapshotRequestParameters;
-}
+}*/
 
 + (void)load
 {
-  static dispatch_once_t onceToken;
+  /*static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
       Class class = [self class];
 
@@ -56,7 +56,7 @@ static id FBAXClient = nil;
       } else {
           method_exchangeImplementations(originalMethod, swizzledMethod);
       }
-  });
+  });*/
 }
 
 @end
@@ -94,7 +94,7 @@ static id FBAXClient = nil;
   return [FBAXClient _setAXTimeout:timeout error:error];
 }
 
-- (XCElementSnapshot *)snapshotForElement:(XCAccessibilityElement *)element
+/*- (XCElementSnapshot *)snapshotForElement:(XCAccessibilityElement *)element
                                attributes:(NSArray<NSString *> *)attributes
                                  maxDepth:(nullable NSNumber *)maxDepth
                                     error:(NSError **)error
@@ -116,7 +116,7 @@ static id FBAXClient = nil;
                              attributes:attributes
                              parameters:[parameters copy]
                                   error:error];
-}
+}*/
 
 - (NSArray<XCAccessibilityElement *> *)activeApplications
 {
@@ -128,10 +128,10 @@ static id FBAXClient = nil;
   return [FBAXClient systemApplication];
 }
 
-- (NSDictionary *)defaultParameters
+/*- (NSDictionary *)defaultParameters
 {
   return [FBAXClient defaultParameters];
-}
+}*/
 
 - (void)notifyWhenNoAnimationsAreActiveForApplication:(XCUIApplication *)application
                                                 reply:(void (^)(void))reply
@@ -139,7 +139,7 @@ static id FBAXClient = nil;
   [FBAXClient notifyWhenNoAnimationsAreActiveForApplication:application reply:reply];
 }
 
-- (NSDictionary *)attributesForElement:(XCAccessibilityElement *)element
+/*- (NSDictionary *)attributesForElement:(XCAccessibilityElement *)element
                             attributes:(NSArray *)attributes
 {
   if ([FBAXClient respondsToSelector:@selector(attributesForElement:attributes:error:)]) {
@@ -153,7 +153,7 @@ static id FBAXClient = nil;
     return result;
   }
   return [FBAXClient attributesForElement:element attributes:attributes];
-}
+}*/
 
 - (BOOL)hasProcessTracker
 {

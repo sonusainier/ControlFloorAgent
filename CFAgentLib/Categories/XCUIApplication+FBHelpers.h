@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return YES if the operation succeeds, otherwise NO.
  */
-- (BOOL)fb_deactivateWithDuration:(NSTimeInterval)duration error:(NSError **)error;
+//- (BOOL)fb_deactivateWithDuration:(NSTimeInterval)duration error:(NSError **)error;
 
 /**
  Resets the authorization status for a protected resource. Available since Xcode 11.4
@@ -32,22 +32,22 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return YES if the operation succeeds, otherwise NO.
  */
-- (BOOL)fb_resetAuthorizationStatusForResource:(long long)resourceId error:(NSError **)error;
+//- (BOOL)fb_resetAuthorizationStatusForResource:(long long)resourceId error:(NSError **)error;
 
 /**
  Return application elements tree in form of nested dictionaries
  */
-- (NSDictionary *)fb_tree;
+//- (NSDictionary *)fb_tree;
 
 /**
  Return application elements accessibility tree in form of nested dictionaries
  */
-- (NSDictionary *)fb_accessibilityTree;
+//- (NSDictionary *)fb_accessibilityTree;
 
 /**
  Return application elements tree in form of xml string
  */
-- (nullable NSString *)fb_xmlRepresentation;
+//- (nullable NSString *)fb_xmlRepresentation;
 
 /**
  Return application elements tree in form of xml string exluding the given attribute names.
@@ -56,17 +56,17 @@ NS_ASSUME_NONNULL_BEGIN
  Invalid attribute names are silently skipped
  @returns The XML representation of the current element as a string
  */
-- (NSString *)fb_xmlRepresentationWithoutAttributes:(NSArray<NSString *> *)excludedAttributes;
+//- (NSString *)fb_xmlRepresentationWithoutAttributes:(NSArray<NSString *> *)excludedAttributes;
 
 /**
  Return application elements tree in form of internal XCTest debugDescription string
  */
-- (NSString *)fb_descriptionRepresentation;
+//- (NSString *)fb_descriptionRepresentation;
 
 /**
  Returns the element, which currently holds the keyboard input focus or nil if there are no such elements.
  */
-- (nullable XCUIElement *)fb_activeElement;
+//- (nullable XCUIElement *)fb_activeElement;
 
 #if TARGET_OS_TV
 /**
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param timeout The maximum time to wait for the element to appear
  @returns Either YES or NO
  */
-- (BOOL)fb_waitForAppElement:(NSTimeInterval)timeout;
+//- (BOOL)fb_waitForAppElement:(NSTimeInterval)timeout;
 
 /**
  Retrieves the information about the applications the given accessiblity elements
@@ -89,14 +89,14 @@ NS_ASSUME_NONNULL_BEGIN
  @param axElements the list of accessibility elements
  @returns The list of dictionaries. Each dictionary contains `bundleId` and `pid` items
  */
-+ (NSArray<NSDictionary<NSString *, id> *> *)fb_appsInfoWithAxElements:(NSArray<XCAccessibilityElement *> *)axElements;
+//+ (NSArray<NSDictionary<NSString *, id> *> *)fb_appsInfoWithAxElements:(NSArray<XCAccessibilityElement *> *)axElements;
 
 /**
  Retrieves the information about the currently active apps
 
  @returns The list of dictionaries. Each dictionary contains `bundleId` and `pid` items.
  */
-+ (NSArray<NSDictionary<NSString *, id> *> *)fb_activeAppsInfo;
+//+ (NSArray<NSDictionary<NSString *, id> *> *)fb_activeAppsInfo;
 
 
 /**
@@ -123,8 +123,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param error The resulting error object if the method fails to dismiss the keyboard
  @returns YES if the keyboard dismissal was successful or NO otherwise
  */
-- (BOOL)fb_dismissKeyboardWithKeyNames:(nullable NSArray<NSString *> *)keyNames
-                                 error:(NSError **)error;
+//- (BOOL)fb_dismissKeyboardWithKeyNames:(nullable NSArray<NSString *> *)keyNames
+//                                 error:(NSError **)error;
 
 @end
 

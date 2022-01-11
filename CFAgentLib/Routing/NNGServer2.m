@@ -2,7 +2,7 @@
 // Cooperative License ( LICENSE_DRYARK )
 
 #import "NNGServer2.h"
-#import "FBLogger.h"
+//#import "FBLogger.h"
 #import "XCUIDevice+FBHelpers.h"
 #import "XCUIDevice+CFHelpers.h"
 #import "FBXCTestDaemonsProxy.h"
@@ -32,9 +32,8 @@
     int listen_error = nng_listen( _replySocket, addr2, NULL, 0);
     if( listen_error != 0 ) {
         NSLog( @"xxr error bindind on 127.0.0.1 : %d - %d", _nngPort, listen_error );
-        [FBLogger logFmt:@"xxr error bindind on 127.0.0.1 : %d - %d", _nngPort, listen_error ];
     }
-    [FBLogger logFmt:@"NNG2 Ready"];
+    NSLog( @"NNG2 Ready" );
     XCUIDevice *device = XCUIDevice.sharedDevice;
   
     CIContext *context = [CIContext contextWithOptions:@{
@@ -64,7 +63,7 @@
             if( msgLen > 0 ) {
                 char *msg = (char *) nng_msg_body( nmsg );
                 //msg = strdup( msg );
-                //[FBLogger logFmt:@"nng req %.*s", msgLen, msg ];
+                NSLog( @"nng req %.*s", msgLen, msg );
                 char buffer[20];
                 char *action = "";
                 
@@ -110,7 +109,7 @@
                     int x2 = node_hash__get_int( root, "x2", 2 );
                     int y2 = node_hash__get_int( root, "y2", 2 );
                     double delay = node_hash__get_double( root, "delay", 5 );
-                    [FBLogger logFmt:@"swipe x1:%d y1:%d x2:%d y2:%d delay:%f",x1,y1,x2,y2,delay];
+                    NSLog( @"swipe x1:%d y1:%d x2:%d y2:%d delay:%f",x1,y1,x2,y2,delay );
                     [device cf_swipe:x1 y1:y1 x2:x2 y2:y2 delay:delay];
                     respText = "ok";
                 }
@@ -138,20 +137,20 @@
                     free( name );
                     respText = "ok";
                 }
-                else if( !strncmp( action, "isLocked", 8 ) ) {
-                    bool locked = device.fb_isScreenLocked;
-                    respText = locked ? "{\"locked\":true}" : "{\"locked\":false}";
-                }
-                else if( !strncmp( action, "lock", 4 ) ) {
-                    NSError *error;
-                    bool success = [device fb_lockScreen:&error];
-                    respText = success ? "{\"success\":true}" : "{\"success\":false}";
-                }
-                else if( !strncmp( action, "unlock", 6 ) ) {
-                    NSError *error;
-                    bool success = [device fb_unlockScreen:&error];
-                    respText = success ? "{\"success\":true}" : "{\"success\":false}";
-                }
+                //else if( !strncmp( action, "isLocked", 8 ) ) {
+                //    bool locked = device.fb_isScreenLocked;
+                //    respText = locked ? "{\"locked\":true}" : "{\"locked\":false}";
+                //}
+                //else if( !strncmp( action, "lock", 4 ) ) {
+                //    NSError *error;
+                //    bool success = [device fb_lockScreen:&error];
+                //    respText = success ? "{\"success\":true}" : "{\"success\":false}";
+                //}
+                //else if( !strncmp( action, "unlock", 6 ) ) {
+                //    NSError *error;
+                //    bool success = [device fb_unlockScreen:&error];
+                //    respText = success ? "{\"success\":true}" : "{\"success\":false}";
+                //}
                 else if( !strncmp( action, "status", 6 ) ) {
                     respText = "{sessionId:\"fakesession\"}";
                 }
@@ -257,7 +256,7 @@
             if( respText ) nng_msg_append( respN, respText, respLen ? respLen : strlen( respText ) );
             int sendErr = nng_sendmsg( _replySocket, respN, 0 );
             if( sendErr ) {
-                [FBLogger logFmt:@"sending err :%d", sendErr ];
+                NSLog( @"sending err :%d", sendErr );
                 nng_msg_free( respN );
             }
             

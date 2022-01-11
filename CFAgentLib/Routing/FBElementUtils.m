@@ -10,7 +10,7 @@
 #import <objc/runtime.h>
 
 #import "FBElementUtils.h"
-#import "FBElementTypeTransformer.h"
+//#import "FBElementTypeTransformer.h"
 
 NSString *const FBUnknownAttributeException = @"FBUnknownAttributeException";
 static NSString *const WD_PREFIX = @"wd";
@@ -32,14 +32,14 @@ static NSString *const OBJC_PROP_ATTRIBS_SEPARATOR = @",";
   return result;
 }
 
-+ (NSSet<NSNumber *> *)uniqueElementTypesWithElements:(NSArray<id<FBElement>> *)elements
+/*+ (NSSet<NSNumber *> *)uniqueElementTypesWithElements:(NSArray<id<FBElement>> *)elements
 {
   NSMutableSet *matchingTypes = [NSMutableSet set];
   [elements enumerateObjectsUsingBlock:^(id<FBElement> element, NSUInteger elementIdx, BOOL *stopElementsEnum) {
     [matchingTypes addObject: @([FBElementTypeTransformer elementTypeWithTypeName:element.wdType])];
   }];
   return matchingTypes.copy;
-}
+}*/
 
 + (NSDictionary<NSString *, NSString *> *)wdAttributeNamesMapping
 {

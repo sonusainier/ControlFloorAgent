@@ -9,10 +9,10 @@
 
 #import "FBApplication.h"
 
-#import "FBLogger.h"
-#import "FBRunLoopSpinner.h"
+//#import "FBLogger.h"
+//#import "FBRunLoopSpinner.h"
 #import "FBMacros.h"
-#import "FBActiveAppDetectionPoint.h"
+//#import "FBActiveAppDetectionPoint.h"
 #import "FBXCodeCompatibility.h"
 #import "FBXCTestDaemonsProxy.h"
 #import "XCAccessibilityElement.h"
@@ -32,10 +32,10 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
 
 @implementation FBApplication
 
-+ (instancetype)fb_activeApplication
+/*+ (instancetype)fb_activeApplication
 {
   return [self fb_activeApplicationWithDefaultBundleId:nil];
-}
+}*/
 
 + (NSArray<FBApplication *> *)fb_activeApplications
 {
@@ -52,7 +52,7 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
   return result.count > 0 ? result.copy : @[self.class.fb_systemApplication];
 }
 
-+ (instancetype)fb_activeApplicationWithDefaultBundleId:(nullable NSString *)bundleId
+/*+ (instancetype)fb_activeApplicationWithDefaultBundleId:(nullable NSString *)bundleId
 {
   NSArray<XCAccessibilityElement *> *activeApplicationElements = [FBXCAXClientProxy.sharedClient activeApplications];
   XCAccessibilityElement *activeApplicationElement = nil;
@@ -125,7 +125,7 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
 
   [FBLogger log:@"Cannot retrieve any active applications. Assuming the system application is the active one"];
   return [self fb_systemApplication];
-}
+}*/
 
 + (instancetype)fb_systemApplication
 {
@@ -155,20 +155,20 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
 - (void)launch
 {
   [super launch];
-  if (![self fb_waitForAppElement:APP_STATE_CHANGE_TIMEOUT]) {
-    [FBLogger logFmt:@"The application '%@' is not running in foreground after %.2f seconds", self.bundleID, APP_STATE_CHANGE_TIMEOUT];
-  }
+  //if (![self fb_waitForAppElement:APP_STATE_CHANGE_TIMEOUT]) {
+    //[FBLogger logFmt:@"The application '%@' is not running in foreground after %.2f seconds", self.bundleID, APP_STATE_CHANGE_TIMEOUT];
+  //}
 }
 
 - (void)terminate
 {
   [super terminate];
   if (![self waitForState:XCUIApplicationStateNotRunning timeout:APP_STATE_CHANGE_TIMEOUT]) {
-    [FBLogger logFmt:@"The active application is still '%@' after %.2f seconds timeout", self.bundleID, APP_STATE_CHANGE_TIMEOUT];
+    //[FBLogger logFmt:@"The active application is still '%@' after %.2f seconds timeout", self.bundleID, APP_STATE_CHANGE_TIMEOUT];
   }
 }
 
-+ (BOOL)fb_switchToSystemApplicationWithError:(NSError **)error
+/*+ (BOOL)fb_switchToSystemApplicationWithError:(NSError **)error
 {
   FBApplication *systemApp = self.fb_systemApplication;
   @try {
@@ -190,6 +190,6 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
     return nil != activeApp && [activeApp.bundleID isEqualToString:systemApp.bundleID];
   }
           error:error];
-}
+}*/
 
 @end

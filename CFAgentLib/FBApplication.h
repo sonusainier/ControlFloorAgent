@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Constructor used to get current active application
  */
-+ (instancetype)fb_activeApplication;
+//+ (instancetype)fb_activeApplication;
 
 /**
  Constructor used to get current active application
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param bundleId The bundle identifier of an app, which should be selected as active by default
  if it is present in the list of active applications
  */
-+ (instancetype)fb_activeApplicationWithDefaultBundleId:(nullable NSString *)bundleId;
+//+ (instancetype)fb_activeApplicationWithDefaultBundleId:(nullable NSString *)bundleId;
 
 /**
  Constructor used to get the system application (e.g. Springboard on iOS)
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param error If there is an error, upon return contains an NSError object that describes the problem.
  @return YES if the operation succeeds, otherwise NO.
  */
-+ (BOOL)fb_switchToSystemApplicationWithError:(NSError **)error;
+//+ (BOOL)fb_switchToSystemApplicationWithError:(NSError **)error;
 
 @end
 

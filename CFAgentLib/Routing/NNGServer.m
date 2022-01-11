@@ -3,23 +3,14 @@
 
 #import "NNGServer.h"
 #import "XCElementSnapshot-XCUIElementSnapshot.h"
-#import "FBConfiguration.h"
-#import "FBLogger.h"
-#import "FBAlert.h"
 #import "XCUIDevice+FBHelpers.h"
 #import "XCUIDevice+CFHelpers.h"
 #import "XCPointerEventPath.h"
 #import "XCSynthesizedEventRecord.h"
 #import "FBApplication.h"
-#import "XCUIElement+FBFind.h"
-#import "FBElementCache.h"
-#import "XCUIElement+FBTap.h"
-#import "XCUIElement+FBForceTouch.h"
-#import "XCUIElement+FBUID.h"
-#import "XCUIApplication+FBQuiescence.h"
+//#import "XCUIApplication+FBQuiescence.h"
 #import "XCUIApplication+FBHelpers.h"
 #import "XCUIDevice+FBHelpers.h"
-#import "XCUIApplication+FBTouchAction.h"
 #import "FBXCAXClientProxy.h"
 #import <objc/runtime.h>
 #import "XCTestPrivateSymbols.h"
@@ -268,7 +259,7 @@ NSString *handleSwipe( myData *my, node_hash *root, char **outVal ) {
     int x2 = node_hash__get_int( root, "x2", 2 );
     int y2 = node_hash__get_int( root, "y2", 2 );
     double delay = node_hash__get_double( root, "delay", 5 );
-    [FBLogger logFmt:@"swipe x1:%d y1:%d x2:%d y2:%d delay:%f",x1,y1,x2,y2,delay];
+    NSLog( @"swipe x1:%d y1:%d x2:%d y2:%d delay:%f",x1,y1,x2,y2,delay );
     [my->device cf_swipe:x1 y1:y1 x2:x2 y2:y2 delay:(CGFloat)delay];
     [NSThread sleepForTimeInterval:delay];
     return @"ok";
@@ -290,7 +281,7 @@ NSString *handleStartBroadcastApp( myData *my, node_hash *root, char **outVal ) 
 
 NSString *handleToLauncher( myData *my, node_hash *root, char **outVal ) {
     if( [my->sbApp fb_state] < 2 ) [my->sbApp launch];
-    else                       [my->sbApp fb_activate];
+    //else                       [my->sbApp fb_activate];
     return @"ok";
 }
 
@@ -333,16 +324,16 @@ NSString *handleElClick( myData *my, node_hash *root, char **outVal ) {
     if( element == nil ) {
         // todo error
     } else {
-        /*if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
+        //if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
             [element tap];
-        } else {
+        /*} else {
             XCElementSnapshot *snapshot = (XCElementSnapshot *) [element snapshotWithError:&error];
             int x = snapshot.frame.origin.x/2;
             int y = snapshot.frame.origin.y/2;
             NSLog( @"tapping a %d,%d", x+1, y+1 );
             [device cf_tap:x/2 y:y/2];
         }*/
-        [element fb_tapWithError:&error];
+        //[element fb_tapWithError:&error];
     }
     return @"ok";
 }
@@ -434,7 +425,7 @@ NSString *handleGetEl( myData *my, node_hash *root, char **outVal ) {
     return nil;
 }
 
-NSString *handleElByName( myData *my, node_hash *root, char **outVal ) {
+/*NSString *handleElByName( myData *my, node_hash *root, char **outVal ) {
     char *name = node_hash__get_str( root, "name", 4 );
     NSString *name2 = [NSString stringWithUTF8String:name];
     
@@ -463,32 +454,52 @@ NSString *handleElByName( myData *my, node_hash *root, char **outVal ) {
     
     *outVal = strdup( [key UTF8String] );
     return nil;
-}
+}*/
 
 NSString *handleAlertInfo( myData *my, node_hash *root, char **outVal ) {
-    FBAlert *alert = [FBAlert alertWithApplication:my->app];
-    
-    if(!alert.isPresent) {
+    XCUIElementQuery *query = [my->app descendantsMatchingType:XCUIElementTypeAlert];
+    XCUIElement *el = [query element];
+    if( el == nil || !el.exists ) {
         return @"{present:false}";
-    } else {
-        NSString *res = @"{\n  present:true\n  buttons:[\n";
-        NSString *alertText = alert.text;
-        NSArray *labels = alert.buttonLabels;
-        
-        for( unsigned long i = 0; i < [labels count]; i++) {
-            NSString *label = [labels objectAtIndex:i];
-            res = [res stringByAppendingFormat:@"    \"%@\"\n", label ];
-        }
-        alertText = [alertText stringByReplacingOccurrencesOfString:@"\""
-                     withString:@"\\\""];
-        res = [res stringByAppendingFormat:@"]\n  alert:\"%@\"\n]\n}", alertText];
-      
-        *outVal = strdup( [res UTF8String] );
     }
-    return nil;
+    
+    NSString *res = @"{\n  present:true\n  buttons:[\n";
+    
+    NSArray<XCUIElement *> *buttons =
+        [el descendantsMatchingType:XCUIElementTypeButton].allElementsBoundByIndex;
+    
+    for( unsigned long i = 0; i < [buttons count]; i++) {
+        XCUIElement *button = [buttons objectAtIndex:i];
+        res = [res stringByAppendingFormat:@"    \"%@\"\n",
+            button.value ?: button.label ];
+    }
+    
+    NSPredicate *alertDescrPredicate = [NSPredicate predicateWithFormat:@"elementType IN {%lu,%lu}",
+        XCUIElementTypeTextView, XCUIElementTypeStaticText];
+    NSArray<XCUIElement *> *descriptions = [
+        [el descendantsMatchingType:XCUIElementTypeAny]
+        matchingPredicate:alertDescrPredicate
+    ].allElementsBoundByIndex;
+    NSString *alertText = nil;
+    for( unsigned long i = 0; i < [descriptions count]; i++) {
+        XCUIElement *descr = [descriptions objectAtIndex:i];
+        NSString *label = descr.value;
+        if( label == nil ) {
+            if(descr.elementType == XCUIElementTypeStaticText)
+                label = descr.label;
+            if(descr.elementType == XCUIElementTypeTextView)
+                label = descr.placeholderValue;
+        }
+        
+        res = [res stringByAppendingFormat:@"    \"%@\"\n", label ];
+    }
+    
+    res = [res stringByAppendingFormat:@"]\n  alert:\"%@\"\n]\n}", alertText];
+      
+    return res;
 }
 
-NSString *handleIsLocked( myData *my, node_hash *root, char **outVal ) {
+/*NSString *handleIsLocked( myData *my, node_hash *root, char **outVal ) {
     bool locked = my->device.fb_isScreenLocked;
     return locked ? @"{\"locked\":true}" : @"{\"locked\":false}";
 }
@@ -503,7 +514,7 @@ NSString *handleUnlock( myData *my, node_hash *root, char **outVal ) {
     NSError *error;
     bool success = [my->device fb_unlockScreen:&error];
     return success ? @"{\"success\":true}" : @"{\"success\":false}";
-}
+}*/
 
 NSString *handleSiri( myData *my, node_hash *root, char **outVal ) {
     NSError *error;
@@ -545,7 +556,7 @@ NSString *handleSource( myData *my, node_hash *root, char **outVal ) {
     
     NSError *serror = nil;
     XCElementSnapshot *snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
-    if( serror != nil ) [FBLogger logFmt:@"err:%@", serror ];
+    if( serror != nil ) NSLog( @"err:%@", serror );
     NSDictionary *sdict = [snapshot dictionaryRepresentation];
     NSMutableString *str = [NSMutableString stringWithString:@""];
     if( strlen( my->action ) > 6 ) {
@@ -557,7 +568,7 @@ NSString *handleSource( myData *my, node_hash *root, char **outVal ) {
     return nil;
 }
 
-NSString *handleElementAtPoint( myData *my, node_hash *root, char **outVal ) {
+/*NSString *handleElementAtPoint( myData *my, node_hash *root, char **outVal ) {
     int x = node_hash__get_int( root, "x", 1 );
     int y = node_hash__get_int( root, "y", 1 );
     int json = node_hash__get_int( root, "json", 4 );
@@ -592,9 +603,9 @@ NSString *handleElementAtPoint( myData *my, node_hash *root, char **outVal ) {
     
     int pid = el.processIdentifier;
                         
-    /*char str[200];
-    sprintf( str, "pid:%d", pid );
-    respTextA = strdup( str );*/
+    //char str[200];
+    //sprintf( str, "pid:%d", pid );
+    //respTextA = strdup( str );
   
     NSMutableString *str = [NSMutableString stringWithString:@""];
   
@@ -609,7 +620,7 @@ NSString *handleElementAtPoint( myData *my, node_hash *root, char **outVal ) {
     }
     *outVal = strdup( [str UTF8String] );
     return nil;
-}
+}*/
 
 NSString *handleElPos( myData *my, node_hash *root, char **outVal ) {
     char *elId = node_hash__get_str( root, "id", 2 );
@@ -671,7 +682,8 @@ NSString *handleCreateSession( myData *my, node_hash *root, char **outVal ) {
                         
     NSString *sessionId = @"fakesession";
     const char *sid = [sessionId UTF8String];
-    [FBLogger logFmt:@"createSession sid:%s", sid ];
+    NSLog( @"createSession sid:%s", sid );
+    
     *outVal = strdup( sid );
     return nil;
 }
@@ -690,7 +702,7 @@ NSString *handleActiveApps( myData *my, node_hash *root, char **outVal ) {
     return nil;
 }
 
-NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
+/*NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     int pid = node_hash__get_int( root, "pid", 3 );
     int json = node_hash__get_int( root, "json", 4 );
     XCAccessibilityElement *el = [XCAccessibilityElement elementWithProcessIdentifier:pid];
@@ -712,7 +724,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     }
     *outVal = strdup( [str UTF8String] );
     return nil;
-}
+}*/
 
 /*NSString *handlePidChildWithWidth( myData *my, node_hash *root, char **outVal ) {
     int pid = node_hash__get_int( root, "pid", 3 );
@@ -769,14 +781,13 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     nng_rep_open(&_replySocket);
     
     char addr2[50];
-    sprintf( addr2, "tcp://*:%d", _nngPort );
+    sprintf( addr2, "tcp://127.0.0.1:%d", _nngPort );
     nng_setopt_int( _replySocket, NNG_OPT_SENDBUF, 100000);
     int listen_error = nng_listen( _replySocket, addr2, NULL, 0);
     if( listen_error != 0 ) {
         NSLog( @"xxr error bindind on * : %d - %d", _nngPort, listen_error );
-        [FBLogger logFmt:@"xxr error bindind on * : %d - %d", _nngPort, listen_error ];
     }
-    [FBLogger logFmt:@"NNG Ready on port %d", _nngPort];
+    NSLog( @"NNG Ready on port %d", _nngPort );
 
     NSDictionary *types = [[NSDictionary alloc] initWithObjectsAndKeys:
                              [NSNumber numberWithInt:XCUIElementTypeActivityIndicator],@"activityIndicator",
@@ -898,18 +909,18 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     CHANDLE(alertInfo,AlertInfo);
     CHANDLE(button,Button);
     CHANDLE(createSession,CreateSession);
-    CHANDLE(elByName,ElByName);
-    CHANDLE(elByPid,ElByPid);
+    //CHANDLE(elByName,ElByName);
+    //CHANDLE(elByPid,ElByPid);
     CHANDLE(elClick,ElClick);
     CHANDLE(elForceTouch,ElForceTouch);
     CHANDLE(elPos,ElPos);
     CHANDLE(elTouchAndHold,ElTouchAndHold);
-    CHANDLE(elementAtPoint,ElementAtPoint);
+    //CHANDLE(elementAtPoint,ElementAtPoint);
     CHANDLE(getEl,GetEl);
     CHANDLE(homeBtn,HomeBtn);
     CHANDLE(iohid,Iohid);
-    CHANDLE(isLocked,IsLocked);
-    CHANDLE(lock,Lock);
+    //CHANDLE(isLocked,IsLocked);
+    //CHANDLE(lock,Lock);
     CHANDLE(mouseDown,MouseDown);
     CHANDLE(mouseUp,MouseUp);
     CHANDLE(nslog,Nslog);
@@ -925,27 +936,11 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
     CHANDLE(tapTime,TapTime);
     CHANDLE(toLauncher,ToLauncher);
     CHANDLE(typeText,TypeText);
-    CHANDLE(unlock,Unlock);
+    //CHANDLE(unlock,Unlock);
     CHANDLE(updateApplication,UpdateApplication);
     CHANDLE(wifiIp,WifiIp);
     CHANDLE(windowSize,WindowSize);
-    
-    /*cmdFuncs[@"ping"] = [NSValue valueWithPointer:(const void * _Nullable)&handlePing];
-    cmdFuncs[@"tap"] = [NSValue valueWithPointer:(const void * _Nullable)&handleTap];
-    cmdFuncs[@"mouseDown"] = [NSValue valueWithPointer:(const void * _Nullable)&handleMouseDown];
-    cmdFuncs[@"mouseUp"] = [NSValue valueWithPointer:(const void * _Nullable)&handleMouseUp];
-    cmdFuncs[@"tapFirm"] = [NSValue valueWithPointer:(const void * _Nullable)&handleTapFirm];
-    cmdFuncs[@"tapTime"] = [NSValue valueWithPointer:(const void * _Nullable)&handleTapTime];
-    cmdFuncs[@"swipe"] = [NSValue valueWithPointer:(const void * _Nullable)&handleSwipe];
-    cmdFuncs[@"button"] = [NSValue valueWithPointer:(const void * _Nullable)&handleButton];
-    cmdFuncs[@"startBroadcastApp"] = [NSValue valueWithPointer:(const void * _Nullable)&handleStartBroadcastApp];*/
-    
-    //[cmdFuncs setValue:[NSValue valueWithPointer:&handlerA] forKey:@"A"];
-    
-    //NSValue *funcValue = [cmdFuncs objectForKey:@"A"];
-    
-    //void (*func)(void) = [funcValue pointerValue];
-    
+   
     myData data;
     data.device = device;
     data.dict = dict;
@@ -972,7 +967,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
             if( msgLen > 0 ) {
                 char *msg = (char *) nng_msg_body( nmsg );
                 //msg = strdup( msg );
-                [FBLogger logFmt:@"nng req %.*s", msgLen, msg ];
+                NSLog( @"nng req %.*s", msgLen, msg );
                 char buffer[20];
                 char *action = "";
                 
@@ -1000,7 +995,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
                     data.action = action;
                     respString = func( &data, root, &outVal );
                 } else {
-                    [FBLogger logFmt:@"unhandled acton %@", actionNs ];
+                    NSLog( @"unhandled acton %@", actionNs );
                 }
             }
             else NSLog(@"xxr empty message");
@@ -1017,7 +1012,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
             if( respString != nil ) {
                 unsigned long length = [respString length];
                 nng_msg_append( respN, [respString UTF8String], length );
-                [FBLogger logFmt:@"sending back:%@", respString ];
+                NSLog( @"sending back:%@", respString );
             } else if( outVal != NULL ) {
                 nng_msg_append( respN, outVal, strlen( outVal ) );
             } else {
@@ -1027,7 +1022,7 @@ NSString *handleElByPid( myData *my, node_hash *root, char **outVal ) {
             
             int sendErr = nng_sendmsg( _replySocket, respN, 0 );
             if( sendErr ) {
-                [FBLogger logFmt:@"sending err :%d", sendErr ];
+                NSLog( @"sending err :%d", sendErr );
                 nng_msg_free( respN );
             }
             

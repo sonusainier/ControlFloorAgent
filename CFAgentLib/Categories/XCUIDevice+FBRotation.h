@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param orientation The interface orientation.
  @return YES if the operation succeeds, otherwise NO.
  */
-- (BOOL)fb_setDeviceInterfaceOrientation:(UIDeviceOrientation)orientation;
+//- (BOOL)fb_setDeviceInterfaceOrientation:(UIDeviceOrientation)orientation;
 
 /**
  Sets the devices orientation to the rotation passed.
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param rotationObj The rotation defining the devices orientation.
  @return YES if the operation succeeds, otherwise NO.
  */
-- (BOOL)fb_setDeviceRotation:(NSDictionary *)rotationObj;
+//- (BOOL)fb_setDeviceRotation:(NSDictionary *)rotationObj;
 
 /*! The UIDeviceOrientation to rotation mappings */
 @property (strong, nonatomic, readonly) NSDictionary *fb_rotationMapping;

@@ -16,13 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
  Set of categories that patches method name differences between Xcode versions,
  so that WDA can be build with different Xcode versions.
  */
-@interface XCElementSnapshot (FBCompatibility)
+//@interface XCElementSnapshot (FBCompatibility)
 
-- (nullable XCElementSnapshot *)fb_rootElement;
+//- (nullable XCElementSnapshot *)fb_rootElement;
 
-+ (nullable SEL)fb_attributesForElementSnapshotKeyPathsSelector;
+//+ (nullable SEL)fb_attributesForElementSnapshotKeyPathsSelector;
 
-@end
+//@end
 
 /**
  The exception happends if one tries to call application method,
@@ -48,7 +48,7 @@ extern NSString *const FBApplicationMethodNotSupportedException;
 
  @throws FBTimeoutException if the app is still not active after the timeout
  */
-- (void)fb_activate;
+//- (void)fb_activate;
 
 /**
  Terminate the application and wait until it disappears from the list of active apps
@@ -60,14 +60,14 @@ extern NSString *const FBApplicationMethodNotSupportedException;
 @interface XCUIElementQuery (FBCompatibility)
 
 /* Performs short-circuit UI tree traversion in iOS 11+ to get the first element matched by the query. Equals to nil if no matching elements are found */
-@property(nullable, readonly) XCUIElement *fb_firstMatch;
+//@property(nullable, readonly) XCUIElement *fb_firstMatch;
 
 /*
  This is the local wrapper for bounded elements extraction.
  It uses either indexed or bounded binding based on the `boundElementsByIndex` configuration
  flag value.
  */
-@property(readonly) NSArray<XCUIElement *> *fb_allMatches;
+//@property(readonly) NSArray<XCUIElement *> *fb_allMatches;
 
 /**
  Returns single unique matching snapshot for the given query
@@ -102,7 +102,7 @@ extern NSString *const FBApplicationMethodNotSupportedException;
  @param error Contains the actual error if element resolution fails
  @returns YES if the element has been successfully resolved
  */
-- (BOOL)fb_resolveWithError:(NSError **)error;
+//- (BOOL)fb_resolveWithError:(NSError **)error;
 
 /**
  Determines whether current iOS SDK supports non modal elements inlusion into snapshots
@@ -116,7 +116,7 @@ extern NSString *const FBApplicationMethodNotSupportedException;
 
  @return Element query property extended with non modal elements depending on the actual configuration
  */
-- (XCUIElementQuery *)fb_query;
+//- (XCUIElementQuery *)fb_query;
 
 @end
 

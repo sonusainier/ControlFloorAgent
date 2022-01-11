@@ -18,7 +18,7 @@
 @property unsigned long long buttonType; // @synthesize buttonType=_buttonType;
 @property unsigned long long eventType; // @synthesize eventType=_eventType;
 
-+ (CDUnknownBlockType)offsetComparator;
+//+ (CDUnknownBlockType)offsetComparator;
 + (id)pointerEventWithType:(unsigned long long)arg1 buttonType:(unsigned long long)arg2 coordinate:(struct CGPoint)arg3 pressure:(double)arg4 offset:(double)arg5;
 + (id)pointerEventWithType:(unsigned long long)arg1 buttonType:(unsigned long long)arg2 coordinate:(struct CGPoint)arg3 offset:(double)arg4;
 // available since Xcode 10.2
