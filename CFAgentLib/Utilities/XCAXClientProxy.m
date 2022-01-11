@@ -1,24 +1,15 @@
-/**
- * Copyright (c) 2015, Facebook Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
+// Copyright (c) 2015, Facebook Inc.
+// All rights reserved.
+// BSD license - See LICENSE
 
-#import "FBXCAXClientProxy.h"
-
+#import "XCAXClientProxy.h"
 #import <objc/runtime.h>
-
-//#import "FBConfiguration.h"
-//#import "FBLogger.h"
 #import "XCAXClient_iOS.h"
 #import "XCUIDevice.h"
 
-static id FBAXClient = nil;
+static id AXClient = nil;
 
-@implementation XCAXClient_iOS (WebDriverAgent)
+@implementation XCAXClient_iOS (CFAgent)
 
 + (void)load
 {
@@ -51,18 +42,18 @@ static id FBAXClient = nil;
 
 @end
 
-@implementation FBXCAXClientProxy
+@implementation XCAXClientProxy
 
 + (instancetype)sharedClient
 {
-  static FBXCAXClientProxy *instance = nil;
+  static XCAXClientProxy *instance = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     instance = [[self alloc] init];
     if ([XCAXClient_iOS.class respondsToSelector:@selector(sharedClient)]) {
-      FBAXClient = [XCAXClient_iOS sharedClient];
+      AXClient = [XCAXClient_iOS sharedClient];
     } else {
-      FBAXClient = [XCUIDevice.sharedDevice accessibilityInterface];
+      AXClient = [XCUIDevice.sharedDevice accessibilityInterface];
     }
   });
   return instance;
@@ -75,29 +66,29 @@ static id FBAXClient = nil;
   //FBAXClient = [XCAXClient_iOS sharedClient];
   //XCUIRemoteAccessibilityInterface *remote = [FBAXClient remoteAccessibilityInterface];
   
-  return [FBAXClient accessibilityElementForElementAtPoint:point error:&err];
+  return [AXClient accessibilityElementForElementAtPoint:point error:&err];
   //return [FBAXClient requestElementAtPoint:point];// error:(id *)&err];
 }
 
 - (BOOL)setAXTimeout:(NSTimeInterval)timeout error:(NSError **)error
 {
-  return [FBAXClient _setAXTimeout:timeout error:error];
+  return [AXClient _setAXTimeout:timeout error:error];
 }
 
 - (NSArray<XCAccessibilityElement *> *)activeApplications
 {
-  return [FBAXClient activeApplications];
+  return [AXClient activeApplications];
 }
 
 - (XCAccessibilityElement *)systemApplication
 {
-  return [FBAXClient systemApplication];
+  return [AXClient systemApplication];
 }
 
 - (void)notifyWhenNoAnimationsAreActiveForApplication:(XCUIApplication *)application
                                                 reply:(void (^)(void))reply
 {
-  [FBAXClient notifyWhenNoAnimationsAreActiveForApplication:application reply:reply];
+  [AXClient notifyWhenNoAnimationsAreActiveForApplication:application reply:reply];
 }
 
 - (BOOL)hasProcessTracker
@@ -105,14 +96,14 @@ static id FBAXClient = nil;
   static BOOL hasTracker;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    hasTracker = [FBAXClient respondsToSelector:@selector(applicationProcessTracker)];
+    hasTracker = [AXClient respondsToSelector:@selector(applicationProcessTracker)];
   });
   return hasTracker;
 }
 
 - (XCUIApplication *)monitoredApplicationWithProcessIdentifier:(int)pid
 {
-  return [[FBAXClient applicationProcessTracker] monitoredApplicationWithProcessIdentifier:pid];
+  return [[AXClient applicationProcessTracker] monitoredApplicationWithProcessIdentifier:pid];
 }
 
 @end

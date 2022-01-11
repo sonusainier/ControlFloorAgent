@@ -1,31 +1,26 @@
-/**
- * Copyright (c) 2015, Facebook Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
+// Copyright (c) 2015, Facebook Inc.
+// All rights reserved.
+// BSD license - See LICENSE
 
-#import "FBXCTestDaemonsProxy.h"
+#import "XCTestDaemonsProxy.h"
 
 #import <objc/runtime.h>
 
 #import "XCTestDriver.h"
 #import "XCUIApplication.h"
 #import "XCUIDevice.h"
-#import "FBXCAXClientProxy.h"
+#import "XCAXClientProxy.h"
 #import "XCTRunnerDaemonSession.h"
 
-@implementation FBXCTestDaemonsProxy
+@implementation XCTestDaemonsProxy
 
-static Class FBXCTRunnerDaemonSessionClass = nil;
+static Class XCTRunnerDaemonSessionClass = nil;
 static dispatch_once_t onceTestRunnerDaemonClass;
 + (void)load
 {
   // XCTRunnerDaemonSession class is only available since Xcode 8.3
   dispatch_once(&onceTestRunnerDaemonClass, ^{
-    FBXCTRunnerDaemonSessionClass = objc_lookUpClass("XCTRunnerDaemonSession");
+    XCTRunnerDaemonSessionClass = objc_lookUpClass("XCTRunnerDaemonSession");
   });
 }
 
@@ -52,7 +47,7 @@ static dispatch_once_t onceTestRunnerDaemonClass;
       [[XCTestDriver sharedTestDriver] respondsToSelector:@selector(managerProxy)]) {
     return [XCTestDriver sharedTestDriver].managerProxy;
   } else {
-    return ((XCTRunnerDaemonSession *)[FBXCTRunnerDaemonSessionClass sharedSession]).daemonProxy;
+    return ((XCTRunnerDaemonSession *)[XCTRunnerDaemonSessionClass sharedSession]).daemonProxy;
   }
 }
 

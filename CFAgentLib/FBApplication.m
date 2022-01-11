@@ -1,16 +1,11 @@
-/**
- * Copyright (c) 2015, Facebook Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
+// Copyright (c) 2015, Facebook Inc.
+// All rights reserved.
+// BSD license - See LICENSE
 
 #import "FBApplication.h"
-#import "FBMacros.h"
-#import "FBXCodeCompatibility.h"
-#import "FBXCTestDaemonsProxy.h"
+#import "VersionMacros.h"
+//#import "FBXCodeCompatibility.h"
+#import "XCTestDaemonsProxy.h"
 #import "XCAccessibilityElement.h"
 #import "XCUIApplication.h"
 #import "XCUIApplication+FBHelpers.h"
@@ -18,7 +13,7 @@
 #import "XCUIApplicationProcess.h"
 #import "XCUIElement.h"
 #import "XCUIElementQuery.h"
-#import "FBXCAXClientProxy.h"
+#import "XCAXClientProxy.h"
 
 static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
 
@@ -32,9 +27,9 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
   return [self fb_activeApplicationWithDefaultBundleId:nil];
 }*/
 
-+ (NSArray<FBApplication *> *)fb_activeApplications
+/*+ (NSArray<FBApplication *> *)fb_activeApplications
 {
-  NSArray<XCAccessibilityElement *> *activeApplicationElements = [FBXCAXClientProxy.sharedClient activeApplications];
+  NSArray<XCAccessibilityElement *> *activeApplicationElements = [XCAXClientProxy.sharedClient activeApplications];
   NSMutableArray<FBApplication *> *result = [NSMutableArray array];
   if (activeApplicationElements.count > 0) {
     for (XCAccessibilityElement *applicationElement in activeApplicationElements) {
@@ -45,13 +40,13 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
     }
   }
   return result.count > 0 ? result.copy : @[self.class.fb_systemApplication];
-}
+}*/
 
-+ (instancetype)fb_systemApplication
+/*+ (instancetype)fb_systemApplication
 {
   return [self fb_applicationWithPID:
-   [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier]];
-}
+   [[XCAXClientProxy.sharedClient systemApplication] processIdentifier]];
+}*/
 
 + (instancetype)appWithPID:(pid_t)processID
 {
@@ -66,8 +61,8 @@ static const NSTimeInterval APP_STATE_CHANGE_TIMEOUT = 5.0;
   if ([NSProcessInfo processInfo].processIdentifier == processID) {
     return nil;
   }
-  if ([FBXCAXClientProxy.sharedClient hasProcessTracker]) {
-    return (FBApplication *)[FBXCAXClientProxy.sharedClient monitoredApplicationWithProcessIdentifier:processID];
+  if ([XCAXClientProxy.sharedClient hasProcessTracker]) {
+    return (FBApplication *)[XCAXClientProxy.sharedClient monitoredApplicationWithProcessIdentifier:processID];
   }
   return  [super applicationWithPID:processID];
 }

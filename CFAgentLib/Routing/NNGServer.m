@@ -10,10 +10,9 @@
 #import "FBApplication.h"
 #import "XCUIApplication+FBHelpers.h"
 #import "XCUIDevice+FBHelpers.h"
-#import "FBXCAXClientProxy.h"
+#import "XCAXClientProxy.h"
 #import <objc/runtime.h>
 #import "XCTestPrivateSymbols.h"
-#import "FBXCodeCompatibility.h"
 #import "XCUIElementQuery.h"
 
 @implementation NngThread
@@ -279,7 +278,8 @@ NSString *handleStartBroadcastApp( myData *my, node_hash *root, char **outVal ) 
 }
 
 NSString *handleToLauncher( myData *my, node_hash *root, char **outVal ) {
-    if( [my->sbApp fb_state] < 2 ) [my->sbApp launch];
+    //if( [my->sbApp fb_state] < 2 ) [my->sbApp launch];
+    if( my->sbApp.state < 2 ) [my->sbApp launch];
     //else                       [my->sbApp fb_activate];
     return @"ok";
 }
@@ -662,7 +662,7 @@ NSString *handleCreateSession( myData *my, node_hash *root, char **outVal ) {
                      
     char *bundleID = node_hash__get_str( root, "bundleId", 8 );
     
-    int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+    int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
     my->systemApp = [FBApplication applicationWithPID:pid];
     if( strlen(bundleID) ) {
       NSString *biNS = [NSString stringWithUTF8String:bundleID];
@@ -689,7 +689,7 @@ NSString *handleCreateSession( myData *my, node_hash *root, char **outVal ) {
 }
 
 NSString *handleActiveApps( myData *my, node_hash *root, char **outVal ) {
-    NSArray<XCAccessibilityElement *> *apps = [FBXCAXClientProxy.sharedClient activeApplications];
+    NSArray<XCAccessibilityElement *> *apps = [XCAXClientProxy.sharedClient activeApplications];
     
     NSMutableString *ids = [[NSMutableString alloc] init];
     for( unsigned long i=0;i<[apps count];i++ ) {
@@ -879,7 +879,7 @@ NSString *handleActiveApps( myData *my, node_hash *root, char **outVal ) {
     XCUIApplication *app = nil;
     
     XCUIApplication *systemApp = nil;
-    int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+    int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
     systemApp = [FBApplication applicationWithPID:pid];
     
     [[NSNotificationCenter defaultCenter]

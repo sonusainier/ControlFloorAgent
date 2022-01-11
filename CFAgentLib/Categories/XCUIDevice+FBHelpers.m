@@ -1,20 +1,13 @@
-/**
- * Copyright (c) 2015, Facebook Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
+// Copyright (c) 2015, Facebook Inc.
+// All rights reserved.
+// BSD license - See LICENSE
 
 #import "XCUIDevice+FBHelpers.h"
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 #include <notify.h>
 #import <objc/runtime.h>
-#import "FBMacros.h"
-#import "FBMathUtils.h"
-#import "FBXCodeCompatibility.h"
+#import "VersionMacros.h"
 #import "XCUIDevice.h"
 #import "XCDeviceEvent.h"
 #import "XCPointerEventPath.h"

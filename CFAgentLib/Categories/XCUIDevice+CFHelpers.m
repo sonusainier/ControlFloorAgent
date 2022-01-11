@@ -7,11 +7,10 @@
 #import "XCUIDevice+CFHelpers.h"
 #import "XCPointerEventPath.h"
 #import "XCSynthesizedEventRecord.h"
-#import "FBXCTestDaemonsProxy.h"
+#import "XCTestDaemonsProxy.h"
 #import "XCTRunnerDaemonSession.h"
 #import "FBApplication.h"
-#import "FBXCAXClientProxy.h"
-#import "FBXCodeCompatibility.h"
+#import "XCAXClientProxy.h"
 #import "XCTest/XCUICoordinate.h"
 
 @implementation XCUIDevice (CFHelpers)
@@ -177,14 +176,14 @@
 {
   FBApplication *cfapp = nil;
   XCUIApplication *cf_systemApp = nil;
-  int pid = [[FBXCAXClientProxy.sharedClient systemApplication] processIdentifier];
+  int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
   cf_systemApp = [FBApplication applicationWithPID:pid];
   cfapp = [ [FBApplication alloc] initWithBundleIdentifier:@"com.dryark.vidstream"];
  
   //cfapp.fb_shouldWaitForQuiescence = false; // or nil
   cfapp.launchArguments = @[];
   cfapp.launchEnvironment = @{};
-  unsigned long state = [cfapp fb_state];
+  unsigned long state = cfapp.state;
   if( state < 2 ) {
     [cfapp launch];
   } else {

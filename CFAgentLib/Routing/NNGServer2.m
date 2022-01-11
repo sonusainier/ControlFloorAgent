@@ -4,12 +4,12 @@
 #import "NNGServer2.h"
 #import "XCUIDevice+FBHelpers.h"
 #import "XCUIDevice+CFHelpers.h"
-#import "FBXCTestDaemonsProxy.h"
+#import "XCTestDaemonsProxy.h"
 #import "XCTestManager_ManagerInterface-Protocol.h"
 #import "XCUIScreen.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <objc/runtime.h>
-#import "FBMacros.h"
+#import "VersionMacros.h"
 
 @implementation NngThread2
 
@@ -45,7 +45,7 @@
     CGAffineTransform resizeTransform = CGAffineTransformMakeScale( 1, 1 );
     bool transformSet = false;
   
-    id<XCTestManager_ManagerInterface> proxy = [FBXCTestDaemonsProxy testRunnerProxy];
+    id<XCTestManager_ManagerInterface> proxy = [XCTestDaemonsProxy testRunnerProxy];
   
     bool is15plus = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0");
   
@@ -81,86 +81,6 @@
                 if( !strncmp( action, "done", 4 ) ) break;
                 else if( !strncmp( action, "ping", 4 ) ) {
                     respText = "pong";
-                }
-                else if( !strncmp( action, "tap", 3 ) && alen == 3 ) {
-                    int x = node_hash__get_int( root, "x", 1 );
-                    int y = node_hash__get_int( root, "y", 1 );
-                    [device cf_tap:x y:y];
-                    respText = "ok";
-                }
-                else if( !strncmp( action, "tapFirm" , 7 ) ) {
-                    int x = node_hash__get_int( root, "x", 1 );
-                    int y = node_hash__get_int( root, "y", 1 );
-                    double pressure = node_hash__get_double( root, "pressure", 8 );
-                    [device cf_tapFirm:x y:y pressure:pressure];
-                    respText = "ok";
-                }
-                else if( !strncmp( action, "tapTime" , 7 ) ) {
-                    int x = node_hash__get_int( root, "x", 1 );
-                    int y = node_hash__get_int( root, "y", 1 );
-                    double forTime = node_hash__get_double( root, "time", 4 );
-                    [device cf_tapTime:x y:y time:forTime];
-                    respText = "ok";
-                }
-                else if( !strncmp( action, "swipe", 5 ) ) {
-                    int x1 = node_hash__get_int( root, "x1", 2 );
-                    int y1 = node_hash__get_int( root, "y1", 2 );
-                    int x2 = node_hash__get_int( root, "x2", 2 );
-                    int y2 = node_hash__get_int( root, "y2", 2 );
-                    double delay = node_hash__get_double( root, "delay", 5 );
-                    NSLog( @"swipe x1:%d y1:%d x2:%d y2:%d delay:%f",x1,y1,x2,y2,delay );
-                    [device cf_swipe:x1 y1:y1 x2:x2 y2:y2 delay:delay];
-                    respText = "ok";
-                }
-                else if( !strncmp( action, "iohid", 5 ) ) {
-                    int page        = node_hash__get_int( root, "page", 4 );
-                    int usage       = node_hash__get_int( root, "usage", 5 );
-                    //int value       = node_hash__get_str( root, "value", 5 );
-                    double duration = node_hash__get_double( root, "duration", 8 );
-                    
-                    NSError *error;
-                    [device
-                     fb_performIOHIDEventWithPage:page
-                     usage:usage
-                     duration:duration
-                     error:&error];
-                    //if( error != nil ) [FBLogger logFmt:@"error %@", error];
-                    
-                    respText = "ok";
-                }
-                else if( !strncmp( action, "button", 6 ) ) {
-                    NSError *error;
-                    char *name = node_hash__get_str( root, "name", 4 );
-                    NSString *name2 = [NSString stringWithUTF8String:name];
-                    [device fb_pressButton:name2 error:&error];
-                    free( name );
-                    respText = "ok";
-                }
-                //else if( !strncmp( action, "isLocked", 8 ) ) {
-                //    bool locked = device.fb_isScreenLocked;
-                //    respText = locked ? "{\"locked\":true}" : "{\"locked\":false}";
-                //}
-                //else if( !strncmp( action, "lock", 4 ) ) {
-                //    NSError *error;
-                //    bool success = [device fb_lockScreen:&error];
-                //    respText = success ? "{\"success\":true}" : "{\"success\":false}";
-                //}
-                //else if( !strncmp( action, "unlock", 6 ) ) {
-                //    NSError *error;
-                //    bool success = [device fb_unlockScreen:&error];
-                //    respText = success ? "{\"success\":true}" : "{\"success\":false}";
-                //}
-                else if( !strncmp( action, "status", 6 ) ) {
-                    respText = "{sessionId:\"fakesession\"}";
-                }
-                // Doesn't work...
-                else if( !strncmp( action, "keyMod", 6 ) ) {
-                    char *key = node_hash__get_str( root, "key", 3 );
-                    NSString *key2 = [NSString stringWithUTF8String:key];
-                    
-                    [XCUIDevice.sharedDevice
-                      cf_keyEvent:key2
-                      modifierFlags:XCUIKeyModifierShift];
                 }
                 else if( !strncmp( action, "screenshot", 10 ) && alen == 10 ) {
                     @autoreleasepool {

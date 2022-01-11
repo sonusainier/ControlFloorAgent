@@ -1,17 +1,10 @@
-/**
- * Copyright (c) 2015, Facebook Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
+// Copyright (c) 2015, Facebook Inc.
+// All rights reserved.
+// BSD license - See LICENSE
 
 #import "FBRuntimeUtils.h"
-
-#import "FBMacros.h"
+#import "VersionMacros.h"
 #import "XCUIDevice.h"
-
 #include <dlfcn.h>
 #import <objc/runtime.h>
 
