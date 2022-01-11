@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -21,19 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FBXCTestDaemonsProxy : NSObject
 
 + (id<XCTestManager_ManagerInterface>)testRunnerProxy;
-
-//#if !TARGET_OS_TV
-//+ (UIInterfaceOrientation)orientationWithApplication:(XCUIApplication *)application;
-//#endif
-
-//+ (XCAccessibilityElement *)requestElementAtPoint:(CGPoint)point;
-
-//+ (BOOL)synthesizeEventWithRecord:(XCSynthesizedEventRecord *)record
-//                            error:(NSError *__autoreleasing*)error;
-
-//+ (XCElementSnapshot *)snapshotForElement:(XCAccessibilityElement *)el
-//                               attributes:(NSArray *)atts
-//                               parameters:(NSDictionary *)params;
 
 @end
 

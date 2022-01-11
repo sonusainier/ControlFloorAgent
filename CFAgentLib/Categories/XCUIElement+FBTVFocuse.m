@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-present, Facebook, Inc.
+ * Copyright (c) 2018, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -8,14 +8,8 @@
  */
 
 #import "XCUIElement+FBTVFocuse.h"
-
 #import <XCTest/XCUIRemote.h>
 #import "FBApplication.h"
-//#import "FBConfiguration.h"
-//#import "FBErrorBuilder.h"
-//#import <FBTVNavigationTracker.h>
-//#import "XCUIElement+FBUtilities.h"
-//#import "XCUIElement+FBWebDriverAttributes.h"
 
 #if TARGET_OS_TV
 

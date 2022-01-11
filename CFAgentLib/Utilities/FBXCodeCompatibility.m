@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -75,14 +75,6 @@ static dispatch_once_t onceAppWithPIDToken;
   }
   return [self applicationWithPID:processID];
 }
-
-/*- (void)fb_activate
-{
-  [self activate];
-  if (![self waitForState:XCUIApplicationStateRunningForeground timeout:APP_STATE_CHANGE_TIMEOUT / 2] || ![self fb_waitForAppElement:APP_STATE_CHANGE_TIMEOUT / 2]) {
-    //[FBLogger logFmt:@"The application '%@' is not running in foreground after %.2f seconds", self.bundleID, APP_STATE_CHANGE_TIMEOUT];
-  }
-}*/
 
 - (void)fb_terminate
 {

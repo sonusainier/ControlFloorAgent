@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -19,16 +19,6 @@
 static id FBAXClient = nil;
 
 @implementation XCAXClient_iOS (WebDriverAgent)
-
-/**
- Parameters for traversing elements tree from parents to children while requesting XCElementSnapshot.
-
- @return dictionary with parameters for element's snapshot request
- */
-/*- (NSDictionary *)fb_getParametersForElementSnapshot
-{
-  return FBConfiguration.snapshotRequestParameters;
-}*/
 
 + (void)load
 {
@@ -94,30 +84,6 @@ static id FBAXClient = nil;
   return [FBAXClient _setAXTimeout:timeout error:error];
 }
 
-/*- (XCElementSnapshot *)snapshotForElement:(XCAccessibilityElement *)element
-                               attributes:(NSArray<NSString *> *)attributes
-                                 maxDepth:(nullable NSNumber *)maxDepth
-                                    error:(NSError **)error
-{
-  NSMutableDictionary *parameters = nil;
-  if (nil != maxDepth) {
-    parameters = self.defaultParameters.mutableCopy;
-    parameters[FBSnapshotMaxDepthKey] = maxDepth;
-  }
-  if ([FBAXClient respondsToSelector:@selector(requestSnapshotForElement:attributes:parameters:error:)]) {
-    id result = [FBAXClient requestSnapshotForElement:element
-                                           attributes:attributes
-                                           parameters:[parameters copy]
-                                                error:error];
-    XCElementSnapshot *snapshot = [result valueForKey:@"_rootElementSnapshot"];
-    return nil == snapshot ? result : snapshot;
-  }
-  return [FBAXClient snapshotForElement:element
-                             attributes:attributes
-                             parameters:[parameters copy]
-                                  error:error];
-}*/
-
 - (NSArray<XCAccessibilityElement *> *)activeApplications
 {
   return [FBAXClient activeApplications];
@@ -128,32 +94,11 @@ static id FBAXClient = nil;
   return [FBAXClient systemApplication];
 }
 
-/*- (NSDictionary *)defaultParameters
-{
-  return [FBAXClient defaultParameters];
-}*/
-
 - (void)notifyWhenNoAnimationsAreActiveForApplication:(XCUIApplication *)application
                                                 reply:(void (^)(void))reply
 {
   [FBAXClient notifyWhenNoAnimationsAreActiveForApplication:application reply:reply];
 }
-
-/*- (NSDictionary *)attributesForElement:(XCAccessibilityElement *)element
-                            attributes:(NSArray *)attributes
-{
-  if ([FBAXClient respondsToSelector:@selector(attributesForElement:attributes:error:)]) {
-    NSError *error = nil;
-    NSDictionary* result = [FBAXClient attributesForElement:element
-                                                 attributes:attributes
-                                                      error:&error];
-    if (error) {
-      [FBLogger logFmt:@"Cannot retrieve element attribute(s) %@. Original error: %@", attributes, error.description];
-    }
-    return result;
-  }
-  return [FBAXClient attributesForElement:element attributes:attributes];
-}*/
 
 - (BOOL)hasProcessTracker
 {

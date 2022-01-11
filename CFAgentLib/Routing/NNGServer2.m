@@ -2,7 +2,6 @@
 // Cooperative License ( LICENSE_DRYARK )
 
 #import "NNGServer2.h"
-//#import "FBLogger.h"
 #import "XCUIDevice+FBHelpers.h"
 #import "XCUIDevice+CFHelpers.h"
 #import "FBXCTestDaemonsProxy.h"

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -11,18 +11,6 @@
 #import "XCPointerEvent.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-/**
- Set of categories that patches method name differences between Xcode versions,
- so that WDA can be build with different Xcode versions.
- */
-//@interface XCElementSnapshot (FBCompatibility)
-
-//- (nullable XCElementSnapshot *)fb_rootElement;
-
-//+ (nullable SEL)fb_attributesForElementSnapshotKeyPathsSelector;
-
-//@end
 
 /**
  The exception happends if one tries to call application method,
@@ -42,15 +30,6 @@ extern NSString *const FBApplicationMethodNotSupportedException;
 - (NSUInteger)fb_state;
 
 /**
- Activate the application by restoring it from the background.
- Nothing will happen if the application is already in foreground.
- This method is only supported since Xcode9.
-
- @throws FBTimeoutException if the app is still not active after the timeout
- */
-//- (void)fb_activate;
-
-/**
  Terminate the application and wait until it disappears from the list of active apps
  */
 - (void)fb_terminate;
@@ -58,16 +37,6 @@ extern NSString *const FBApplicationMethodNotSupportedException;
 @end
 
 @interface XCUIElementQuery (FBCompatibility)
-
-/* Performs short-circuit UI tree traversion in iOS 11+ to get the first element matched by the query. Equals to nil if no matching elements are found */
-//@property(nullable, readonly) XCUIElement *fb_firstMatch;
-
-/*
- This is the local wrapper for bounded elements extraction.
- It uses either indexed or bounded binding based on the `boundElementsByIndex` configuration
- flag value.
- */
-//@property(readonly) NSArray<XCUIElement *> *fb_allMatches;
 
 /**
  Returns single unique matching snapshot for the given query
@@ -91,18 +60,7 @@ extern NSString *const FBApplicationMethodNotSupportedException;
 
 @end
 
-
 @interface XCUIElement (FBCompatibility)
-
-/**
- Enforces snapshot resolution of the destination element.
- !!! Do not cal this method on Xcode 11 or later due to performance considerations.
- Prefer using fb_takeSnapshot instead.
-
- @param error Contains the actual error if element resolution fails
- @returns YES if the element has been successfully resolved
- */
-//- (BOOL)fb_resolveWithError:(NSError **)error;
 
 /**
  Determines whether current iOS SDK supports non modal elements inlusion into snapshots
@@ -110,13 +68,6 @@ extern NSString *const FBApplicationMethodNotSupportedException;
  @return Either YES or NO
  */
 + (BOOL)fb_supportsNonModalElementsInclusion;
-
-/**
- Retrieves element query
-
- @return Element query property extended with non modal elements depending on the actual configuration
- */
-//- (XCUIElementQuery *)fb_query;
 
 @end
 

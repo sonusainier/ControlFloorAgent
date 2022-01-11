@@ -9,7 +9,6 @@
 #import "XCSynthesizedEventRecord.h"
 #import "FBXCTestDaemonsProxy.h"
 #import "XCTRunnerDaemonSession.h"
-
 #import "FBApplication.h"
 #import "FBXCAXClientProxy.h"
 #import "FBXCodeCompatibility.h"

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -26,22 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)setAXTimeout:(NSTimeInterval)timeout error:(NSError **)error;
 
-/*- (nullable XCElementSnapshot *)snapshotForElement:(XCAccessibilityElement *)element
-                                        attributes:(nullable NSArray<NSString *> *)attributes
-                                          maxDepth:(nullable NSNumber *)maxDepth
-                                             error:(NSError **)error;*/
-
 - (NSArray<XCAccessibilityElement *> *)activeApplications;
 
 - (XCAccessibilityElement *)systemApplication;
 
-//- (NSDictionary *)defaultParameters;
-
 - (void)notifyWhenNoAnimationsAreActiveForApplication:(XCUIApplication *)application
                                                 reply:(void (^)(void))reply;
-
-//- (NSDictionary *)attributesForElement:(XCAccessibilityElement *)element
-//                            attributes:(NSArray *)attributes;
 
 - (BOOL)hasProcessTracker;
 

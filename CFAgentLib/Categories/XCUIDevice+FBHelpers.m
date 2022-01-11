@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -8,21 +8,15 @@
  */
 
 #import "XCUIDevice+FBHelpers.h"
-
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 #include <notify.h>
 #import <objc/runtime.h>
-
-//#import "FBErrorBuilder.h"
-#//import "FBImageUtils.h"
 #import "FBMacros.h"
 #import "FBMathUtils.h"
-//#import "FBScreenshot.h"
 #import "FBXCodeCompatibility.h"
 #import "XCUIDevice.h"
 #import "XCDeviceEvent.h"
-
 #import "XCPointerEventPath.h"
 
 static const NSTimeInterval FBHomeButtonCoolOffTime = 1.;
@@ -49,11 +43,6 @@ static bool fb_isLocked;
   });
 #pragma clang diagnostic pop
 }
-
-/*- (BOOL)fb_goToHomescreenWithError:(NSError **)error
-{
-  return [FBApplication fb_switchToSystemApplicationWithError:error];
-}*/
 
 - (BOOL)fb_isScreenLocked
 {

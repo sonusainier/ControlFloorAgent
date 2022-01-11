@@ -311,14 +311,14 @@
 			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 641EE5D52240C5CA00173FCB;
-			remoteInfo = WebDriverAgentLib_tvOS;
+			remoteInfo = CFAgentLib_tvOS;
 		};
 		EE158B5B1CBD462500A3E3F0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EE158A981CBD452B00A3E3F0;
-			remoteInfo = WebDriverAgentLib;
+			remoteInfo = CFAgentLib;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -509,7 +509,6 @@
 		EE6B64FC1D0F86EF00E85F5D /* XCTestPrivateSymbols.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XCTestPrivateSymbols.m; sourceTree = "<group>"; };
 		EE9AB7661CAEDF0C008C271F /* FBApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FBApplication.h; path = CFAgentLib/FBApplication.h; sourceTree = SOURCE_ROOT; };
 		EE9AB7671CAEDF0C008C271F /* FBApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FBApplication.m; path = CFAgentLib/FBApplication.m; sourceTree = SOURCE_ROOT; };
-		EE9AB8031CAEE182008C271F /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		EE9B76A51CF7A43900275851 /* FBMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBMacros.h; sourceTree = "<group>"; };
 		EEE3763D1D59F81400ED88DD /* XCUIDevice+FBRotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+FBRotation.h"; sourceTree = "<group>"; };
 		EEE3763E1D59F81400ED88DD /* XCUIDevice+FBRotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "XCUIDevice+FBRotation.m"; sourceTree = "<group>"; };
@@ -615,7 +614,6 @@
 				EEE5CABE1C80361500CBBDD9 /* Configurations */,
 				91F9DB731B99DDD8001349B2 /* PrivateHeaders */,
 				EEC288F81BF0ED2500B4DC79 /* CFAgentLib */,
-				EE9AB8021CAEE182008C271F /* Scripts */,
 				91F9DAEA1B99DBC2001349B2 /* Products */,
 				B6E83A410C45944B036B6B0F /* Frameworks */,
 			);
@@ -726,14 +724,6 @@
 			name = Utilities;
 			path = CFAgentLib/Utilities;
 			sourceTree = SOURCE_ROOT;
-		};
-		EE9AB8021CAEE182008C271F /* Scripts */ = {
-			isa = PBXGroup;
-			children = (
-				EE9AB8031CAEE182008C271F /* build.sh */,
-			);
-			path = Scripts;
-			sourceTree = "<group>";
 		};
 		EEC288F81BF0ED2500B4DC79 /* CFAgentLib */ = {
 			isa = PBXGroup;
@@ -1155,7 +1145,7 @@
 				641EE6FB2240C5F400173FCB /* PBXTargetDependency */,
 			);
 			name = CFAgent_tvOS;
-			productName = WebDriverAgent;
+			productName = CFAgent;
 			productReference = 641EE2DA2240BBE300173FCB /* CFAgent_tvOS.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
@@ -1173,7 +1163,7 @@
 			dependencies = (
 			);
 			name = CFAgentLib_tvOS;
-			productName = WebDriverAgentLib_;
+			productName = CFAgentLib_;
 			productReference = 641EE6F82240C5CA00173FCB /* CFAgentLib_tvOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
@@ -1191,7 +1181,7 @@
 			dependencies = (
 			);
 			name = CFAgentLib;
-			productName = WebDriverAgentLib_;
+			productName = CFAgentLib_;
 			productReference = EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */;
 			productType = "com.apple.product-type.framework";
 		};
@@ -1390,7 +1380,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = WebDriverAgentRunner/Info.plist;
+				INFOPLIST_FILE = CFDriverAgent/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1398,7 +1388,7 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.WebDriverAgentRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dryark.CFAgent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = appletvos;
@@ -1448,7 +1438,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = WebDriverAgentRunner/Info.plist;
+				INFOPLIST_FILE = CFDriverAgent/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1456,7 +1446,7 @@
 				);
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.WebDriverAgentRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dryark.CFAgent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = appletvos;
@@ -1507,7 +1497,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/PrivateFrameworks",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				INFOPLIST_FILE = WebDriverAgentLib/Info.plist;
+				INFOPLIST_FILE = CFAgentLib/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1574,7 +1564,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/PrivateFrameworks",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				INFOPLIST_FILE = WebDriverAgentLib/Info.plist;
+				INFOPLIST_FILE = CFAgentLib/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -8,7 +8,6 @@
 #import "XCPointerEventPath.h"
 #import "XCSynthesizedEventRecord.h"
 #import "FBApplication.h"
-//#import "XCUIApplication+FBQuiescence.h"
 #import "XCUIApplication+FBHelpers.h"
 #import "XCUIDevice+FBHelpers.h"
 #import "FBXCAXClientProxy.h"

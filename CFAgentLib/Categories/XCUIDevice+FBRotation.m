@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015, Facebook Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -9,40 +9,9 @@
 
 #import "XCUIDevice+FBRotation.h"
 
-//#import "FBConfiguration.h"
-//#import "XCUIElement+FBUtilities.h"
-
 # if !TARGET_OS_TV
 
 @implementation XCUIDevice (FBRotation)
-
-/*- (BOOL)fb_setDeviceInterfaceOrientation:(UIDeviceOrientation)orientation
-{
-  FBApplication *application = FBApplication.fb_activeApplication;
-  [XCUIDevice sharedDevice].orientation = orientation;
-  return [self waitUntilInterfaceIsAtOrientation:orientation application:application];
-}*/
-
-/*- (BOOL)fb_setDeviceRotation:(NSDictionary *)rotationObj
-{
-  NSArray<NSNumber *> *keysForRotationObj = [self.fb_rotationMapping allKeysForObject:rotationObj];
-  if (keysForRotationObj.count == 0) {
-    return NO;
-  }
-  NSInteger orientation = keysForRotationObj.firstObject.integerValue;
-  FBApplication *application = FBApplication.fb_activeApplication;
-  [XCUIDevice sharedDevice].orientation = orientation;
-  return [self waitUntilInterfaceIsAtOrientation:orientation application:application];
-}*/
-
-/*- (BOOL)waitUntilInterfaceIsAtOrientation:(NSInteger)orientation application:(FBApplication *)application
-{
-  // Tapping elements immediately after rotation may fail due to way UIKit is handling touches.
-  // We should wait till UI cools off, before continuing
-  [application fb_waitUntilStableWithTimeout:FBConfiguration.animationCoolOffTimeout];
-
-  return application.interfaceOrientation == orientation;
-}*/
 
 - (NSDictionary *)fb_rotationMapping
 {
