@@ -1,12 +1,10 @@
-// Copyright (c) 2015, Facebook Inc.
-// All rights reserved.
+// Copyright (c) 2015, Facebook Inc. All rights reserved.
 // BSD license - See LICENSE
 
 #import "XCTestPrivateSymbols.h"
 #import <objc/runtime.h>
-#import "FBRuntimeUtils.h"
 #import "XCElementSnapshot.h"
-
+#include <dlfcn.h>
 NSNumber *FB_XCAXAIsVisibleAttribute;
 NSString *FB_XCAXAIsVisibleAttributeName = @"XC_kAXXCAttributeIsVisible";
 NSNumber *FB_XCAXAIsElementAttribute;
@@ -17,8 +15,15 @@ id<XCDebugLogDelegate> (*XCDebugLogger)(void);
 
 NSArray<NSNumber *> *(*XCAXAccessibilityAttributesForStringAttributes)(id);
 
-__attribute__((constructor)) void FBLoadXCTestSymbols(void)
-{
+void *FBRetrieveSymbolFromBinary(const char *binary, const char *name) {
+  void *handle = dlopen(binary, RTLD_LAZY);
+  NSCAssert(handle, @"%s could not be opened", binary);
+  void *pointer = dlsym(handle, name);
+  NSCAssert(pointer, @"%s could not be located", name);
+  return pointer;
+}
+
+__attribute__((constructor)) void FBLoadXCTestSymbols(void) {
   NSString *XC_kAXXCAttributeIsVisible = *(NSString*__autoreleasing*)FBRetrieveXCTestSymbol([FB_XCAXAIsVisibleAttributeName UTF8String]);
   NSString *XC_kAXXCAttributeIsElement = *(NSString*__autoreleasing*)FBRetrieveXCTestSymbol([FB_XCAXAIsElementAttributeName UTF8String]);
 
@@ -36,8 +41,7 @@ __attribute__((constructor)) void FBLoadXCTestSymbols(void)
   NSCAssert(FB_XCAXAIsElementAttribute != nil , @"Failed to retrieve FB_XCAXAIsElementAttribute", FB_XCAXAIsElementAttribute);
 }
 
-void *FBRetrieveXCTestSymbol(const char *name)
-{
+void *FBRetrieveXCTestSymbol(const char *name) {
   Class XCTestClass = objc_lookUpClass("XCTestCase");
   NSCAssert(XCTestClass != nil, @"XCTest should be already linked", XCTestClass);
   NSString *XCTestBinary = [NSBundle bundleForClass:XCTestClass].executablePath;
@@ -46,21 +50,6 @@ void *FBRetrieveXCTestSymbol(const char *name)
   return FBRetrieveSymbolFromBinary(binaryPath, name);
 }
 
-NSArray<NSString*> *FBStandardAttributeNames(void)
-{
-  return [XCElementSnapshot sanitizedElementSnapshotHierarchyAttributesForAttributes:nil
-                                                                             isMacOS:NO];
-}
-
-NSArray<NSString*> *FBCustomAttributeNames(void)
-{
-  static NSArray<NSString *> *customNames;
-  static dispatch_once_t onceCustomAttributeNamesToken;
-  dispatch_once(&onceCustomAttributeNamesToken, ^{
-    customNames = @[
-      FB_XCAXAIsVisibleAttributeName,
-      FB_XCAXAIsElementAttributeName
-    ];
-  });
-  return customNames;
+NSArray<NSString*> *FBStandardAttributeNames(void) {
+  return [XCElementSnapshot sanitizedElementSnapshotHierarchyAttributesForAttributes:nil isMacOS:NO];
 }

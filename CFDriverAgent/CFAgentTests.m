@@ -1,7 +1,7 @@
 #import <XCTest/XCTest.h>
 #import <CFAgentLib/XCTestCase.h>
-#import "../CFAgentLib/Routing/NNGServer.h"
-#import "../CFAgentLib/Routing/NNGServer2.h"
+#import "../CFAgentLib/CommandHandlers/NNGServer.h"
+#import "../CFAgentLib/CommandHandlers/NNGServer2.h"
 
 @interface CFAgentTests : XCTestCase
 @end

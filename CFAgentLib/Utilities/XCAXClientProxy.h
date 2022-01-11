@@ -1,5 +1,4 @@
-// Copyright (c) 2015, Facebook Inc.
-// All rights reserved.
+// Copyright (c) 2015, Facebook Inc. All rights reserved.
 // BSD license - See LICENSE
 
 #import <XCTest/XCTest.h>
@@ -8,30 +7,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- This class acts as a proxy between WDA and XCAXClient_iOS.
- Other classes are obliged to use its methods instead of directly accessing XCAXClient_iOS,
- since Apple resticted the interface of XCAXClient_iOS class since Xcode10.2
- */
+// Needed as Apple restricted XCAXClient_iOS since Xcode10.2
 @interface XCAXClientProxy : NSObject
 
-+ (instancetype)sharedClient;
-
-- (XCUIElement *)elementAtPoint:(int)x y:(int)y;
-
-- (BOOL)setAXTimeout:(NSTimeInterval)timeout error:(NSError **)error;
-
-- (NSArray<XCAccessibilityElement *> *)activeApplications;
-
-- (XCAccessibilityElement *)systemApplication;
++ (instancetype)                        sharedClient;
+- (BOOL)                                hasProcessTracker;
+- (XCUIElement *)                       elementAtPoint:(int)x y:(int)y;
+- (BOOL)                                setAXTimeout:(NSTimeInterval)timeout error:(NSError **)error;
+- (NSArray<XCAccessibilityElement *> *) activeApplications;
+- (XCAccessibilityElement *)            systemApplication;
+- (XCUIApplication *)                   monitoredApplicationWithProcessIdentifier:(int)pid;
 
 - (void)notifyWhenNoAnimationsAreActiveForApplication:(XCUIApplication *)application
                                                 reply:(void (^)(void))reply;
-
-- (BOOL)hasProcessTracker;
-
-- (XCUIApplication *)monitoredApplicationWithProcessIdentifier:(int)pid;
-
 @end
 
 NS_ASSUME_NONNULL_END

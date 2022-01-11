@@ -1,8 +1,7 @@
 // Copyright (C) 2021 Dry Ark LLC
 // Cooperative License ( LICENSE_DRYARK )
+#pragma once
 
-#ifndef __UJSONIN_H
-#define __UJSONIN_H
 #include"string-tree.h"
 #include<stdint.h>
 typedef struct jnode_s jnode;
@@ -48,4 +47,3 @@ void jnode__dump_env( jnode *self );
 void node_hash__dump_to_makefile( node_hash *self, char *prefix );
 void node_hash__delete( node_hash *self );
 node_hash *parse_with_default( char *file, char *def, char **d1, char **d2 );
-#endif

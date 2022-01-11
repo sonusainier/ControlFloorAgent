@@ -2,14 +2,14 @@
 // Cooperative License ( LICENSE_DRYARK )
 
 #import "NNGServer2.h"
-#import "XCUIDevice+FBHelpers.h"
 #import "XCUIDevice+CFHelpers.h"
-#import "XCTestDaemonsProxy.h"
 #import "XCTestManager_ManagerInterface-Protocol.h"
 #import "XCUIScreen.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <objc/runtime.h>
 #import "VersionMacros.h"
+#import "XCTestDriver.h"
+#import "XCTRunnerDaemonSession.h"
+#import <objc/runtime.h>
 
 @implementation NngThread2
 
@@ -17,9 +17,6 @@
     self = [super init];
     _nngPort = nngPort;
     return self;
-}
-
--(void) dealloc {
 }
 
 -(void) entry:(id)param {
@@ -33,8 +30,7 @@
         NSLog( @"xxr error bindind on 127.0.0.1 : %d - %d", _nngPort, listen_error );
     }
     NSLog( @"NNG2 Ready" );
-    XCUIDevice *device = XCUIDevice.sharedDevice;
-  
+    
     CIContext *context = [CIContext contextWithOptions:@{
         kCIContextWorkingFormat: @(kCIFormatRGBAf),
         kCIContextUseSoftwareRenderer: @NO
@@ -45,9 +41,18 @@
     CGAffineTransform resizeTransform = CGAffineTransformMakeScale( 1, 1 );
     bool transformSet = false;
   
-    id<XCTestManager_ManagerInterface> proxy = [XCTestDaemonsProxy testRunnerProxy];
-  
-    bool is15plus = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0");
+    id<XCTestManager_ManagerInterface> proxy;
+    if ([XCTestDriver respondsToSelector:@selector(sharedTestDriver)] &&
+        [[XCTestDriver sharedTestDriver] respondsToSelector:@selector(managerProxy)]) {
+      proxy = [XCTestDriver sharedTestDriver].managerProxy;
+    } else {
+      Class XCTRunnerDaemonSessionClass = nil;
+      XCTRunnerDaemonSessionClass = objc_lookUpClass("XCTRunnerDaemonSession");
+      XCTRunnerDaemonSession *sess = (XCTRunnerDaemonSession *) [XCTRunnerDaemonSessionClass sharedSession];
+      proxy = sess.daemonProxy;
+    }
+
+    bool is15plus = !IOS_LESS_THAN(@"15.0");
   
     ujsonin_init();
     while( 1 ) {
@@ -61,8 +66,6 @@
             int msgLen = (int) nng_msg_len( nmsg );
             if( msgLen > 0 ) {
                 char *msg = (char *) nng_msg_body( nmsg );
-                //msg = strdup( msg );
-                NSLog( @"nng req %.*s", msgLen, msg );
                 char buffer[20];
                 char *action = "";
                 
@@ -79,9 +82,6 @@
                 
                 long alen = strlen( action );
                 if( !strncmp( action, "done", 4 ) ) break;
-                else if( !strncmp( action, "ping", 4 ) ) {
-                    respText = "pong";
-                }
                 else if( !strncmp( action, "screenshot", 10 ) && alen == 10 ) {
                     @autoreleasepool {
                         CGImageRef cgImage = [[screen screenshot] image].CGImage;
@@ -90,7 +90,6 @@
                         if( !transformSet ) {
                             transformSet = true;
                             CGSize size = cImage.extent.size;
-                            //CGFloat width = size.width;
                             CGFloat height = size.height;
                             CGFloat destH = 848;
                             CGFloat scale = destH / height;
@@ -98,17 +97,15 @@
                         }
                         cImage = [cImage imageByApplyingTransform:resizeTransform];
                         if( colorSpace == nil ) colorSpace = cImage.colorSpace;
-                        NSData *jpegData = [context
-                                            JPEGRepresentationOfImage:cImage
-                                            colorSpace:colorSpace
-                                            options:jpegOptions];
+                        NSData *jpegData = [context JPEGRepresentationOfImage:cImage
+                                                                   colorSpace:colorSpace
+                                                                      options:jpegOptions];
                         respTextA = malloc( jpegData.length );
                         memcpy( respTextA, jpegData.bytes, jpegData.length );
                         cImage = nil;
                         cgImage = nil;
                         respLen = jpegData.length;
                         jpegData = nil;
-                      
                     }
                 }
                 else if( !strncmp( action, "screenshot2", 11 ) && alen == 11 ) {
@@ -122,8 +119,6 @@
                             XCUIScreenshot *shot = [screen screenshot];
                             imgData = [shot PNGRepresentation];
                             cImage = [CIImage imageWithData:imgData];
-                            //CGImageRef cgImage = [shot image].CGImage;
-                            //cImage = [[CIImage alloc] initWithCGImage:cgImage];
                         } else {
                             [proxy _XCT_requestScreenshotOfScreenWithID:displayID
                                                          withRect:CGRectNull
@@ -142,7 +137,6 @@
                         if( !transformSet ) {
                             transformSet = true;
                             CGSize size = cImage.extent.size;
-                            //CGFloat width = size.width;
                             CGFloat height = size.height;
                             CGFloat destH = 848;
                             CGFloat scale = destH / height;
@@ -163,7 +157,6 @@
                     }
                 }
             }
-            else NSLog(@"xxr empty message");
             if( root ) node_hash__delete( root );
             nng_msg_free( nmsg );
             
@@ -171,7 +164,6 @@
             nng_msg_alloc(&respN, 0);
             
             if( respTextA ) respText = respTextA;
-            //[FBLogger logFmt:@"sending back :%s", respText ];
             if( respText ) nng_msg_append( respN, respText, respLen ? respLen : strlen( respText ) );
             int sendErr = nng_sendmsg( _replySocket, respN, 0 );
             if( sendErr ) {

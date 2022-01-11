@@ -1,5 +1,4 @@
-// Copyright (c) 2015, Facebook Inc.
-// All rights reserved.
+// Copyright (c) 2015, Facebook Inc. All rights reserved.
 // BSD license - See LICENSE
 
 #import "XCAXClientProxy.h"
@@ -11,8 +10,7 @@ static id AXClient = nil;
 
 @implementation XCAXClient_iOS (CFAgent)
 
-+ (void)load
-{
++ (void)load {
   /*static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
       Class class = [self class];
@@ -44,8 +42,7 @@ static id AXClient = nil;
 
 @implementation XCAXClientProxy
 
-+ (instancetype)sharedClient
-{
++ (instancetype)sharedClient {
   static XCAXClientProxy *instance = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -59,8 +56,7 @@ static id AXClient = nil;
   return instance;
 }
 
-- (XCUIElement *)elementAtPoint:(int)x y:(int)y
-{
+- (XCUIElement *)elementAtPoint:(int)x y:(int)y {
   NSError *err = nil;
   CGPoint point = CGPointMake(x,y);
   //FBAXClient = [XCAXClient_iOS sharedClient];
@@ -70,18 +66,15 @@ static id AXClient = nil;
   //return [FBAXClient requestElementAtPoint:point];// error:(id *)&err];
 }
 
-- (BOOL)setAXTimeout:(NSTimeInterval)timeout error:(NSError **)error
-{
+- (BOOL)setAXTimeout:(NSTimeInterval)timeout error:(NSError **)error {
   return [AXClient _setAXTimeout:timeout error:error];
 }
 
-- (NSArray<XCAccessibilityElement *> *)activeApplications
-{
+- (NSArray<XCAccessibilityElement *> *)activeApplications {
   return [AXClient activeApplications];
 }
 
-- (XCAccessibilityElement *)systemApplication
-{
+- (XCAccessibilityElement *)systemApplication {
   return [AXClient systemApplication];
 }
 
@@ -91,8 +84,7 @@ static id AXClient = nil;
   [AXClient notifyWhenNoAnimationsAreActiveForApplication:application reply:reply];
 }
 
-- (BOOL)hasProcessTracker
-{
+- (BOOL)hasProcessTracker {
   static BOOL hasTracker;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -101,8 +93,7 @@ static id AXClient = nil;
   return hasTracker;
 }
 
-- (XCUIApplication *)monitoredApplicationWithProcessIdentifier:(int)pid
-{
+- (XCUIApplication *)monitoredApplicationWithProcessIdentifier:(int)pid {
   return [[AXClient applicationProcessTracker] monitoredApplicationWithProcessIdentifier:pid];
 }
 
