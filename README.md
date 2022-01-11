@@ -12,7 +12,7 @@ CFA is a thin wrapper around XCUITest. It was created primarily to enable Contro
  
 ## Patents
 
-Conceptually it is based on WebDriverAgent by Facebook, so their original patent grant should apply. [patent grant](PATENTS).
+Conceptually it is based on WebDriverAgent by Facebook, so their original [patent grant](PATENTS) applies.
 
 ## Third Party Sources
 
