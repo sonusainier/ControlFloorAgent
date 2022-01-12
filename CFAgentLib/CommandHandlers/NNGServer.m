@@ -1,18 +1,24 @@
 //  Copyright © 2021 DryArk LLC. All rights reserved.
 //  Cooperative License ( LICENSE_DRYARK )
-
 #import "NNGServer.h"
 #import "XCElementSnapshot-XCUIElementSnapshot.h"
 #import "XCUIDevice+Helpers.h"
-#import "XCUIDevice+CFHelpers.h"
+#import "XCUIDevice+Helpers.h"
 #import "XCPointerEventPath.h"
 #import "XCSynthesizedEventRecord.h"
-#import "FBApplication.h"
+#import "XCUIApplication.h"
 #import "XCUIDevice+Helpers.h"
 #import "XCAXClientProxy.h"
 #import <objc/runtime.h>
-#import "XCTestPrivateSymbols.h"
 #import "XCUIElementQuery.h"
+#import <ifaddrs.h>
+#import <arpa/inet.h>
+#import "XCTestDriver.h"
+#import "XCTRunnerDaemonSession.h"
+#import "XCUIApplication+Helpers.h"
+
+@implementation NetworkIface
+@end
 
 @implementation NngThread
 
@@ -47,7 +53,7 @@ struct myData_s {
     NSDictionary *types;
     char *action;
     NSArray *typeMap;
-    FBApplication *sbApp;
+    XCUIApplication *sbApp;
     NngThread *nngServer;
 };
 typedef struct myData_s myData;
@@ -247,7 +253,18 @@ NSString *handleSwipe( myData *my, node_hash *root ) {
 NSString *handleButton( myData *my, node_hash *root ) {
     char *name = node_hash__get_str( root, "name", 4 );
     NSString *name2 = [NSString stringWithUTF8String:name];
-    [my->device fb_pressButton:name2];
+    
+    static NSMutableDictionary *nameMap = nil;
+    static dispatch_once_t once;
+    dispatch_once( &once, ^{
+      nameMap = [[NSMutableDictionary alloc] initWithCapacity:3];
+      [nameMap setObject:[NSNumber numberWithInt:XCUIDeviceButtonHome] forKey:@"home"];
+      [nameMap setObject:[NSNumber numberWithInt:XCUIDeviceButtonVolumeUp] forKey:@"volumeup"];
+      [nameMap setObject:[NSNumber numberWithInt:XCUIDeviceButtonVolumeDown] forKey:@"volumedown"];
+    } );
+        
+    NSNumber *num = [nameMap valueForKey:name2];
+    [my->device pressButton:[num integerValue]];
     free( name );
     return @"ok";
 }
@@ -284,8 +301,45 @@ NSString *handleHomeBtn( myData *my, node_hash *root ) {
     return @"ok";
 }
 
+NSArray *getInterfaces(void) {
+  NSMutableArray *ifaces = [[NSMutableArray alloc] init];
+  struct ifaddrs *ifaddrs = NULL;
+  if( getifaddrs( &ifaddrs ) || ifaddrs == NULL ) {
+    // TODO error
+    return ifaces;
+  }
+  for( struct ifaddrs *iface = ifaddrs; iface; iface = iface->ifa_next ) {
+    if( iface->ifa_addr && iface->ifa_addr->sa_family == AF_INET ) {
+      NetworkIface *ob = [[NetworkIface alloc] init];
+      struct sockaddr_in *addr_in = ( struct sockaddr_in *) iface->ifa_addr;
+      ob.ipv4 = ( NSString * _Nonnull )[NSString stringWithUTF8String:inet_ntoa( addr_in->sin_addr )];
+      ob.name = ( NSString * _Nonnull )[NSString stringWithUTF8String:iface->ifa_name];
+      [ifaces addObject:ob];
+    }
+    if( iface->ifa_addr && iface->ifa_addr->sa_family == AF_INET6 ) {
+      NetworkIface *ob = [[NetworkIface alloc] init];
+      struct sockaddr_in6 *addr_in = ( struct sockaddr_in6 *) iface->ifa_addr;
+      char *ipv6 = malloc( INET6_ADDRSTRLEN );
+      inet_ntop( AF_INET6, &(addr_in->sin6_addr), ipv6, INET6_ADDRSTRLEN );
+      ob.ipv4 = ( NSString * _Nonnull )[NSString stringWithUTF8String:ipv6];
+      free( ipv6 );
+      ob.name = ( NSString * _Nonnull )[NSString stringWithUTF8String:iface->ifa_name];
+      [ifaces addObject:ob];
+    }
+  }
+  return ifaces;
+}
+
 NSString *handleWifiIp( myData *my, node_hash *root ) {
-    return [my->device fb_wifiIPAddress];
+    NSArray *ifaces = getInterfaces();
+    NSString *ipv4 = nil;
+    for( id ifaceId in ifaces ) {
+        NetworkIface *iface = (NetworkIface *) ifaceId;
+        if( [iface.name hasPrefix:@"en"] ) {
+            if( iface.ipv4 != nil ) ipv4 = iface.ipv4;
+        }
+    }
+    return ipv4;
 }
 
 NSString *handleElClick( myData *my, node_hash *root ) {
@@ -477,7 +531,7 @@ NSString *handleSource( myData *my, node_hash *root ) {
   
     int pid = node_hash__get_int( root, "pid", 3 );
     if( pid != -1 ) {
-        el = [FBApplication applicationWithPID:pid];
+        el = [XCUIApplication newWithPID:pid];
     }
     
     NSError *serror = nil;
@@ -493,58 +547,68 @@ NSString *handleSource( myData *my, node_hash *root ) {
     return str;
 }
 
-/*NSString *handleElementAtPoint( myData *my, node_hash *root ) {
+id<XCTestManager_ManagerInterface> retrieveTestRunnerProxy(void) {
+  static XCTRunnerDaemonSession *sharedSession = nil;
+  static dispatch_once_t once;
+  dispatch_once( &once, ^{
+    id daemonSessionClass = objc_lookUpClass("XCTRunnerDaemonSession");
+    sharedSession = (XCTRunnerDaemonSession *) [daemonSessionClass sharedSession];
+  });
+  return sharedSession.daemonProxy;
+}
+
+XCAccessibilityElement *requestElementAtPoint( CGPoint point ) {
+  __block XCAccessibilityElement *el = nil;
+  dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+  id<XCTestManager_ManagerInterface> proxy = retrieveTestRunnerProxy();
+  [proxy _XCT_requestElementAtPoint:point reply:^(XCAccessibilityElement *el2, NSError *error) {
+    if( nil == error ) el = el2;
+    dispatch_semaphore_signal(sem);
+  }];
+  dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
+  return el;
+}
+
+XCElementSnapshot *snapshotForElement( XCAccessibilityElement *el,
+                                  NSArray *atts,
+                                  NSDictionary *params )
+{
+  NSError *err;
+  XCElementSnapshot *snapshot = [XCAXClientProxy.sharedClient snapshotForElement:el
+                                                                     attributes:atts
+                                                                       maxDepth:@20
+                                                                          error:&err];
+  return snapshot;
+}
+
+NSString *handleElementAtPoint( myData *my, node_hash *root ) {
     int x = node_hash__get_int( root, "x", 1 );
     int y = node_hash__get_int( root, "y", 1 );
     int json = node_hash__get_int( root, "json", 4 );
     int nopid = node_hash__get_int( root, "nopid", 5 );
     int top = node_hash__get_int( root, "top", 3 );
-    //XCUIElement *el = [XCUIApplication elementAtPoint:x y:y];
-    //instancetype *sharedClient = FBXCAXClientProxy.sharedClient;
-    
-    //XCUIElement *el = [FBXCAXClientProxy.sharedClient elementAtPoint:x y:y];
-    //XCUIApplication *app = [el application];
+
     CGPoint point = CGPointMake(x,y);
-    XCAccessibilityElement *el = [my->app cf_requestElementAtPoint:point];
-    
-    //AXUIElement *el2 = [AXUIElement uiElementWithAXElement:el.AXUIElement];
-    
-    NSArray *standardAttributes = FBStandardAttributeNames();
-  
-    XCElementSnapshot *snap = [my->app cf_snapshotForElement:el
-                                              attributes:standardAttributes
-                                              parameters:nil];
+    XCAccessibilityElement *el = requestElementAtPoint( point );
+    XCElementSnapshot *snap = snapshotForElement( el, nil, nil );
   
     if( top != -1 ) {
-        while( snap.parent != nil ) {
-            //XCAccessibilityElement *parentEl = snap.parentAccessibilityElement;
-            //snap = [app cf_snapshotForElement:parentEl
-            //                                        attributes:standardAttributes
-            //                                        parameters:nil];
-            snap = snap.parent;
-        }
+        while( snap.parent != nil ) snap = snap.parent;
         snap = snap.rootElement;
     }
     
-    int pid = el.processIdentifier;
-                        
-    //char str[200];
-    //sprintf( str, "pid:%d", pid );
-    //respTextA = strdup( str );
-  
     NSMutableString *str = [NSMutableString stringWithString:@""];
   
-    if( nopid == -1 ) [str appendFormat:@"Pid:%d\n", pid];
+    if( nopid == -1 ) [str appendFormat:@"Pid:%d\n", el.processIdentifier];
     
     if( json != -1 ) {
         snapToJson( my, snap, str, 0, my->app );
     } else {
         NSDictionary *sdict = [snap dictionaryRepresentation];
-        
         dictToStr( my, sdict, str, 0 );
     }
     return str;
-}*/
+}
 
 NSString *handleElPos( myData *my, node_hash *root ) {
     char *elId = node_hash__get_str( root, "id", 2 );
@@ -577,7 +641,7 @@ NSString *handleLaunchApp( myData *my, node_hash *root ) {
     char *bundleID = node_hash__get_str( root, "bundleId", 8 );
     
     int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
-    my->systemApp = [FBApplication applicationWithPID:pid];
+    my->systemApp = [XCUIApplication newWithPID:pid];
 
     NSString *biNS = [NSString stringWithUTF8String:bundleID];
     my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
@@ -601,16 +665,18 @@ NSString *handleActiveApps( myData *my, node_hash *root ) {
     return ids;
 }
 
-/*NSString *handleElByPid( myData *my, node_hash *root ) {
+NSArray<NSString*> *FBStandardAttributeNames(void) {
+  return [XCElementSnapshot sanitizedElementSnapshotHierarchyAttributesForAttributes:nil isMacOS:NO];
+}
+
+NSString *handleElByPid( myData *my, node_hash *root ) {
     int pid = node_hash__get_int( root, "pid", 3 );
     int json = node_hash__get_int( root, "json", 4 );
     XCAccessibilityElement *el = [XCAccessibilityElement elementWithProcessIdentifier:pid];
     
     NSArray *standardAttributes = FBStandardAttributeNames();
   
-    XCElementSnapshot *snap = [my->app cf_snapshotForElement:el
-                                              attributes:standardAttributes
-                                              parameters:nil];
+    XCElementSnapshot *snap = snapshotForElement( el, standardAttributes, nil );
     
     NSMutableString *str = [NSMutableString stringWithString:@""];
     
@@ -622,7 +688,7 @@ NSString *handleActiveApps( myData *my, node_hash *root ) {
         dictToStr( my, sdict, str, 0 );
     }
     return str;
-}*/
+}
 
 -(void) entry:(id)param {
     nng_rep_open(&_replySocket);
@@ -727,12 +793,12 @@ NSString *handleActiveApps( myData *my, node_hash *root ) {
     
     XCUIApplication *systemApp = nil;
     int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
-    systemApp = [FBApplication applicationWithPID:pid];
+    systemApp = [XCUIApplication newWithPID:pid];
         
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
     XCUIDevice *device = XCUIDevice.sharedDevice;
   
-    FBApplication *sbApp = [ [FBApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
+    XCUIApplication *sbApp = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
     
     NSMutableDictionary *cmdFuncs = [[NSMutableDictionary alloc] initWithCapacity:10];
    

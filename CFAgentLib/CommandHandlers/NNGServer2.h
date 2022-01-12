@@ -1,7 +1,6 @@
 //  Copyright © 2021 DryArk LLC. All rights reserved.
 //  Cooperative License ( LICENSE_DRYARK )
 #pragma once
-
 #import <Foundation/Foundation.h>
 #include "../../nng/nng.h"
 #include "../../nng/protocol/reqrep0/rep.h"

@@ -1,7 +1,5 @@
 # ControlFloorAgent
 
-License: Portions BSD, Portions DryArk Cooperative
-
 CFA is a thin wrapper around XCUITest. It was created primarily to enable ControlFloor use of iOS devices.
 
 ## Features
@@ -10,10 +8,6 @@ CFA is a thin wrapper around XCUITest. It was created primarily to enable Contro
  * Wrapper around critical XCUITest functions
  * Jpeg server
  
-## Patents
-
-Conceptually it is based on WebDriverAgent by Facebook, so their original [patent grant](PATENTS) applies.
-
 ## Third Party Sources
 
 CFA relies on ujsonin and nng, both of which are directly included in this project.

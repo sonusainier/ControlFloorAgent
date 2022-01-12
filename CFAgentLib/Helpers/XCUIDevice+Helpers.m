@@ -1,103 +1,164 @@
-// Copyright (c) 2015, Facebook Inc. All rights reserved.
-// BSD license - See LICENSE
-
-#import "XCUIDevice+Helpers.h"
-#import <arpa/inet.h>
-#import <ifaddrs.h>
-#include <notify.h>
-#import <objc/runtime.h>
-#import "VersionMacros.h"
+//  Copyright © 2021 DryArk LLC. All rights reserved.
+//  Cooperative License ( LICENSE_DRYARK )
+#import <Foundation/Foundation.h>
 #import "XCUIDevice.h"
 #import "XCDeviceEvent.h"
+#import "XCUIDevice+Helpers.h"
 #import "XCPointerEventPath.h"
+#import "XCSynthesizedEventRecord.h"
+#import "XCTRunnerDaemonSession.h"
+#import "XCAXClientProxy.h"
+#import "XCTest/XCUICoordinate.h"
+#include "VersionMacros.h"
+#import "XCUIRemote.h"
+#import "XCUIApplication.h"
 
 @implementation XCUIDevice (Helpers)
 
-static bool fb_isLocked;
-
-+ (void)load {
-  [self fb_registerAppforDetectLockState];
-}
-
-+ (void)fb_registerAppforDetectLockState {
-  int notify_token;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wstrict-prototypes"
-  notify_register_dispatch("com.apple.springboard.lockstate", &notify_token, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(int token) {
-    uint64_t state = UINT64_MAX;
-    notify_get_state(token, &state);
-    fb_isLocked = state != 0;
-  });
-#pragma clang diagnostic pop
-}
-
-- (BOOL)fb_isScreenLocked {
-  return fb_isLocked;
-}
-
-- (NSString *)fb_wifiIPAddress {
-  struct ifaddrs *interfaces = NULL;
-  int success = getifaddrs(&interfaces);
-  if (success != 0) {
-    freeifaddrs(interfaces);
-    return nil;
-  }
-
-  NSString *address = nil;
-  struct ifaddrs *temp_addr = interfaces;
-  while(temp_addr != NULL) {
-    if(temp_addr->ifa_addr->sa_family != AF_INET) {
-      temp_addr = temp_addr->ifa_next;
-      continue;
-    }
-    NSString *interfaceName = [NSString stringWithUTF8String:temp_addr->ifa_name];
-    if(![interfaceName containsString:@"en"]) {
-      temp_addr = temp_addr->ifa_next;
-      continue;
-    }
-    address = [NSString stringWithUTF8String:
-        inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)
-    ];
-    break;
-  }
-  freeifaddrs(interfaces);
-  return address;
-}
-
-- (BOOL)fb_pressButton:(NSString *)button {
-#if TARGET_OS_TV
-  NSInteger remoteButton = -1; // no remote button
-  button = button.lowercaseString;
-    
-  // https://developer.apple.com/design/human-interface-guidelines/tvos/remote-and-controllers/remote/
-  if ([button isEqualToString:@"home"]     ) remoteButton = XCUIRemoteButtonHome;      // 7
-  if ([button isEqualToString:@"up"]       ) remoteButton = XCUIRemoteButtonUp;        // 0
-  if ([button isEqualToString:@"down"]     ) remoteButton = XCUIRemoteButtonDown;      // 1
-  if ([button isEqualToString:@"left"]     ) remoteButton = XCUIRemoteButtonLeft;      // 2
-  if ([button isEqualToString:@"right"]    ) remoteButton = XCUIRemoteButtonRight;     // 3
-  if ([button isEqualToString:@"menu"]     ) remoteButton = XCUIRemoteButtonMenu;      // 5
-  if ([button isEqualToString:@"playpause"]) remoteButton = XCUIRemoteButtonPlayPause; // 6
-  if ([button isEqualToString:@"select"]   ) remoteButton = XCUIRemoteButtonSelect;    // 4
-
-  if (remoteButton == -1) return NO;
-  [[XCUIRemote sharedRemote] pressButton:remoteButton];
-  return YES;
-#else
-  button = button.lowercaseString;
-
-  XCUIDeviceButton dstButton = 0;
-  if ([button isEqualToString:@"home"]      ) dstButton = XCUIDeviceButtonHome;
+- (void)runEventPath:(XCPointerEventPath*)path {
+  XCSynthesizedEventRecord *event = [[XCSynthesizedEventRecord alloc]
+                                           initWithName:nil
+                                   interfaceOrientation:0];
+  [event addPointerEventPath:path];
   
-#if !TARGET_OS_SIMULATOR
-  if ([button isEqualToString:@"volumeup"]  ) dstButton = XCUIDeviceButtonVolumeUp;
-  if ([button isEqualToString:@"volumedown"]) dstButton = XCUIDeviceButtonVolumeDown;
-#endif
-
-  if (dstButton == 0) return NO;
-  [self pressButton:dstButton];
-  return YES;
-#endif
+  [[self eventSynthesizer] synthesizeEvent:event
+                                completion:(id)^(BOOL result, NSError *invokeError) {} ];
 }
 
+- (void)runEventPaths:(XCPointerEventPath* __strong [])paths count:(int)count {
+  XCSynthesizedEventRecord *event = [[XCSynthesizedEventRecord alloc]
+                                           initWithName:nil
+                                   interfaceOrientation:0];
+  for( int i=0;i<count;i++ ) [event addPointerEventPath:paths[i]];
+  
+  [[self eventSynthesizer] synthesizeEvent:event
+                                completion:(id)^(BOOL result, NSError *invokeError) {} ];
+}
+
+- (void)cf_tap:(CGFloat)x y:(CGFloat) y {
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                              initForTouchAtPoint:CGPointMake(x,y)
+                              offset:0];
+  [path liftUpAtOffset:0.05];
+  [self runEventPath:path];
+}
+
+- (void)cf_doubletap:(XCUIElement *)el x:(CGFloat)x y:(CGFloat)y {
+  XCUICoordinate *base = [el coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
+  XCUICoordinate *coord = [base coordinateWithOffset:CGVectorMake(x, y)];
+  [coord doubleTap];
+}
+
+- (void)cf_mouseDown:(CGFloat)x y:(CGFloat)y {
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                                    initForMouseAtPoint:CGPointMake(x,y)
+                                                 offset:0];
+  [path pressButton:0 atOffset:0];
+  [self runEventPath:path];
+}
+
+- (void)cf_mouseUp:(CGFloat)x y:(CGFloat)y {
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                                    initForMouseAtPoint:CGPointMake(x,y)
+                                                 offset:0];
+  [path releaseButton:0 atOffset:0];
+  [self runEventPath:path];
+}
+
+- (void)cf_holdHomeButtonForDuration:(CGFloat)dur {
+  [self holdHomeButtonForDuration:dur];
+}
+
+- (void)cf_tapTime:(CGFloat)x y:(CGFloat)y time:(CGFloat)time {
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                                    initForTouchAtPoint:CGPointMake(x,y)
+                                                 offset:0];
+  [path liftUpAtOffset:time];
+  [self runEventPath:path];
+}
+
+- (void)cf_tapFirm:(CGFloat)x y:(CGFloat)y pressure:(CGFloat)pressure {
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                                    initForTouchAtPoint:CGPointMake(x,y)
+                                                 offset:0.0];
+  [path pressDownWithPressure:pressure atOffset:0];
+  [path liftUpAtOffset:0.05];
+  [self runEventPath:path];
+}
+
+- (void)cf_fingerPaste:(CGFloat)x y:(CGFloat)y {
+  CGFloat time = 0.1;
+  
+  XCPointerEventPath *paths[3] = { nil, nil, nil };
+  
+  paths[0] = [[XCPointerEventPath alloc] initForTouchAtPoint:CGPointMake(x,y) offset:0];
+  [paths[0] liftUpAtOffset:time];
+  
+  paths[1] = [[XCPointerEventPath alloc] initForTouchAtPoint:CGPointMake(x-10,y) offset:0];
+  [paths[1] moveToPoint:CGPointMake(x-20,y) atOffset:time];
+  [paths[1] liftUpAtOffset:time];
+  
+  paths[2] = [[XCPointerEventPath alloc] initForTouchAtPoint:CGPointMake(x+10,y) offset:0];
+  [paths[2] moveToPoint:CGPointMake(x+20,y) atOffset:time];
+  [paths[2] liftUpAtOffset:time];
+  
+  [self runEventPaths:paths count:3];
+}
+
+- (void)cf_swipe:(CGFloat)x1 y1:(CGFloat)y1 x2:(CGFloat)x2 y2:(CGFloat)y2 delay:(CGFloat)delay {
+  XCPointerEventPath *path = [[XCPointerEventPath alloc]
+                                    initForTouchAtPoint:CGPointMake(x1,y1)
+                                                 offset:0];
+  [path moveToPoint:CGPointMake(x2,y2) atOffset:delay];
+  [path liftUpAtOffset:delay];
+  [self runEventPath:path];
+}
+
+#if TARGET_OS_TV
+// See https://developer.apple.com/documentation/xctest/xcuiremotebutton?language=objc
+- (void)cf_remotePressButton:(NSUInteger)button {
+  XCUIRemote *remote = [XCUIRemote sharedRemote];
+  [remote pressButton:button];
+}
+
+- (void)cf_remotePressButton:(NSUInteger)button forDuration:(CGFloat)dur {
+  XCUIRemote *remote = [XCUIRemote sharedRemote];
+  [remote pressButton:button forDuration:dur];
+}
+#endif
+
+// See https://unix.superglobalmegacorp.com/xnu/newsrc/iokit/IOKit/hidsystem/IOHIDUsageTables.h.html
+- (BOOL)cf_iohid:(unsigned int)page
+           usage:(unsigned int)usage
+        duration:(NSTimeInterval)duration
+           error:(NSError **)error
+{
+  XCDeviceEvent *event = [XCDeviceEvent deviceEventWithPage:page usage:usage duration:duration];
+  return [self performDeviceEvent:event error:error];
+}
+
+- (NSString *)cf_startBroadcastApp {
+  int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
+  XCUIApplication *cf_systemApp = [XCUIApplication applicationWithPID:pid];
+  XCUIApplication *cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.dryark.vidstream"];
+  
+  if( cfapp.state < 2 ) [cfapp launch];
+  else                  [cfapp activate];
+  [NSThread sleepForTimeInterval:1.0];
+  
+  [cfapp.buttons[@"Broadcast Selector"] tap];
+  [NSThread sleepForTimeInterval:1.0];
+ 
+  if( !IOS_LESS_THAN( @"14.0" ) ) [cf_systemApp.buttons[@"Start Broadcast"] tap];
+  else                            [cfapp.staticTexts[@"Start Broadcast"] tap];
+  [NSThread sleepForTimeInterval:3.0];
+  
+  [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
+  [NSThread sleepForTimeInterval:2.0];
+  
+  [cfapp terminate];
+ 
+  return @"true";
+}
 
 @end

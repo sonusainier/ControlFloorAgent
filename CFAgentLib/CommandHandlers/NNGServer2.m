@@ -1,8 +1,7 @@
 // Copyright (C) 2021 Dry Ark LLC
 // Cooperative License ( LICENSE_DRYARK )
-
 #import "NNGServer2.h"
-#import "XCUIDevice+CFHelpers.h"
+#import "XCUIDevice+Helpers.h"
 #import "XCTestManager_ManagerInterface-Protocol.h"
 #import "XCUIScreen.h"
 #import <MobileCoreServices/MobileCoreServices.h>
