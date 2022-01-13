@@ -1,13 +1,10 @@
 // Copyright (C) 2021 Dry Ark LLC
 // Cooperative License ( LICENSE_DRYARK )
-#pragma once
 #import <Foundation/Foundation.h>
 #include "../../nng/nng.h"
 #include "../../nng/protocol/reqrep0/rep.h"
 #include "../../nng/protocol/reqrep0/req.h"
 #include "../../ujsonin/ujsonin.h"
-
-NS_ASSUME_NONNULL_BEGIN
 
 @interface NngThread : NSObject
 -(NngThread *)init:(int)nngPort;
@@ -22,5 +19,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *ipv4;
 @property (nonatomic, strong) NSString *ipv6;
 @end
-
-NS_ASSUME_NONNULL_END

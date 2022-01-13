@@ -1,21 +1,22 @@
 //  Copyright © 2021 DryArk LLC. All rights reserved.
 //  Cooperative License ( LICENSE_DRYARK )
 #import "NNGServer.h"
-#import "XCElementSnapshot-XCUIElementSnapshot.h"
+#import "XCElementSnapshot-TreeManagement.h"
 #import "XCUIDevice+Helpers.h"
 #import "XCUIDevice+Helpers.h"
 #import "XCPointerEventPath.h"
 #import "XCSynthesizedEventRecord.h"
 #import "XCUIApplication.h"
 #import "XCUIDevice+Helpers.h"
-#import "XCAXClientProxy.h"
 #import <objc/runtime.h>
-#import "XCUIElementQuery.h"
 #import <ifaddrs.h>
 #import <arpa/inet.h>
 #import "XCTestDriver.h"
 #import "XCTRunnerDaemonSession.h"
 #import "XCUIApplication+Helpers.h"
+#import "XCTMessagingChannel_RunnerToDaemon-Protocol.h"
+#import "XCAXClient_iOS+Helpers.h"
+#import "XCAccessibilityElement.h"
 
 @implementation NetworkIface
 @end
@@ -531,7 +532,8 @@ NSString *handleSource( myData *my, node_hash *root ) {
   
     int pid = node_hash__get_int( root, "pid", 3 );
     if( pid != -1 ) {
-        el = [XCUIApplication newWithPID:pid];
+        el = (XCUIApplication *)[XCUIApplication appProcessWithPID:pid];
+        //el = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
     }
     
     NSError *serror = nil;
@@ -547,24 +549,17 @@ NSString *handleSource( myData *my, node_hash *root ) {
     return str;
 }
 
-id<XCTestManager_ManagerInterface> retrieveTestRunnerProxy(void) {
-  static XCTRunnerDaemonSession *sharedSession = nil;
-  static dispatch_once_t once;
-  dispatch_once( &once, ^{
-    id daemonSessionClass = objc_lookUpClass("XCTRunnerDaemonSession");
-    sharedSession = (XCTRunnerDaemonSession *) [daemonSessionClass sharedSession];
-  });
-  return sharedSession.daemonProxy;
-}
-
 XCAccessibilityElement *requestElementAtPoint( CGPoint point ) {
   __block XCAccessibilityElement *el = nil;
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-  id<XCTestManager_ManagerInterface> proxy = retrieveTestRunnerProxy();
-  [proxy _XCT_requestElementAtPoint:point reply:^(XCAccessibilityElement *el2, NSError *error) {
-    if( nil == error ) el = el2;
-    dispatch_semaphore_signal(sem);
-  }];
+  id <XCTMessagingChannel_RunnerToDaemon> proxy = [XCTRunnerDaemonSession sharedSession];
+  [proxy _XCT_requestElementAtPoint:point
+                         reply:
+    ^(XCAccessibilityElement *el2, NSError *error) {
+      if( nil == error ) el = el2;
+      dispatch_semaphore_signal(sem);
+    }
+  ];
   dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
   return el;
 }
@@ -574,10 +569,11 @@ XCElementSnapshot *snapshotForElement( XCAccessibilityElement *el,
                                   NSDictionary *params )
 {
   NSError *err;
-  XCElementSnapshot *snapshot = [XCAXClientProxy.sharedClient snapshotForElement:el
-                                                                     attributes:atts
-                                                                       maxDepth:@20
-                                                                          error:&err];
+  XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
+  XCElementSnapshot *snapshot = [axClient cf_elSnapshot:el
+                                attributes:atts
+                                  maxDepth:@20
+                                     error:&err];
   return snapshot;
 }
 
@@ -599,7 +595,7 @@ NSString *handleElementAtPoint( myData *my, node_hash *root ) {
     
     NSMutableString *str = [NSMutableString stringWithString:@""];
   
-    if( nopid == -1 ) [str appendFormat:@"Pid:%d\n", el.processIdentifier];
+  if( nopid == -1 ) [str appendFormat:@"Pid:%ld", (long)el.processIdentifier];
     
     if( json != -1 ) {
         snapToJson( my, snap, str, 0, my->app );
@@ -640,8 +636,9 @@ NSString *handleWindowSize( myData *my, node_hash *root ) {
 NSString *handleLaunchApp( myData *my, node_hash *root ) {
     char *bundleID = node_hash__get_str( root, "bundleId", 8 );
     
-    int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
-    my->systemApp = [XCUIApplication newWithPID:pid];
+    NSInteger pid = [[XCAXClient_iOS.sharedClient systemApplication] processIdentifier];
+    my->systemApp = (XCUIApplication *)[XCUIApplication appProcessWithPID:pid];
+    //my->systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
 
     NSString *biNS = [NSString stringWithUTF8String:bundleID];
     my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
@@ -654,13 +651,13 @@ NSString *handleLaunchApp( myData *my, node_hash *root ) {
 }
 
 NSString *handleActiveApps( myData *my, node_hash *root ) {
-    NSArray<XCAccessibilityElement *> *apps = [XCAXClientProxy.sharedClient activeApplications];
+    NSArray<XCAccessibilityElement *> *apps = [XCAXClient_iOS.sharedClient activeApplications];
     
     NSMutableString *ids = [[NSMutableString alloc] init];
     for( unsigned long i=0;i<[apps count];i++ ) {
         XCAccessibilityElement *app = [apps objectAtIndex:i];
-        int pid = app.processIdentifier;
-        [ids appendFormat:@"%d,", pid ];
+        NSInteger pid = app.processIdentifier;
+        [ids appendFormat:@"%ld,", (long)pid ];
     }
     return ids;
 }
@@ -792,8 +789,9 @@ NSString *handleElByPid( myData *my, node_hash *root ) {
     XCUIApplication *app = nil;
     
     XCUIApplication *systemApp = nil;
-    int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
-    systemApp = [XCUIApplication newWithPID:pid];
+    NSInteger pid = [[XCAXClient_iOS.sharedClient systemApplication] processIdentifier];
+    systemApp = (XCUIApplication *)[XCUIApplication appProcessWithPID:pid];
+    //systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
         
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
     XCUIDevice *device = XCUIDevice.sharedDevice;

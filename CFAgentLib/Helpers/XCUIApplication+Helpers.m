@@ -1,13 +1,10 @@
 #import "XCUIApplication+Helpers.h"
-#import "XCAXClientproxy.h"
+#import "XCAXClient_iOS+Helpers.h"
 @implementation XCUIApplication (Helpers)
 
-+ (XCUIApplication*) newWithPID:(pid_t)pid {
-  if( [XCUIApplication respondsToSelector:@selector(appWithPID:)] )
-    return [XCUIApplication appWithPID:pid];
-  if( [XCUIApplication respondsToSelector:@selector(applicationWithPID:)] )
-    return [XCUIApplication applicationWithPID:pid];
-  return [XCAXClientProxy.sharedClient monitoredApplicationWithProcessIdentifier:pid];
++ ( XCUIApplicationProcess * ) appProcessWithPID:(NSInteger)pid {
+  XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
+  return [axClient appProcessWithPID:pid];
 }
 
 @end

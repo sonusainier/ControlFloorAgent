@@ -2,13 +2,13 @@
 // Cooperative License ( LICENSE_DRYARK )
 #import "NNGServer2.h"
 #import "XCUIDevice+Helpers.h"
-#import "XCTestManager_ManagerInterface-Protocol.h"
-#import "XCUIScreen.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "VersionMacros.h"
 #import "XCTestDriver.h"
 #import "XCTRunnerDaemonSession.h"
 #import <objc/runtime.h>
+#import "XCUIScreen.h"
+#import "XCTMessagingChannel_RunnerToDaemon-Protocol.h"
 
 @implementation NngThread2
 
@@ -40,16 +40,16 @@
     CGAffineTransform resizeTransform = CGAffineTransformMakeScale( 1, 1 );
     bool transformSet = false;
   
-    id<XCTestManager_ManagerInterface> proxy;
-    if ([XCTestDriver respondsToSelector:@selector(sharedTestDriver)] &&
-        [[XCTestDriver sharedTestDriver] respondsToSelector:@selector(managerProxy)]) {
-      proxy = [XCTestDriver sharedTestDriver].managerProxy;
-    } else {
+    id<XCTMessagingChannel_RunnerToDaemon> proxy;
+    //if ([XCTestDriver respondsToSelector:@selector(sharedTestDriver)] &&
+    //    [[XCTestDriver sharedTestDriver] //respondsToSelector:@selector(managerProxy)]) {
+    //  proxy = [XCTestDriver sharedTestDriver].managerProxy;
+    //} else {
       Class XCTRunnerDaemonSessionClass = nil;
       XCTRunnerDaemonSessionClass = objc_lookUpClass("XCTRunnerDaemonSession");
       XCTRunnerDaemonSession *sess = (XCTRunnerDaemonSession *) [XCTRunnerDaemonSessionClass sharedSession];
       proxy = sess.daemonProxy;
-    }
+    //}
 
     bool is15plus = !IOS_LESS_THAN(@"15.0");
   
@@ -112,7 +112,7 @@
                     
                     @autoreleasepool {
                         __block NSData *imgData = nil;
-                        unsigned int displayID = [screen displayID];
+                        NSInteger displayID = [screen displayID];
                         CIImage *cImage;
                         if (is15plus) {
                             XCUIScreenshot *shot = [screen screenshot];

@@ -5,8 +5,6 @@
 #import <XCTest/XCTest.h>
 #import "XCPointerEventPath.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface XCUIDevice (Helpers)
 
 @property (readonly) id accessibilityInterface;
@@ -32,5 +30,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)cf_startBroadcastApp;
 
 @end
-
-NS_ASSUME_NONNULL_END

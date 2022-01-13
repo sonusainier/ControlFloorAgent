@@ -1,7 +1,7 @@
 #import "XCUIApplication.h"
-
+#import "XCUIApplicationProcess.h"
 @interface XCUIApplication (Helpers)
 
-+ (XCUIApplication*) newWithPID:(pid_t)pid;
++ (XCUIApplicationProcess*) appProcessWithPID:(NSInteger)pid;
 
 @end

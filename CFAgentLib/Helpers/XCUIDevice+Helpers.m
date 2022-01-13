@@ -6,12 +6,14 @@
 #import "XCUIDevice+Helpers.h"
 #import "XCPointerEventPath.h"
 #import "XCSynthesizedEventRecord.h"
-#import "XCTRunnerDaemonSession.h"
-#import "XCAXClientProxy.h"
+#import "XCAXClient_iOS+Helpers.h"
+#import "XCAccessibilityElement.h"
 #import "XCTest/XCUICoordinate.h"
 #include "VersionMacros.h"
-#import "XCUIRemote.h"
+#import <XCTest/XCUIRemote.h>
 #import "XCUIApplication.h"
+#import "XCUIApplication+Helpers.h"
+#import "XCTRunnerDaemonSession.h"
 
 @implementation XCUIDevice (Helpers)
 
@@ -51,17 +53,17 @@
 
 - (void)cf_mouseDown:(CGFloat)x y:(CGFloat)y {
   XCPointerEventPath *path = [[XCPointerEventPath alloc]
-                                    initForMouseAtPoint:CGPointMake(x,y)
-                                                 offset:0];
-  [path pressButton:0 atOffset:0];
+                                    initForMouseEventsAtLocation:CGPointMake(x,y)
+                                                ];
+  [path pressButton:0 atOffset:0 clickCount:1];
   [self runEventPath:path];
 }
 
 - (void)cf_mouseUp:(CGFloat)x y:(CGFloat)y {
   XCPointerEventPath *path = [[XCPointerEventPath alloc]
-                                    initForMouseAtPoint:CGPointMake(x,y)
-                                                 offset:0];
-  [path releaseButton:0 atOffset:0];
+                                    initForMouseEventsAtLocation:CGPointMake(x,y)
+                                                ];
+  [path releaseButton:0 atOffset:0 clickCount:1];
   [self runEventPath:path];
 }
 
@@ -138,25 +140,29 @@
 }
 
 - (NSString *)cf_startBroadcastApp {
-  int pid = [[XCAXClientProxy.sharedClient systemApplication] processIdentifier];
-  XCUIApplication *cf_systemApp = [XCUIApplication applicationWithPID:pid];
-  XCUIApplication *cfapp = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.dryark.vidstream"];
+  XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
+  NSInteger pid = [[axClient systemApplication] processIdentifier];
   
-  if( cfapp.state < 2 ) [cfapp launch];
-  else                  [cfapp activate];
+  XCUIApplication *systemApp = (XCUIApplication *)[XCUIApplication appProcessWithPID:pid];
+  //XCUIApplication *systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
+  
+  XCUIApplication *app = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.dryark.vidstream"];
+  
+  if( app.state < 2 ) [app launch];
+  else                  [app activate];
   [NSThread sleepForTimeInterval:1.0];
   
-  [cfapp.buttons[@"Broadcast Selector"] tap];
+  [app.buttons[@"Broadcast Selector"] tap];
   [NSThread sleepForTimeInterval:1.0];
  
-  if( !IOS_LESS_THAN( @"14.0" ) ) [cf_systemApp.buttons[@"Start Broadcast"] tap];
-  else                            [cfapp.staticTexts[@"Start Broadcast"] tap];
+  if( !IOS_LESS_THAN( @"14.0" ) ) [systemApp.buttons[@"Start Broadcast"] tap];
+  else                            [app.staticTexts[@"Start Broadcast"] tap];
   [NSThread sleepForTimeInterval:3.0];
   
   [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
   [NSThread sleepForTimeInterval:2.0];
   
-  [cfapp terminate];
+  [app terminate];
  
   return @"true";
 }
