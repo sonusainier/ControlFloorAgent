@@ -445,6 +445,23 @@ NSString *handleGetEl( myData *my, node_hash *root ) {
     return key;
 }
 
+NSString *handleGetOrientation( myData *my, node_hash *root ) {
+    NSInteger orientation = my->systemApp.interfaceOrientation;
+    
+    // See https://developer.apple.com/documentation/uikit/uiinterfaceorientation?language=objc
+    switch( orientation ) {
+        case UIInterfaceOrientationPortrait:
+            return @"portrait";
+        case UIInterfaceOrientationPortraitUpsideDown:
+            return @"portraitUpsideDown";
+        case UIInterfaceOrientationLandscapeLeft:
+            return @"landscapeLeft";
+        case UIInterfaceOrientationLandscapeRight:
+            return @"landscapeRight";
+    }
+    return [NSString stringWithFormat:@"unknown orientation:%ld", (long)orientation];
+}
+
 NSString *handleAlertInfo( myData *my, node_hash *root ) {
     XCUIElementQuery *query = [my->app descendantsMatchingType:XCUIElementTypeAlert];
     XCUIElement *el = [query element];
@@ -813,6 +830,7 @@ NSString *handleElByPid( myData *my, node_hash *root ) {
     CHANDLE(elTouchAndHold,ElTouchAndHold);
     //CHANDLE(elementAtPoint,ElementAtPoint);
     CHANDLE(getEl,GetEl);
+    CHANDLE(getOrientation,GetOrientation);
     CHANDLE(homeBtn,HomeBtn);
     CHANDLE(iohid,Iohid);
     //CHANDLE(isLocked,IsLocked);

@@ -148,7 +148,7 @@
   
   XCUIApplication *app = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.dryark.vidstream"];
   
-  if( app.state < 2 ) [app launch];
+  if( app.state < 2 )   [app launch];
   else                  [app activate];
   [NSThread sleepForTimeInterval:1.0];
   
