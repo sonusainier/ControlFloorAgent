@@ -79,4 +79,3 @@
 - (id)xcodeApplicationManager;
 
 @end
-
