@@ -1,5 +1,5 @@
-// Copyright (C) 2020 David Helkowski
-// Anti-Corruption License ( AC_LICENSE.TXT )
+// Copyright (C) 2021 Dry Ark LLC
+// Cooperative License ( LICENSE_DRYARK )
 
 #include<stdio.h>
 #include<stdint.h>
@@ -236,8 +236,14 @@ char *node_hash__get_str_escapes( node_hash *self, char *key, long keyLen ) {
                 byte += hexlet( str[++i] );
                 
                 if( byte < 256 ) {
-                    buffer[ dest ] = byte;
+                    buffer[ dest ] = (char) byte;
                 }
+            }
+            else if( next == 'r' ) {
+                buffer[dest] = '\r';
+            }
+            else if( next == 'n' ) {
+                buffer[dest] = '\n';
             }
             else buffer[dest]=next;
             continue;

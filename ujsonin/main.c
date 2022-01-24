@@ -1,5 +1,5 @@
-// Copyright (C) 2020 David Helkowski
-// Anti-Corruption License
+// Copyright (C) 2021 Dry Ark LLC
+// Cooperative License ( LICENSE_DRYARK )
 
 #include "ujsonin.h"
 #include<stdio.h>
