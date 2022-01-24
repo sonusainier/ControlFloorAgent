@@ -481,6 +481,28 @@ NSString *handleGetOrientation( myData *my, node_hash *root ) {
     return [NSString stringWithFormat:@"unknown orientation:%ld", (long)orientation];
 }
 
+NSString *handleSetOrientation( myData *my, node_hash *root ) {
+    char *orientation = node_hash__get_str( root, "orientation", 11 );
+    if( !orientation ) return @"Must pass orientation";
+    NSString *o = [NSString stringWithUTF8String:orientation];
+     
+    if( [o isEqualToString:@"portrait"] ) {
+        my->device.orientation = UIDeviceOrientationPortrait;
+    }
+    else if( [o isEqualToString:@"portraitUpsideDown"] ) {
+        my->device.orientation = UIDeviceOrientationPortraitUpsideDown;
+    }
+    else if( [o isEqualToString:@"landscapeLeft"] ) {
+        my->device.orientation = UIDeviceOrientationLandscapeLeft;
+    }
+    else if( [o isEqualToString:@"landscapeRight"] ) {
+        my->device.orientation = UIDeviceOrientationLandscapeRight;
+    } else {
+        return [NSString stringWithFormat:@"unknown orientation:%@", o];
+    }
+    return @"ok";
+}
+
 NSString *handleAlertInfo( myData *my, node_hash *root ) {
     XCUIElementQuery *query = [my->app descendantsMatchingType:XCUIElementTypeAlert];
     XCUIElement *el = [query element];
@@ -850,6 +872,7 @@ NSString *handleElByPid( myData *my, node_hash *root ) {
     //CHANDLE(elementAtPoint,ElementAtPoint);
     CHANDLE(getEl,GetEl);
     CHANDLE(getOrientation,GetOrientation);
+    CHANDLE(setOrientation,SetOrientation);
     CHANDLE(homeBtn,HomeBtn);
     CHANDLE(iohid,Iohid);
     //CHANDLE(isLocked,IsLocked);
