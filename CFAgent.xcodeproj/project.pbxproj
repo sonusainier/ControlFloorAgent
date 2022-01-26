@@ -17,7 +17,7 @@
 		CE1D22FF278FBCB300EA917B /* XCAXClient_iOS+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CE1D22FE278FBCB300EA917B /* XCAXClient_iOS+Helpers.m */; };
 		CEA4752426ABF477006D60B5 /* libnng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA4750226AB82CF006D60B5 /* libnng.a */; };
 		CEA4753026ABF4A9006D60B5 /* red_black_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */; };
-		CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752E26ABF4A9006D60B5 /* ujsonin.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CEA4753126ABF4A9006D60B5 /* ujsonin.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752E26ABF4A9006D60B5 /* ujsonin.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CEA4753226ABF4A9006D60B5 /* string-tree.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA4752F26ABF4A9006D60B5 /* string-tree.c */; };
 		CEAB72C4271A95BD00BB848B /* NNGServer2.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAB72C2271A95BD00BB848B /* NNGServer2.m */; };
 		CEAB72C5271A95BD00BB848B /* NNGServer2.h in Headers */ = {isa = PBXBuildFile; fileRef = CEAB72C3271A95BD00BB848B /* NNGServer2.h */; };
@@ -395,6 +395,7 @@
 		CEDCAC8C278F96D10049085C /* XCUIDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = CEDCAC8B278F96D10049085C /* XCUIDevice.h */; };
 		CEEA7AB927A0E88B007AA0EF /* XCElementSnapshot+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEA7AB827A0E88B007AA0EF /* XCElementSnapshot+Helpers.m */; };
 		CEEA7ABB27A0E9BD007AA0EF /* CFA.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEA7ABA27A0E9BD007AA0EF /* CFA.m */; };
+		CEEA7AC027A128B0007AA0EF /* SnapshotApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEA7ABF27A128B0007AA0EF /* SnapshotApplication.m */; };
 		EE158B5A1CBD462100A3E3F0 /* CFAgentLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */; };
 		EE9B76AA1CF7A43900275851 /* VersionMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = EE9B76A51CF7A43900275851 /* VersionMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -439,7 +440,7 @@
 		CE1D22FE278FBCB300EA917B /* XCAXClient_iOS+Helpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XCAXClient_iOS+Helpers.m"; sourceTree = "<group>"; };
 		CEA4750226AB82CF006D60B5 /* libnng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libnng.a; sourceTree = "<group>"; };
 		CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = red_black_tree.c; path = ujsonin/red_black_tree.c; sourceTree = SOURCE_ROOT; };
-		CEA4752E26ABF4A9006D60B5 /* ujsonin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ujsonin.c; path = ujsonin/ujsonin.c; sourceTree = SOURCE_ROOT; };
+		CEA4752E26ABF4A9006D60B5 /* ujsonin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ujsonin.m; path = ujsonin/ujsonin.m; sourceTree = SOURCE_ROOT; };
 		CEA4752F26ABF4A9006D60B5 /* string-tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "string-tree.c"; path = "ujsonin/string-tree.c"; sourceTree = SOURCE_ROOT; };
 		CEAB72C2271A95BD00BB848B /* NNGServer2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NNGServer2.m; sourceTree = "<group>"; };
 		CEAB72C3271A95BD00BB848B /* NNGServer2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NNGServer2.h; sourceTree = "<group>"; };
@@ -823,6 +824,8 @@
 		CEEA7ABA27A0E9BD007AA0EF /* CFA.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFA.m; sourceTree = "<group>"; };
 		CEEA7ABC27A0E9C7007AA0EF /* CFA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFA.h; sourceTree = "<group>"; };
 		CEEA7ABD27A0F5D1007AA0EF /* CommandList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandList.h; sourceTree = "<group>"; };
+		CEEA7ABE27A1289D007AA0EF /* SnapshotApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SnapshotApplication.h; sourceTree = "<group>"; };
+		CEEA7ABF27A128B0007AA0EF /* SnapshotApplication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SnapshotApplication.m; sourceTree = "<group>"; };
 		EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CFAgentLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE158B5D1CBD479000A3E3F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = CFAgentLib/Info.plist; sourceTree = SOURCE_ROOT; };
 		EE9B76A51CF7A43900275851 /* VersionMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMacros.h; sourceTree = "<group>"; };
@@ -1332,6 +1335,8 @@
 				CEEA7AB827A0E88B007AA0EF /* XCElementSnapshot+Helpers.m */,
 				CEEA7ABA27A0E9BD007AA0EF /* CFA.m */,
 				CEEA7ABC27A0E9C7007AA0EF /* CFA.h */,
+				CEEA7ABE27A1289D007AA0EF /* SnapshotApplication.h */,
+				CEEA7ABF27A128B0007AA0EF /* SnapshotApplication.m */,
 			);
 			name = Helpers;
 			path = CFAgentLib/Helpers;
@@ -1356,7 +1361,7 @@
 				CEDCA992278D28EF0049085C /* ujsonin.h */,
 				CEA4752D26ABF4A9006D60B5 /* red_black_tree.c */,
 				CEA4752F26ABF4A9006D60B5 /* string-tree.c */,
-				CEA4752E26ABF4A9006D60B5 /* ujsonin.c */,
+				CEA4752E26ABF4A9006D60B5 /* ujsonin.m */,
 				EE9B76A51CF7A43900275851 /* VersionMacros.h */,
 				EE9AB73E1CAEDF0C008C271F /* Helpers */,
 				EE9AB7741CAEDF0C008C271F /* CommandHandlers */,
@@ -1854,10 +1859,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */,
+				CEA4753126ABF4A9006D60B5 /* ujsonin.m in Sources */,
 				CEA4753026ABF4A9006D60B5 /* red_black_tree.c in Sources */,
 				CEA4753226ABF4A9006D60B5 /* string-tree.c in Sources */,
 				CEEA7AB927A0E88B007AA0EF /* XCElementSnapshot+Helpers.m in Sources */,
+				CEEA7AC027A128B0007AA0EF /* SnapshotApplication.m in Sources */,
 				CEEA7ABB27A0E9BD007AA0EF /* CFA.m in Sources */,
 				CEACE61126B21D4B0006AA5C /* NNGServer.m in Sources */,
 				CE1D22FF278FBCB300EA917B /* XCAXClient_iOS+Helpers.m in Sources */,

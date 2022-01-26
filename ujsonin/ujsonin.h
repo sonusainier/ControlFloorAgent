@@ -1,9 +1,10 @@
 // Copyright (C) 2021 Dry Ark LLC
 // Cooperative License ( LICENSE_DRYARK )
 #pragma once
-
 #include"string-tree.h"
 #include<stdint.h>
+#import <Foundation/Foundation.h>
+
 typedef struct jnode_s jnode;
 
 #define NODEBASE uint64_t type; jnode *parent;
@@ -39,6 +40,7 @@ jnode *node_hash__get( node_hash *self, char *key, long keyLen );
 int node_hash__get_int( node_hash *self, char *key, long keyLen );
 double node_hash__get_double( node_hash *self, char *key, long keyLen );
 char *node_hash__get_str( node_hash *self, char *key, long keyLen );
+NSString *node_hash__get_str_ns( node_hash *self, char *key, long keyLen );
 char *node_hash__get_str_escapes( node_hash *self, char *key, long keyLen );
 void jnode__dump( jnode *self, int depth );
 char *slurp_file( char *filename, long *outlen );

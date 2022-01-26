@@ -19,6 +19,8 @@
 #import "XCAccessibilityElement.h"
 #import "CFA.h"
 #import "XCElementSnapshot+Helpers.h"
+#import "SnapshotApplication.h"
+#import "VersionMacros.h"
 
 @implementation NetworkIface
 @end
@@ -35,41 +37,12 @@ struct myData_s {
     XCUIDevice *device;
     NSMutableDictionary *dict;
     XCUIApplication *app;
-    id<XCUIElementSnapshotApplication> systemApp;
+    SnapshotApplication *systemApp;
     char *action;
     XCUIApplication *sbApp;
     NngThread *nngServer;
 };
 typedef struct myData_s myData;
-
-XCElementSnapshot *snapGetEl( myData *my, XCElementSnapshot *el, NSString *ident, CGFloat *x, CGFloat *y ) {
-    if( [ident isEqual:el.identifier] ) {
-        *x += el.centerX;
-        *y += el.centerY;
-        return el;
-    }
-    if( [ident isEqual:el.label] ) {
-        *x += el.centerX;
-        *y += el.centerY;
-        return el;
-    }
-    
-    NSArray *children = el.children;
-    unsigned long cCount = [children count];
-    for( unsigned long i = 0; i < cCount; i++) {
-        NSObject *child = [children objectAtIndex:i];
-        XCElementSnapshot *found = snapGetEl( my, (XCElementSnapshot *)child, ident, x, y );
-        if( found ) {
-            long type = el.elementType;
-            if( type != XCUIElementTypeOther ) {
-                *x += el.frame.origin.x;
-                *y += el.frame.origin.y;
-            }
-            return found;
-        }
-    }
-    return nil;
-}
 
 NSString *createKey(void) {
     NSString *keyCharSet = @"abcdefghijklmnopqrstuvwxyz0123456789";
@@ -144,8 +117,7 @@ NSString *handleSwipe( myData *my, node_hash *root ) {
 }
 
 NSString *handleButton( myData *my, node_hash *root ) {
-    char *name = node_hash__get_str( root, "name", 4 );
-    NSString *name2 = [NSString stringWithUTF8String:name];
+    NSString *name = node_hash__get_str_ns( root, "name", 4 );
     
     static NSMutableDictionary *nameMap = nil;
     static dispatch_once_t once;
@@ -156,9 +128,8 @@ NSString *handleButton( myData *my, node_hash *root ) {
       [nameMap setObject:[NSNumber numberWithInt:XCUIDeviceButtonVolumeDown] forKey:@"volumedown"];
     } );
         
-    NSNumber *num = [nameMap valueForKey:name2];
+    NSNumber *num = [nameMap valueForKey:name];
     [my->device pressButton:[num integerValue]];
-    free( name );
     return @"ok";
 }
 
@@ -260,46 +231,43 @@ NSString *handleWifiIp( myData *my, node_hash *root ) {
 }
 
 NSString *handleElClick( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
-    [my->dict removeObjectForKey:id2];
-    //NSError *error = nil;
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
+    [my->dict removeObjectForKey:elId];
+
     if( element == nil ) {
-        // todo error
+        return @"failed to find element";
     } else {
-        //if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
+        //if (!IOS_LESS_THAN(@"14.0")) {
             [element tap];
         /*} else {
+            NSError *error;
             XCElementSnapshot *snapshot = (XCElementSnapshot *) [element snapshotWithError:&error];
-            int x = snapshot.frame.origin.x/2;
-            int y = snapshot.frame.origin.y/2;
-            NSLog( @"tapping a %d,%d", x+1, y+1 );
-            [device cf_tap:x/2 y:y/2];
+            double x = snapshot.centerX;
+            double y = snapshot.centerY;
+            NSLog( @"tapping a %f,%f", x, y );
+            [my->device cf_tap:x y:y];
         }*/
-        //[element fb_tapWithError:&error];
     }
     return @"ok";
 }
 
 NSString *handleElTouchAndHold( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
-    [my->dict removeObjectForKey:id2];
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
+    [my->dict removeObjectForKey:elId];
     double forTime = node_hash__get_double( root, "time", 4 );
     [element pressForDuration:forTime];
     return @"ok";
 }
 
 NSString *handleElForceTouch( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
-    [my->dict removeObjectForKey:id2];
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
+    [my->dict removeObjectForKey:elId];
     
     //double forTime = node_hash__get_double( root, "time", 4 );
     double pressure = node_hash__get_double( root, "pressure", 8 );
@@ -319,37 +287,29 @@ NSString *handleElForceTouch( myData *my, node_hash *root ) {
 }
 
 NSString *handleSysElPos( myData *my, node_hash *root ) {
-    char *name = node_hash__get_str( root, "id", 2 );
-    NSString *name2 = [NSString stringWithUTF8String:name];
+    NSString *name = node_hash__get_str_ns( root, "id", 2 );
+    NSString *type = node_hash__get_str_ns( root, "type", 4 );
     
-    NSError *serror = nil;
-    XCElementSnapshot *snapshot = (XCElementSnapshot *) [my->systemApp snapshotWithError:&serror];
-    if( serror != nil ) NSLog( @"err:%@", serror );
+    SnapFindElResult *result = [my->systemApp findEl:name withTypeStr:type];
     
-    CGFloat x = 0;
-    CGFloat y = 0;
-    snapshot = snapGetEl( my, snapshot, name2, &x, &y );
+    //NSMutableString *str = [result.el asJson];
+    //[str appendFormat:@"{\nx: %f y:%f", result.x, result.y ];
+    if( result == nil ) return @"";
     
-    //NSDictionary *sdict = [snapshot dictionaryRepresentation];
-    NSMutableString *str = [snapshot asJson];
-        
-    [str appendFormat:@"\nx: %f y:%f", x, y ];
-    
-    return str;
+    return [NSString stringWithFormat:@"{x: %.02f, y: %.02f}", result.x, result.y];
 }
 
 NSString *handleGetEl( myData *my, node_hash *root ) {
-    char *name = node_hash__get_str( root, "id", 2 );
-    NSString *name2 = [NSString stringWithUTF8String:name];
+    NSString *name = node_hash__get_str_ns( root, "id", 2 );
     
-    char *type = node_hash__get_str( root, "type", 4 );
+    NSString *type = node_hash__get_str_ns( root, "type", 4 );
     long typeNum = 0;
     if( type ) {
-        typeNum = [CFA typeNum:[NSString stringWithUTF8String:type]];
+        typeNum = [CFA typeNum:type];
     }
   
     XCUIElementQuery *query = [my->app descendantsMatchingType:typeNum];
-    XCUIElement *el = [query elementMatchingType:typeNum identifier:name2];
+    XCUIElement *el = [query elementMatchingType:typeNum identifier:name];
     
     double wait = node_hash__get_double( root, "wait", 4 );
     if( wait < 0 ) {
@@ -371,7 +331,7 @@ NSString *handleGetEl( myData *my, node_hash *root ) {
 }
 
 NSString *handleGetOrientation( myData *my, node_hash *root ) {
-    NSInteger orientation = my->systemApp.interfaceOrientation;
+    NSInteger orientation = my->systemApp.app.interfaceOrientation;
     
     // See https://developer.apple.com/documentation/uikit/uiinterfaceorientation?language=objc
     switch( orientation ) {
@@ -388,9 +348,8 @@ NSString *handleGetOrientation( myData *my, node_hash *root ) {
 }
 
 NSString *handleSetOrientation( myData *my, node_hash *root ) {
-    char *orientation = node_hash__get_str( root, "orientation", 11 );
-    if( !orientation ) return @"Must pass orientation";
-    NSString *o = [NSString stringWithUTF8String:orientation];
+    NSString *o = node_hash__get_str_ns( root, "orientation", 11 );
+    if( o == nil ) return @"Must pass orientation";
      
     if( [o isEqualToString:@"portrait"] ) {
         my->device.orientation = UIDeviceOrientationPortrait;
@@ -446,9 +405,8 @@ NSString *handleAlertInfo( myData *my, node_hash *root ) {
 }
 
 NSString *handleSiri( myData *my, node_hash *root ) {
-    char *text = node_hash__get_str( root, "text", 4 );
-    NSString *text2 = [NSString stringWithUTF8String:text];
-    [my->device.siriService activateWithVoiceRecognitionText:text2];
+    NSString *text = node_hash__get_str_ns( root, "text", 4 );
+    [my->device.siriService activateWithVoiceRecognitionText:text];
     return @"ok";
 }
 
@@ -480,19 +438,17 @@ NSString *handleHasEventRecording( myData *my, node_hash *root ) {
 }
 
 NSString *handleUpdateApplication( myData *my, node_hash *root ) {
-    char *bi = node_hash__get_str( root, "bundleId", 8 );
-    NSString *biNS = [NSString stringWithUTF8String:bi];
-    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
+    NSString *bi = node_hash__get_str_ns( root, "bundleId", 8 );
+    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:bi];
     return @"ok";
 }
 
 NSString *handleSource( myData *my, node_hash *root ) {
     XCUIElement *el = nil;
     
-    char *bi = node_hash__get_str( root, "bi", 2 );
+    NSString *bi = node_hash__get_str_ns( root, "bi", 2 );
     if( bi ) {
-        NSString *bi2 = [NSString stringWithUTF8String:bi];
-        el = [ [XCUIApplication alloc] initWithBundleIdentifier:bi2];
+        el = [ [XCUIApplication alloc] initWithBundleIdentifier:bi];
     } else {
         el = my->app;
     }
@@ -508,7 +464,7 @@ NSString *handleSource( myData *my, node_hash *root ) {
         snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
     }
     else if( pid == -2 ) {
-        snapshot = (XCElementSnapshot *) [my->systemApp snapshotWithError:&serror];
+        snapshot = (XCElementSnapshot *) [my->systemApp.app snapshotWithError:&serror];
     }
     else {
         snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
@@ -573,19 +529,16 @@ NSString *handleElementAtPoint( myData *my, node_hash *root ) {
   
     //if( nopid == -1 ) [str appendFormat:@"Pid:%ld", (long)el.processIdentifier];
     
-    if( json != -1 ) {
-        str = [snap asJson];
-    } else {
-        str = [snap asStringViaDict];
-    }
+    if( json != -1 ) str = [snap asJson];
+    else             str = [snap asStringViaDict];
+
     return str;
 }
 
 NSString *handleElPos( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
     CGRect frame = [element frame];
     int x = (int) frame.origin.x;
     int y = (int) frame.origin.y;
@@ -595,24 +548,22 @@ NSString *handleElPos( myData *my, node_hash *root ) {
 }
 
 NSString *handleNslog( myData *my, node_hash *root ) {
-    char *msg = node_hash__get_str( root, "msg", 3 );
-    NSString *msg2 = [NSString stringWithUTF8String:msg];
-    NSLog( @"%@", msg2 );
+    NSString *msg = node_hash__get_str_ns( root, "msg", 3 );
+    NSLog( @"%@", msg );
     return @"ok";
 }
 
 NSString *handleWindowSize( myData *my, node_hash *root ) {
-    CGRect frame = CGRectIntegral( my->systemApp.frame );
+    CGRect frame = CGRectIntegral( my->systemApp.app.frame );
     return [NSString stringWithFormat:@"{width:%d,height:%d}",
             (int)frame.size.width,
             (int)frame.size.height];
 }
 
 NSString *handleLaunchApp( myData *my, node_hash *root ) {
-    char *bundleID = node_hash__get_str( root, "bundleId", 8 );
+    NSString *bundleID = node_hash__get_str_ns( root, "bundleId", 8 );
     
-    NSString *biNS = [NSString stringWithUTF8String:bundleID];
-    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
+    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:bundleID];
     //my->app.launchArguments = @[];
     //my->app.launchEnvironment = @{};
     [my->app launch];
@@ -664,9 +615,7 @@ NSString *handleElByPid( myData *my, node_hash *root ) {
 
     XCUIApplication *app = nil;
     
-    id<XCUIElementSnapshotApplication> systemApp = nil;
-    NSInteger pid = [[XCAXClient_iOS.sharedClient systemApplication] processIdentifier];
-    systemApp = [XCUIApplication snapshotAppWithPID:pid];
+    SnapshotApplication *systemApp = [XCUIApplication systemSnapshotApp];
     
     XCUIDevice *device = XCUIDevice.sharedDevice;
     
@@ -680,7 +629,6 @@ NSString *handleElByPid( myData *my, node_hash *root ) {
     dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
     systemApp = [[XCUIApplication alloc] initWithApplicationSpecifier:systemSpecifier device:device];*/
         
-    NSLog(@"System pid:%ld\n",(long)pid);
     //systemApp = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
     //systemApp = (XCUIApplication *)[systemApp firstMatch];
     

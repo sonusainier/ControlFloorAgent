@@ -122,6 +122,30 @@ void dictToStr( NSDictionary *dict, NSMutableString *str, int depth ) {
     if( cCount ) [str appendFormat:@"%@]}\n", spaces ];
 }*/
 
+@implementation SnapFindElResult
+@end
+
+SnapFindElResult *findElRecurse( XCElementSnapshot *el, NSString *ident, NSArray *types ) {
+    if( types == nil || [types containsObject:@(el.elementType)] ) {
+        if( [ident isEqual:el.identifier] || [ident isEqual:el.label]  ) {
+            SnapFindElResult *res = [[SnapFindElResult alloc] init];
+            res.x = el.centerX;
+            res.y = el.centerY;
+            res.el = el;
+            return res;
+        }
+    }
+    
+    NSArray *children = el.children;
+    unsigned long cCount = [children count];
+    for( unsigned long i = 0; i < cCount; i++) {
+        XCElementSnapshot *child = [children objectAtIndex:i];
+        SnapFindElResult *found = findElRecurse( child, ident, types );
+        if( found ) return found;
+    }
+    return nil;
+}
+
 @implementation XCElementSnapshot (Helpers)
 
 - (NSMutableString *) asJson {
@@ -135,6 +159,10 @@ void dictToStr( NSDictionary *dict, NSMutableString *str, int depth ) {
     NSMutableString *str = [NSMutableString stringWithString:@""];
     dictToStr( sdict, str, 0 );
     return str;
+}
+
+- (SnapFindElResult *) findEl:(NSString *)ident withType:(NSArray *)types {
+    return findElRecurse( self, ident, types );
 }
 
 @end

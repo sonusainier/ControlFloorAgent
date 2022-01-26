@@ -1,5 +1,8 @@
 #import "XCUIApplication+Helpers.h"
 #import "XCAXClient_iOS+Helpers.h"
+#import "SnapshotApplication.h"
+#import "XCAXClient_iOS+Helpers.h"
+#import "XCAccessibilityElement.h"
 
 @implementation XCUIApplication (Helpers)
 
@@ -8,10 +11,16 @@
   return [axClient appProcessWithPID:pid];
 }
 
-+ ( id<XCUIElementSnapshotApplication> ) snapshotAppWithPID:(NSInteger)pid {
++ ( SnapshotApplication * ) snapshotAppWithPID:(NSInteger)pid {
   XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
 
-  return [axClient.applicationProcessTracker monitoredApplicationWithProcessIdentifier:pid];
+  id<XCUIElementSnapshotApplication> snapshotApp = [axClient.applicationProcessTracker monitoredApplicationWithProcessIdentifier:pid];
+  return [[SnapshotApplication alloc] init:snapshotApp];
+}
+
++ (SnapshotApplication *) systemSnapshotApp {
+  NSInteger pid = [[XCAXClient_iOS.sharedClient systemApplication] processIdentifier];
+  return [XCUIApplication snapshotAppWithPID:pid];
 }
 
 @end
