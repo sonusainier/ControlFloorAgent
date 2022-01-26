@@ -10,7 +10,6 @@
 -(NngThread *)init:(int)nngPort;
 -(void)entry:(id)param;
 @property int nngPort;
-@property NSArray *typeMap;
 @property nng_socket replySocket;
 @end
 

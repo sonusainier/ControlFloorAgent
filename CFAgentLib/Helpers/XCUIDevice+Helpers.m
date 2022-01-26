@@ -139,6 +139,40 @@
   return [self performDeviceEvent:event error:error];
 }
 
+- (BOOL)cf_iohid_with_modifier:(unsigned int)page
+           usage:(unsigned int)usage
+        duration:(NSTimeInterval)duration
+        modifier:(XCUIKeyModifierFlags)flags
+           error:(NSError **)errorOut
+{
+  XCDeviceEvent *event = [XCDeviceEvent deviceEventWithPage:page usage:usage duration:duration];
+  __block bool success;
+  dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+  
+  __block NSError *error2 = nil;
+  [self performWithKeyModifiers:flags block:^{
+    NSError *error = nil;
+    success = [self performDeviceEvent:event error:&error];
+    if( error != nil ) error2 = error;
+    dispatch_semaphore_signal(sem);
+  }];
+  dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
+  if( errorOut != nil ) *errorOut = error2;
+  return success;
+}
+
+- (void)cf_typeKey:(XCUIApplication *)app
+{
+    XCUIKeyModifierFlags flags = XCUIKeyModifierShift;
+    //XCUIElement *sys = (XCUIElement *) my->systemApp;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    [self performWithKeyModifiers:flags block:^{
+      [app typeText:@"a"];
+      dispatch_semaphore_signal(sem);
+    }];
+    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
+}
+
 - (NSString *)cf_startBroadcastApp {
   XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
   NSInteger pid = [[axClient systemApplication] processIdentifier];

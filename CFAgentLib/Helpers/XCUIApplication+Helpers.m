@@ -1,20 +1,17 @@
 #import "XCUIApplication+Helpers.h"
 #import "XCAXClient_iOS+Helpers.h"
-#import "XCUIApplicationProcessTracker-Protocol.h"
+
 @implementation XCUIApplication (Helpers)
 
 + ( XCUIApplicationProcess * ) appProcessWithPID:(NSInteger)pid {
   XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
+  return [axClient appProcessWithPID:pid];
+}
 
-  XCUIApplicationProcess *appProcess = [axClient appProcessWithPID:pid];
++ ( id<XCUIElementSnapshotApplication> ) snapshotAppWithPID:(NSInteger)pid {
+  XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
 
-  if( appProcess == nil ){
-      id<XCUIApplicationProcessTracker> tracker = axClient.applicationProcessTracker;
-      id<XCUIElementSnapshotApplication> snapshotApp = [tracker monitoredApplicationWithProcessIdentifier:pid];
-      appProcess = (XCUIApplicationProcess *) snapshotApp;
-  }
-
-  return appProcess;
+  return [axClient.applicationProcessTracker monitoredApplicationWithProcessIdentifier:pid];
 }
 
 @end

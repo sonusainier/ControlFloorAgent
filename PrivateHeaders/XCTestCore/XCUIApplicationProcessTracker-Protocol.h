@@ -10,11 +10,17 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <XCTest/XCUIElementTypes.h>
 #import "CDStructures.h"
+#import "XCUIElement.h"
 @protocol OS_dispatch_queue;
 @protocol OS_xpc_object;
 
 @class NSNumber, XCTestExpectation, XCUIApplicationImpl, XCUIApplicationProcess;
-@protocol XCUIElementSnapshotApplication;
+
+@protocol XCUIElementSnapshotApplication <XCUIScreenshotProviding, XCUIElementSnapshotProviding, XCUIElementAttributesPrivate, XCUIElementAttributes>
+
+@property(readonly, nonatomic) NSInteger interfaceOrientation;
+
+@end
 
 @protocol XCUIApplicationProcessTracker <NSObject>
 - (XCUIApplicationProcess *)applicationProcessWithPID:(NSInteger)arg1;

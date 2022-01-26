@@ -393,6 +393,8 @@
 		CEDCAC89278F917A0049085C /* DTXMessageTransmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = CEDCAB15278F91790049085C /* DTXMessageTransmitter.h */; };
 		CEDCAC8A278F917A0049085C /* CDStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = CEDCAB16278F91790049085C /* CDStructures.h */; };
 		CEDCAC8C278F96D10049085C /* XCUIDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = CEDCAC8B278F96D10049085C /* XCUIDevice.h */; };
+		CEEA7AB927A0E88B007AA0EF /* XCElementSnapshot+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEA7AB827A0E88B007AA0EF /* XCElementSnapshot+Helpers.m */; };
+		CEEA7ABB27A0E9BD007AA0EF /* CFA.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEA7ABA27A0E9BD007AA0EF /* CFA.m */; };
 		EE158B5A1CBD462100A3E3F0 /* CFAgentLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */; };
 		EE9B76AA1CF7A43900275851 /* VersionMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = EE9B76A51CF7A43900275851 /* VersionMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -816,11 +818,16 @@
 		CEDCAB15278F91790049085C /* DTXMessageTransmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTXMessageTransmitter.h; sourceTree = "<group>"; };
 		CEDCAB16278F91790049085C /* CDStructures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDStructures.h; sourceTree = "<group>"; };
 		CEDCAC8B278F96D10049085C /* XCUIDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCUIDevice.h; sourceTree = "<group>"; };
+		CEEA7AB727A0E877007AA0EF /* XCElementSnapshot+Helpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCElementSnapshot+Helpers.h"; sourceTree = "<group>"; };
+		CEEA7AB827A0E88B007AA0EF /* XCElementSnapshot+Helpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XCElementSnapshot+Helpers.m"; sourceTree = "<group>"; };
+		CEEA7ABA27A0E9BD007AA0EF /* CFA.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFA.m; sourceTree = "<group>"; };
+		CEEA7ABC27A0E9C7007AA0EF /* CFA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFA.h; sourceTree = "<group>"; };
+		CEEA7ABD27A0F5D1007AA0EF /* CommandList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandList.h; sourceTree = "<group>"; };
 		EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CFAgentLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE158B5D1CBD479000A3E3F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = CFAgentLib/Info.plist; sourceTree = SOURCE_ROOT; };
 		EE9B76A51CF7A43900275851 /* VersionMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionMacros.h; sourceTree = "<group>"; };
 		EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = IOSSettings.xcconfig; sourceTree = "<group>"; };
-		EEF9882A1C486603005CA669 /* CFAgent-Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CFAgent-Runner.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEF9882A1C486603005CA669 /* CFAgent.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CFAgent.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -889,7 +896,7 @@
 		91F9DAEA1B99DBC2001349B2 /* ProjectOutputs */ = {
 			isa = PBXGroup;
 			children = (
-				EEF9882A1C486603005CA669 /* CFAgent-Runner.app */,
+				EEF9882A1C486603005CA669 /* CFAgent.xctest */,
 				EE158A991CBD452B00A3E3F0 /* CFAgentLib.framework */,
 			);
 			name = ProjectOutputs;
@@ -1321,6 +1328,10 @@
 				CEDCA99E278E82660049085C /* XCUIApplication+Helpers.h */,
 				CE1D22FD278FBCA400EA917B /* XCAXClient_iOS+Helpers.h */,
 				CE1D22FE278FBCB300EA917B /* XCAXClient_iOS+Helpers.m */,
+				CEEA7AB727A0E877007AA0EF /* XCElementSnapshot+Helpers.h */,
+				CEEA7AB827A0E88B007AA0EF /* XCElementSnapshot+Helpers.m */,
+				CEEA7ABA27A0E9BD007AA0EF /* CFA.m */,
+				CEEA7ABC27A0E9C7007AA0EF /* CFA.h */,
 			);
 			name = Helpers;
 			path = CFAgentLib/Helpers;
@@ -1333,6 +1344,7 @@
 				CEAB72C2271A95BD00BB848B /* NNGServer2.m */,
 				CEACE61026B21D4B0006AA5C /* NNGServer.m */,
 				CEACE61B26B21D7F0006AA5C /* NNGServer.h */,
+				CEEA7ABD27A0F5D1007AA0EF /* CommandList.h */,
 			);
 			name = CommandHandlers;
 			path = CFAgentLib/CommandHandlers;
@@ -1779,7 +1791,7 @@
 			);
 			name = CFAgent;
 			productName = XCTUITestRunner;
-			productReference = EEF9882A1C486603005CA669 /* CFAgent-Runner.app */;
+			productReference = EEF9882A1C486603005CA669 /* CFAgent.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -1845,6 +1857,8 @@
 				CEA4753126ABF4A9006D60B5 /* ujsonin.c in Sources */,
 				CEA4753026ABF4A9006D60B5 /* red_black_tree.c in Sources */,
 				CEA4753226ABF4A9006D60B5 /* string-tree.c in Sources */,
+				CEEA7AB927A0E88B007AA0EF /* XCElementSnapshot+Helpers.m in Sources */,
+				CEEA7ABB27A0E9BD007AA0EF /* CFA.m in Sources */,
 				CEACE61126B21D4B0006AA5C /* NNGServer.m in Sources */,
 				CE1D22FF278FBCB300EA917B /* XCAXClient_iOS+Helpers.m in Sources */,
 				CEACE62526B220B70006AA5C /* XCUIDevice+Helpers.m in Sources */,
@@ -2007,7 +2021,7 @@
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = NO;
@@ -2074,8 +2088,10 @@
 			baseConfigurationReference = EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
+				DEVELOPMENT_TEAM = 7628766FL2;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -2137,9 +2153,9 @@
 			baseConfigurationReference = EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7628766FL2;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2155,7 +2171,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dryark.CFAgent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = dev3;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				USES_XCTRUNNER = YES;
 				WARNING_CFLAGS = (
@@ -2191,7 +2207,9 @@
 			baseConfigurationReference = EEE5CABF1C80361500CBBDD9 /* IOSSettings.xcconfig */;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7628766FL2;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = CFDriverAgent/Info.plist;
@@ -2207,7 +2225,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dryark.CFAgent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = dev3;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				USES_XCTRUNNER = YES;
 				WARNING_CFLAGS = (
