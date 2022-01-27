@@ -14,7 +14,7 @@
 
 - (SnapFindElResult *) findEl:(NSString *)name withTypeStr:(NSString *)type {
     NSArray *types = nil;
-    if( type != nil && [type isEqual:@"any"] ) {
+    if( type != nil && ![type isEqual:@"any"] ) {
         types = @[ @([CFA typeNum:type]) ];
     }
     return [self findEl:name withTypes:types];

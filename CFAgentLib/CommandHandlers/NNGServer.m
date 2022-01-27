@@ -445,7 +445,7 @@ NSString *handleSetOrientation( myData *my, node_hash *root ) {
 
 NSString *handleAlertInfo( myData *my, node_hash *root ) {
     SnapshotApplication *app = my->systemApp;
-    SnapFindElResult *alertRes = [app findEl:nil withTypeStr:@"Alert"];
+    SnapFindElResult *alertRes = [app findEl:nil withTypeStr:@"alert"];
     XCElementSnapshot *alert = alertRes.el;
     if( alert == nil ) return @"{present:false}";
     
@@ -477,9 +477,10 @@ NSString *handleAlertInfo( myData *my, node_hash *root ) {
             foundTitle = true;
             [res appendFormat:@"  title:\"%@\"\n", label ];
         } else {
-            [res appendFormat:@"  descr:\"%@\"\n}", label ];
+            [res appendFormat:@"  descr:\"%@\"\n", label ];
         }
     }
+    [res appendString:@"}"];
     return res;
 }
 
