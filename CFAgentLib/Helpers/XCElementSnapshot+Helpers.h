@@ -11,5 +11,6 @@
 - (NSMutableString *) asJson;
 - (NSMutableString *) asStringViaDict;
 - (SnapFindElResult *) findEl:(NSString *)ident withType:(NSArray *)types;
+- (NSArray<XCElementSnapshot *> *) findEls:(NSString *)ident withType:(NSArray *)types;
 
 @end

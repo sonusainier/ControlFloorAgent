@@ -21,8 +21,13 @@
 #import "XCElementSnapshot+Helpers.h"
 #import "SnapshotApplication.h"
 #import "VersionMacros.h"
+//#import "XCUIElementQuery.h"
 
 @implementation NetworkIface
+@end
+
+@interface NSObject (Private)
+- (NSString *) _methodDescription;
 @end
 
 @implementation NngThread
@@ -274,7 +279,6 @@ NSString *handleElForceTouch( myData *my, node_hash *root ) {
     if( pressure < 0 ) pressure = -pressure; // bug
     //[element pressForDuration:forTime];
     //NSError *err;
-    //[element fb_forceTouchWithPressure:pressure duration:forTime error:&err];
     CGRect frame = [element frame];
     CGFloat x = frame.origin.x;
     CGFloat y = frame.origin.y;
@@ -297,6 +301,77 @@ NSString *handleSysElPos( myData *my, node_hash *root ) {
     if( result == nil ) return @"";
     
     return [NSString stringWithFormat:@"{x: %.02f, y: %.02f}", result.x, result.y];
+}
+
+void elTreeToStr( XCUIElement *el, NSMutableString *str, int depth ) {
+    NSString *spaces     = [@"" stringByPaddingToLength:depth withString:@"  " startingAtIndex:0];
+    long elementType     = el.elementType;
+    NSString *ident      = el.identifier;
+    XCUIElementQuery *q = el.query;
+    XCUIElementQuery *children    = [q childrenMatchingType:XCUIElementTypeAny];
+    unsigned long cCount = [children count];
+    
+    NSString *typeStr    = [CFA typeStr:elementType];
+    [str appendFormat:@"%@<el type=\"%@\"", spaces, typeStr ];
+    if( [ident length] != 0 ) [str appendFormat:@" id=\"%@\"", ident ];
+  
+    NSString *label = el.label;
+    if( [label length] ) [str appendFormat:@" label=\"%@\"", label];
+  
+    NSString *title = el.title;
+    if( [title length] ) [str appendFormat:@" title=\"%@\"", title];
+  
+    CGRect rect = el.frame;
+    [str appendFormat:@" \"x\":%.0f, \"y\":%.0f, \"w\":%.0f, \"h\":%.0f",
+      rect.origin.x, rect.origin.y,
+      rect.size.width, rect.size.height];
+   
+    if( !cCount ) [str appendFormat:@"/>\n" ];
+    else [str appendFormat:@">\n" ];
+    
+    NSArray<XCUIElement *> *children2 = children.allElementsBoundByIndex;
+    for( unsigned long i = 0; i < [children2 count]; i++) {
+        NSObject *child = [children2 objectAtIndex:i];
+        elTreeToStr( (XCUIElement *)child, str, depth+2 );
+    }
+  
+    if( cCount ) [str appendFormat:@"%@</el>\n", spaces ];
+}
+
+NSString *handleTest( myData *my, node_hash *root ) {
+    //SnapFindElResult *result = [my->systemApp findEl:name withTypeStr:type];
+    SnapshotApplication *app = my->systemApp;
+    XCUIElement *el = (XCUIApplication *) app.app;
+    NSMutableString *str = [NSMutableString stringWithString:@""];
+    
+    //[str appendString:el.debugDescription];
+    
+    //NSString *methodStr = [el performSelector:@selector(_methodDescription) ];
+    //[str appendString:methodStr];
+    
+    //elTreeToStr( el, str, 40 );
+    NSError *error;
+    XCElementSnapshot *snap = (XCElementSnapshot *) [el snapshotWithError:&error];
+    
+    NSString *snapMethods = [snap performSelector:@selector(_methodDescription) ];
+    [str appendString:snapMethods];
+    
+    //XCUIElementQuery *query = [snap descendantsMatchingType:XCUIElementTypeAny];
+    //[str appendString:[snap asJson]];
+    
+    /*NSSet *subFrames = [snap uniqueDescendantSubframes];
+    for( NSValue *frame in subFrames ) {
+        //NSString *methodStr = [frame performSelector:@selector(_methodDescription) ];
+        //[str appendString:methodStr];
+        
+        const char *frameClass = [frame objCType];
+        [str appendFormat:@"Class:%s\n", frameClass];
+        CGRect rect = frame.CGRectValue;
+        [str appendFormat:@"x:%f y:%f w:%f h:%f\n", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height];
+        //[str appendFormat:@"Class:%@\n", NSStringFromClass( [frame class] ) ];
+    }*/
+    
+    return str;
 }
 
 NSString *handleGetEl( myData *my, node_hash *root ) {
@@ -369,39 +444,43 @@ NSString *handleSetOrientation( myData *my, node_hash *root ) {
 }
 
 NSString *handleAlertInfo( myData *my, node_hash *root ) {
-    XCUIElementQuery *query = [my->app descendantsMatchingType:XCUIElementTypeAlert];
-    XCUIElement *el = [query element];
-    if( el == nil || !el.exists ) return @"{present:false}";
+    SnapshotApplication *app = my->systemApp;
+    SnapFindElResult *alertRes = [app findEl:nil withTypeStr:@"Alert"];
+    XCElementSnapshot *alert = alertRes.el;
+    if( alert == nil ) return @"{present:false}";
     
-    NSString *res = @"{\n  present:true\n  buttons:[\n";
+    NSMutableString *res = [[NSMutableString alloc] initWithString:@"{\n  present:true\n  buttons:[\n"];
     
-    NSArray<XCUIElement *> *buttons =
-        [el descendantsMatchingType:XCUIElementTypeButton].allElementsBoundByIndex;
+    NSArray *types = @[ @(XCUIElementTypeButton) ];
+    NSArray<XCElementSnapshot *> *buttons = [alert findEls:nil withType:types];
     
-    for( unsigned long i = 0; i < [buttons count]; i++) {
-        XCUIElement *button = [buttons objectAtIndex:i];
-        res = [res stringByAppendingFormat:@"    \"%@\"\n", button.value ?: button.label ];
+    for( XCElementSnapshot *button in buttons ) {
+        [res appendFormat:@"    \"%@\"\n", button.value ?: button.label ];
     }
+    [res appendString:@"  ]\n"];
     
-    NSPredicate *alertDescrPredicate = [NSPredicate predicateWithFormat:@"elementType IN {%lu,%lu}",
-        XCUIElementTypeTextView, XCUIElementTypeStaticText];
-    NSArray<XCUIElement *> *descriptions = [
-        [el descendantsMatchingType:XCUIElementTypeAny]
-        matchingPredicate:alertDescrPredicate
-    ].allElementsBoundByIndex;
-    NSString *alertText = nil;
-    for( unsigned long i = 0; i < [descriptions count]; i++) {
-        XCUIElement *descr = [descriptions objectAtIndex:i];
-        NSString *label = descr.value;
+    NSArray *textTypes = @[
+        @(XCUIElementTypeTextView),
+        @(XCUIElementTypeStaticText)
+    ];
+    NSArray<XCElementSnapshot *> *texts = [alert findEls:nil withType:textTypes];
+    
+    bool foundTitle = false;
+    for( XCElementSnapshot *text in texts) {
+        NSString *label = text.value;
         if( label == nil ) {
-            if(descr.elementType == XCUIElementTypeStaticText) label = descr.label;
-            if(descr.elementType == XCUIElementTypeTextView  ) label = descr.placeholderValue;
+            if(text.elementType == XCUIElementTypeStaticText) label = text.label;
+            if(text.elementType == XCUIElementTypeTextView  ) label = text.placeholderValue;
         }
         
-        res = [res stringByAppendingFormat:@"    \"%@\"\n", label ];
+        if( !foundTitle ) {
+            foundTitle = true;
+            [res appendFormat:@"  title:\"%@\"\n", label ];
+        } else {
+            [res appendFormat:@"  descr:\"%@\"\n}", label ];
+        }
     }
-    
-    return [res stringByAppendingFormat:@"]\n  alert:\"%@\"\n]\n}", alertText];
+    return res;
 }
 
 NSString *handleSiri( myData *my, node_hash *root ) {
@@ -576,8 +655,7 @@ NSString *handleActiveApps( myData *my, node_hash *root ) {
     NSArray<XCAccessibilityElement *> *apps = [XCAXClient_iOS.sharedClient activeApplications];
     
     NSMutableString *ids = [[NSMutableString alloc] init];
-    for( unsigned long i=0;i<[apps count];i++ ) {
-        XCAccessibilityElement *app = [apps objectAtIndex:i];
+    for( XCAccessibilityElement *app in apps ) {
         NSInteger pid = app.processIdentifier;
         [ids appendFormat:@"%ld,", (long)pid ];
     }

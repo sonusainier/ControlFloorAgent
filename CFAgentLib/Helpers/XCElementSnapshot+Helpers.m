@@ -127,7 +127,11 @@ void dictToStr( NSDictionary *dict, NSMutableString *str, int depth ) {
 
 SnapFindElResult *findElRecurse( XCElementSnapshot *el, NSString *ident, NSArray *types ) {
     if( types == nil || [types containsObject:@(el.elementType)] ) {
-        if( [ident isEqual:el.identifier] || [ident isEqual:el.label]  ) {
+        if(
+            ident == nil ||
+            [ident isEqual:el.identifier] ||
+            [ident isEqual:el.label]
+        ) {
             SnapFindElResult *res = [[SnapFindElResult alloc] init];
             res.x = el.centerX;
             res.y = el.centerY;
@@ -144,6 +148,25 @@ SnapFindElResult *findElRecurse( XCElementSnapshot *el, NSString *ident, NSArray
         if( found ) return found;
     }
     return nil;
+}
+
+void findElsRecurse( XCElementSnapshot *el, NSString *ident, NSArray *types, NSMutableArray<XCElementSnapshot *> *els) {
+    if( types == nil || [types containsObject:@(el.elementType)] ) {
+        if(
+            ident == nil ||
+            [ident isEqual:el.identifier] ||
+            [ident isEqual:el.label]
+        ) {
+            [els addObject:el];
+        }
+    }
+    
+    NSArray *children = el.children;
+    unsigned long cCount = [children count];
+    for( unsigned long i = 0; i < cCount; i++) {
+        XCElementSnapshot *child = [children objectAtIndex:i];
+        findElsRecurse( child, ident, types, els );
+    }
 }
 
 @implementation XCElementSnapshot (Helpers)
@@ -163,6 +186,12 @@ SnapFindElResult *findElRecurse( XCElementSnapshot *el, NSString *ident, NSArray
 
 - (SnapFindElResult *) findEl:(NSString *)ident withType:(NSArray *)types {
     return findElRecurse( self, ident, types );
+}
+
+- (NSArray<XCElementSnapshot *> *) findEls:(NSString *)ident withType:(NSArray *)types {
+    NSMutableArray<XCElementSnapshot *> *els = [[NSMutableArray alloc] init];
+    findElsRecurse( self, ident, types, els );
+    return els;
 }
 
 @end

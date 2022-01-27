@@ -28,6 +28,7 @@ CHANDLE(sourceJson,Source);
 CHANDLE(startBroadcastApp,StartBroadcastApp);
 CHANDLE(swipe,Swipe);
 CHANDLE(tap,Tap);
+CHANDLE(test,Test);
 CHANDLE(doubletap,Doubletap);
 CHANDLE(tapFirm,TapFirm);
 CHANDLE(tapTime,TapTime);
