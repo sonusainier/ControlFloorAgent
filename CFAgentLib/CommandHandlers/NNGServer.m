@@ -17,32 +17,24 @@
 #import "XCTMessagingChannel_RunnerToDaemon-Protocol.h"
 #import "XCAXClient_iOS+Helpers.h"
 #import "XCAccessibilityElement.h"
+#import "CFA.h"
+#import "XCElementSnapshot+Helpers.h"
+#import "SnapshotApplication.h"
+#import "VersionMacros.h"
+//#import "XCUIElementQuery.h"
 
 @implementation NetworkIface
+@end
+
+@interface NSObject (Private)
+- (NSString *) _methodDescription;
 @end
 
 @implementation NngThread
 
 -(NngThread *) init:(int)nngPort {
     self = [super init];
-        
     _nngPort = nngPort;
-    
-    _typeMap = @[
-        @"Any", @"Other",  @"Application",  @"Group", @"Window", @"Sheet", @"Drawer", @"Alert", @"Dialog",
-        @"Button", @"RadioButton", @"RadioGroup", @"CheckBox", @"DisclosureTriangle", @"PopUpButton",
-        @"ComboBox", @"MenuButton", @"ToolbarButton", @"Popover", @"Keyboard", @"Key", @"NavigationBar",
-        @"TabBar", @"TabGroup", @"Toolbar", @"StatusBar", @"Table", @"TableRow", @"TableColumn", @"Outline",
-        @"OutlineRow", @"Browser", @"CollectionView", @"Slider", @"PageIndicator", @"ProgressIndicator",
-        @"ActivityIndicator", @"SegmentedControl", @"Picker", @"PickerWheel", @"Switch", @"Toggle", @"Link",
-        @"Image", @"Icon", @"SearchField", @"ScrollView", @"ScrollBar", @"StaticText", @"TextField",
-        @"SecureTextField", @"DatePicker", @"TextView", @"Menu", @"MenuItem", @"MenuBar", @"MenuBarItem",
-        @"Map", @"WebView", @"IncrementArrow", @"DecrementArrow", @"Timeline", @"RatingIndicator",
-        @"ValueIndicator", @"SplitGroup", @"Splitter", @"RelevanceIndicator", @"ColorWell", @"HelpTag",
-        @"Matte", @"DockItem", @"Ruler", @"RulerMarker", @"Grid", @"LevelIndicator", @"Cell", @"LayoutArea",
-        @"LayoutItem", @"Handle", @"Stepper", @"Tab"
-    ];
-  
     return self;
 }
 
@@ -50,134 +42,12 @@ struct myData_s {
     XCUIDevice *device;
     NSMutableDictionary *dict;
     XCUIApplication *app;
-    XCUIApplication *systemApp;
-    NSDictionary *types;
+    SnapshotApplication *systemApp;
     char *action;
-    NSArray *typeMap;
     XCUIApplication *sbApp;
     NngThread *nngServer;
 };
 typedef struct myData_s myData;
-
-// Common attributes of element snapshot items: horizontalSizeClass,enabled,elementType,frame,title,verticalSizeClass,identifier,label,hasFocus,selected,children
-
-void dictToStr( myData *my, NSDictionary *dict, NSMutableString *str, int depth ) {
-    NSString *spaces     = [@"" stringByPaddingToLength:depth withString:@"  " startingAtIndex:0];
-    long elementType     = [dict[@"elementType"] integerValue];
-    NSString *ident      = dict[@"identifier"];
-    NSArray *children    = dict[@"children"];
-    unsigned long cCount = [children count];
-    
-    NSString *typeStr    = my->typeMap[ elementType ];
-    [str appendFormat:@"%@<el type=\"%@\"", spaces, typeStr ];
-    if( [ident length] != 0 ) [str appendFormat:@" id=\"%@\"", ident ];
-  
-    NSString *label = dict[@"label"];
-    if( [label length] ) [str appendFormat:@" label=\"%@\"", label];
-  
-    NSString *title = dict[@"title"];
-    if( [title length] ) [str appendFormat:@" title=\"%@\"", title];
-  
-    NSDictionary *rect = [dict objectForKey:@"frame"];
-    [str appendFormat:@" x=%.0f y=%.0f w=%.0f h=%.0f",
-       [rect[@"X"]     floatValue], [rect[@"Y"]      floatValue],
-       [rect[@"Width"] floatValue], [rect[@"Height"] floatValue]];
-   
-    if( !cCount ) [str appendFormat:@"/>\n" ];
-    else [str appendFormat:@">\n" ];
-    
-    for( unsigned long i = 0; i < [children count]; i++) {
-        NSObject *child = [children objectAtIndex:i];
-        dictToStr( my, (NSDictionary *)child, str, depth+2 );
-    }
-  
-    if( cCount ) [str appendFormat:@"%@</el>\n", spaces ];
-}
-
-void snapToJson( myData *my, XCElementSnapshot *el, NSMutableString *str, int depth, XCUIApplication *app ) {
-    NSString *spaces   = [@"" stringByPaddingToLength:depth withString:@"  " startingAtIndex:0];
-    long elementType   = el.elementType;
-    NSString *ident    = el.identifier;
-    NSString *typeStr  = my->typeMap[ elementType ];
-    NSDictionary *atts = el.additionalAttributes;
-    
-    if( [typeStr isEqualToString:@"Other"] && [atts objectForKey:@5004] ) {
-        typeStr = [atts objectForKey:@5004];
-    }
-  
-    [str appendFormat:@"%@{ \"type\":\"%@\",", spaces, typeStr ];
-    if( [ident length] != 0 ) [str appendFormat:@" \"id\":\"%@\",", ident ];
-
-    NSString *label = el.label;
-    if( [label length] ) {
-      if( [label containsString:@"\""] ) {
-        label = [label stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-      }
-      [str appendFormat:@" \"label\":\"%@\",", label];
-    }
-    
-    NSArray *children = el.children;
-    unsigned long cCount = [children count];
-
-    NSString *title = el.title;
-    if( [title length] ) [str appendFormat:@" \"title\":\"%@\",", title];
-
-    CGRect rect = el.frame;
-    [str appendFormat:@" \"x\":%.0f, \"y\":%.0f, \"w\":%.0f, \"h\":%.0f",
-      rect.origin.x, rect.origin.y,
-      rect.size.width, rect.size.height];
-   
-    if( !cCount ) [str appendFormat:@"}\n" ];
-    else          [str appendFormat:@",\"c\":[\n" ];
-    
-    for( unsigned long i = 0; i < cCount; i++) {
-        NSObject *child = [children objectAtIndex:i];
-        snapToJson( my, (XCElementSnapshot *)child, str, depth+2, app );
-        if( i != ( cCount -1 ) ) [str appendFormat:@",\n" ];
-    }
-
-    if( cCount ) [str appendFormat:@"%@]}\n", spaces ];
-}
-
-void dictToJson( myData *my, NSDictionary *dict, NSMutableString *str, int depth ) {
-    NSString *spaces     = [@"" stringByPaddingToLength:depth withString:@"  " startingAtIndex:0];
-    long elementType     = [dict[@"elementType"] integerValue];
-    NSString *ident      = dict[@"identifier"];
-    NSArray *children    = dict[@"children"];
-    unsigned long cCount = [children count];
-    
-    NSString *typeStr    = my->typeMap[ elementType ];
-    [str appendFormat:@"%@{ \"type\":\"%@\",", spaces, typeStr ];
-    if( [ident length] != 0 ) [str appendFormat:@" \"id\":\"%@\",", ident ];
-  
-    NSString *label = dict[@"label"];
-    if( [label length] ) {
-      if( [label containsString:@"\""] ) {
-        label = [label stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-      }
-      [str appendFormat:@" \"label\":\"%@\",", label];
-    }
-  
-    NSString *title = dict[@"title"];
-    if( [title length] ) [str appendFormat:@" \"title\":\"%@\",", title];
-  
-    NSDictionary *rect = [dict objectForKey:@"frame"];
-    [str
-         appendFormat:@" \"x\":%.0f, \"y\":%.0f, \"w\":%.0f, \"h\":%.0f",
-         [rect[@"X"]     floatValue], [rect[@"Y"]      floatValue],
-         [rect[@"Width"] floatValue], [rect[@"Height"] floatValue]];
-   
-    if( !cCount ) [str appendFormat:@"}\n" ];
-    else          [str appendFormat:@",\"c\":[\n" ];
-    
-    for( unsigned long i = 0; i < cCount; i++) {
-        NSObject *child = [children objectAtIndex:i];
-        dictToJson( my, (NSDictionary *)child, str, depth+2 );
-        if( i != ( cCount -1 ) ) [str appendFormat:@",\n" ];
-    }
-  
-    if( cCount ) [str appendFormat:@"%@]}\n", spaces ];
-}
 
 NSString *createKey(void) {
     NSString *keyCharSet = @"abcdefghijklmnopqrstuvwxyz0123456789";
@@ -252,8 +122,7 @@ NSString *handleSwipe( myData *my, node_hash *root ) {
 }
 
 NSString *handleButton( myData *my, node_hash *root ) {
-    char *name = node_hash__get_str( root, "name", 4 );
-    NSString *name2 = [NSString stringWithUTF8String:name];
+    NSString *name = node_hash__get_str_ns( root, "name", 4 );
     
     static NSMutableDictionary *nameMap = nil;
     static dispatch_once_t once;
@@ -264,9 +133,8 @@ NSString *handleButton( myData *my, node_hash *root ) {
       [nameMap setObject:[NSNumber numberWithInt:XCUIDeviceButtonVolumeDown] forKey:@"volumedown"];
     } );
         
-    NSNumber *num = [nameMap valueForKey:name2];
+    NSNumber *num = [nameMap valueForKey:name];
     [my->device pressButton:[num integerValue]];
-    free( name );
     return @"ok";
 }
 
@@ -285,12 +153,36 @@ NSString *handleIohid( myData *my, node_hash *root ) {
     int page        = node_hash__get_int( root, "page", 4 );
     int usage       = node_hash__get_int( root, "usage", 5 );
     double duration = node_hash__get_double( root, "duration", 8 );
-    NSError *error;
+    char *modifier  = node_hash__get_str( root, "modifier", 8 );
     
-    [my->device cf_iohid:page
-                   usage:usage
-                duration:duration
-                   error:&error];
+    NSError *error;
+    if( modifier ) {
+        unsigned long len = strlen( modifier );
+        XCUIKeyModifierFlags flags = 0;
+        if( modifier[0] == 'c' && len >= 3 ) {
+            if( modifier[2] == 'n' ) flags = XCUIKeyModifierControl;
+            if( modifier[1] == 'm' ) flags = XCUIKeyModifierCommand;
+        }
+        if( modifier[0] == 'o' ) flags = XCUIKeyModifierOption;
+        if( modifier[0] == 'f' ) flags = XCUIKeyModifierFunction;
+        if( modifier[0] == 's' ) flags = XCUIKeyModifierShift;
+        
+        if( flags == 0 ) {
+            NSLog( @"Invalid key modifier specified" );
+        } else {
+            [my->device cf_iohid_with_modifier:page
+                           usage:usage
+                        duration:duration
+                        modifier:flags
+                           error:&error];
+        }
+    }
+    else {
+        [my->device cf_iohid:page
+                       usage:usage
+                    duration:duration
+                       error:&error];
+    }
     if( error != nil ) NSLog( @"error %@", error );
     
     return @"ok";
@@ -303,32 +195,32 @@ NSString *handleHomeBtn( myData *my, node_hash *root ) {
 }
 
 NSArray *getInterfaces(void) {
-  NSMutableArray *ifaces = [[NSMutableArray alloc] init];
-  struct ifaddrs *ifaddrs = NULL;
-  if( getifaddrs( &ifaddrs ) || ifaddrs == NULL ) {
-    // TODO error
+    NSMutableArray *ifaces = [[NSMutableArray alloc] init];
+    struct ifaddrs *ifaddrs = NULL;
+    if( getifaddrs( &ifaddrs ) || ifaddrs == NULL ) {
+      // TODO error
+      return ifaces;
+    }
+    for( struct ifaddrs *iface = ifaddrs; iface; iface = iface->ifa_next ) {
+      if( iface->ifa_addr && iface->ifa_addr->sa_family == AF_INET ) {
+        NetworkIface *ob = [[NetworkIface alloc] init];
+        struct sockaddr_in *addr_in = ( struct sockaddr_in *) iface->ifa_addr;
+        ob.ipv4 = ( NSString * _Nonnull )[NSString stringWithUTF8String:inet_ntoa( addr_in->sin_addr )];
+        ob.name = ( NSString * _Nonnull )[NSString stringWithUTF8String:iface->ifa_name];
+        [ifaces addObject:ob];
+      }
+      if( iface->ifa_addr && iface->ifa_addr->sa_family == AF_INET6 ) {
+        NetworkIface *ob = [[NetworkIface alloc] init];
+        struct sockaddr_in6 *addr_in = ( struct sockaddr_in6 *) iface->ifa_addr;
+        char *ipv6 = malloc( INET6_ADDRSTRLEN );
+        inet_ntop( AF_INET6, &(addr_in->sin6_addr), ipv6, INET6_ADDRSTRLEN );
+        ob.ipv4 = ( NSString * _Nonnull )[NSString stringWithUTF8String:ipv6];
+        free( ipv6 );
+        ob.name = ( NSString * _Nonnull )[NSString stringWithUTF8String:iface->ifa_name];
+        [ifaces addObject:ob];
+      }
+    }
     return ifaces;
-  }
-  for( struct ifaddrs *iface = ifaddrs; iface; iface = iface->ifa_next ) {
-    if( iface->ifa_addr && iface->ifa_addr->sa_family == AF_INET ) {
-      NetworkIface *ob = [[NetworkIface alloc] init];
-      struct sockaddr_in *addr_in = ( struct sockaddr_in *) iface->ifa_addr;
-      ob.ipv4 = ( NSString * _Nonnull )[NSString stringWithUTF8String:inet_ntoa( addr_in->sin_addr )];
-      ob.name = ( NSString * _Nonnull )[NSString stringWithUTF8String:iface->ifa_name];
-      [ifaces addObject:ob];
-    }
-    if( iface->ifa_addr && iface->ifa_addr->sa_family == AF_INET6 ) {
-      NetworkIface *ob = [[NetworkIface alloc] init];
-      struct sockaddr_in6 *addr_in = ( struct sockaddr_in6 *) iface->ifa_addr;
-      char *ipv6 = malloc( INET6_ADDRSTRLEN );
-      inet_ntop( AF_INET6, &(addr_in->sin6_addr), ipv6, INET6_ADDRSTRLEN );
-      ob.ipv4 = ( NSString * _Nonnull )[NSString stringWithUTF8String:ipv6];
-      free( ipv6 );
-      ob.name = ( NSString * _Nonnull )[NSString stringWithUTF8String:iface->ifa_name];
-      [ifaces addObject:ob];
-    }
-  }
-  return ifaces;
 }
 
 NSString *handleWifiIp( myData *my, node_hash *root ) {
@@ -363,53 +255,49 @@ NSString *handleCleanBrowser( myData *my, node_hash *root, char **outVal ) {
 }
 
 NSString *handleElClick( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
-    [my->dict removeObjectForKey:id2];
-    //NSError *error = nil;
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
+    [my->dict removeObjectForKey:elId];
+
     if( element == nil ) {
-        // todo error
+        return @"failed to find element";
     } else {
-        //if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"13.0")) {
+        //if (!IOS_LESS_THAN(@"14.0")) {
             [element tap];
         /*} else {
+            NSError *error;
             XCElementSnapshot *snapshot = (XCElementSnapshot *) [element snapshotWithError:&error];
-            int x = snapshot.frame.origin.x/2;
-            int y = snapshot.frame.origin.y/2;
-            NSLog( @"tapping a %d,%d", x+1, y+1 );
-            [device cf_tap:x/2 y:y/2];
+            double x = snapshot.centerX;
+            double y = snapshot.centerY;
+            NSLog( @"tapping a %f,%f", x, y );
+            [my->device cf_tap:x y:y];
         }*/
-        //[element fb_tapWithError:&error];
     }
     return @"ok";
 }
 
 NSString *handleElTouchAndHold( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
-    [my->dict removeObjectForKey:id2];
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
+    [my->dict removeObjectForKey:elId];
     double forTime = node_hash__get_double( root, "time", 4 );
     [element pressForDuration:forTime];
     return @"ok";
 }
 
 NSString *handleElForceTouch( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
-    [my->dict removeObjectForKey:id2];
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
+    [my->dict removeObjectForKey:elId];
     
     //double forTime = node_hash__get_double( root, "time", 4 );
     double pressure = node_hash__get_double( root, "pressure", 8 );
     if( pressure < 0 ) pressure = -pressure; // bug
     //[element pressForDuration:forTime];
     //NSError *err;
-    //[element fb_forceTouchWithPressure:pressure duration:forTime error:&err];
     CGRect frame = [element frame];
     CGFloat x = frame.origin.x;
     CGFloat y = frame.origin.y;
@@ -421,31 +309,103 @@ NSString *handleElForceTouch( myData *my, node_hash *root ) {
     return @"ok";
 }
 
-NSString *handleGetEl( myData *my, node_hash *root ) {
-    char *name = node_hash__get_str( root, "id", 2 );
-    NSString *name2 = [NSString stringWithUTF8String:name];
+NSString *handleSysElPos( myData *my, node_hash *root ) {
+    NSString *name = node_hash__get_str_ns( root, "id", 2 );
+    NSString *type = node_hash__get_str_ns( root, "type", 4 );
     
-    char *type = node_hash__get_str( root, "type", 4 );
-    int typeNum = 0;
-    if( type ) {
-        NSString *type2 = [NSString stringWithUTF8String:type];
-        id typeNumNS = my->types[ type2 ];
-        if( typeNumNS ) typeNum = [typeNumNS intValue];
+    SnapFindElResult *result = [my->systemApp findEl:name withTypeStr:type];
+    
+    //NSMutableString *str = [result.el asJson];
+    //[str appendFormat:@"{\nx: %f y:%f", result.x, result.y ];
+    if( result == nil ) return @"";
+    
+    return [NSString stringWithFormat:@"{x: %.02f, y: %.02f}", result.x, result.y];
+}
+
+void elTreeToStr( XCUIElement *el, NSMutableString *str, int depth ) {
+    NSString *spaces     = [@"" stringByPaddingToLength:depth withString:@"  " startingAtIndex:0];
+    long elementType     = el.elementType;
+    NSString *ident      = el.identifier;
+    XCUIElementQuery *q = el.query;
+    XCUIElementQuery *children    = [q childrenMatchingType:XCUIElementTypeAny];
+    unsigned long cCount = [children count];
+    
+    NSString *typeStr    = [CFA typeStr:elementType];
+    [str appendFormat:@"%@<el type=\"%@\"", spaces, typeStr ];
+    if( [ident length] != 0 ) [str appendFormat:@" id=\"%@\"", ident ];
+  
+    NSString *label = el.label;
+    if( [label length] ) [str appendFormat:@" label=\"%@\"", label];
+  
+    NSString *title = el.title;
+    if( [title length] ) [str appendFormat:@" title=\"%@\"", title];
+  
+    CGRect rect = el.frame;
+    [str appendFormat:@" \"x\":%.0f, \"y\":%.0f, \"w\":%.0f, \"h\":%.0f",
+      rect.origin.x, rect.origin.y,
+      rect.size.width, rect.size.height];
+   
+    if( !cCount ) [str appendFormat:@"/>\n" ];
+    else [str appendFormat:@">\n" ];
+    
+    NSArray<XCUIElement *> *children2 = children.allElementsBoundByIndex;
+    for( unsigned long i = 0; i < [children2 count]; i++) {
+        NSObject *child = [children2 objectAtIndex:i];
+        elTreeToStr( (XCUIElement *)child, str, depth+2 );
     }
+  
+    if( cCount ) [str appendFormat:@"%@</el>\n", spaces ];
+}
+
+NSString *handleTest( myData *my, node_hash *root ) {
+    //SnapFindElResult *result = [my->systemApp findEl:name withTypeStr:type];
+    SnapshotApplication *app = my->systemApp;
+    XCUIElement *el = (XCUIApplication *) app.app;
+    NSMutableString *str = [NSMutableString stringWithString:@""];
+    
+    //[str appendString:el.debugDescription];
+    
+    //NSString *methodStr = [el performSelector:@selector(_methodDescription) ];
+    //[str appendString:methodStr];
+    
+    //elTreeToStr( el, str, 40 );
+    NSError *error;
+    XCElementSnapshot *snap = (XCElementSnapshot *) [el snapshotWithError:&error];
+    
+    NSString *snapMethods = [snap performSelector:@selector(_methodDescription) ];
+    [str appendString:snapMethods];
+    
+    //XCUIElementQuery *query = [snap descendantsMatchingType:XCUIElementTypeAny];
+    //[str appendString:[snap asJson]];
+    
+    /*NSSet *subFrames = [snap uniqueDescendantSubframes];
+    for( NSValue *frame in subFrames ) {
+        //NSString *methodStr = [frame performSelector:@selector(_methodDescription) ];
+        //[str appendString:methodStr];
+        
+        const char *frameClass = [frame objCType];
+        [str appendFormat:@"Class:%s\n", frameClass];
+        CGRect rect = frame.CGRectValue;
+        [str appendFormat:@"x:%f y:%f w:%f h:%f\n", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height];
+        //[str appendFormat:@"Class:%@\n", NSStringFromClass( [frame class] ) ];
+    }*/
+    
+    return str;
+}
+
+NSString *handleGetEl( myData *my, node_hash *root ) {
+    NSString *name = node_hash__get_str_ns( root, "id", 2 );
+    
+    NSString *type = node_hash__get_str_ns( root, "type", 4 );
+    long typeNum = 0;
+    if( type ) {
+        typeNum = [CFA typeNum:type];
+    }
+  
+    XCUIElementQuery *query = [my->app descendantsMatchingType:typeNum];
+    XCUIElement *el = [query elementMatchingType:typeNum identifier:name];
     
     double wait = node_hash__get_double( root, "wait", 4 );
-  
-    XCUIElement *el = nil;
-    
-    if( node_hash__get( root, "system", 6 ) ) {
-        XCUIElementQuery *query = [my->systemApp descendantsMatchingType:typeNum];
-        el = [query elementMatchingType:typeNum identifier:name2];
-    }
-    else {
-        XCUIElementQuery *query = [my->app descendantsMatchingType:typeNum];
-        el = [query elementMatchingType:typeNum identifier:name2];
-    }
-  
     if( wait < 0 ) {
         bool exists = [el waitForExistenceWithTimeout:wait];
         if( !exists ) el = nil;
@@ -465,7 +425,7 @@ NSString *handleGetEl( myData *my, node_hash *root ) {
 }
 
 NSString *handleGetOrientation( myData *my, node_hash *root ) {
-    NSInteger orientation = my->systemApp.interfaceOrientation;
+    NSInteger orientation = my->systemApp.app.interfaceOrientation;
     
     // See https://developer.apple.com/documentation/uikit/uiinterfaceorientation?language=objc
     switch( orientation ) {
@@ -482,9 +442,8 @@ NSString *handleGetOrientation( myData *my, node_hash *root ) {
 }
 
 NSString *handleSetOrientation( myData *my, node_hash *root ) {
-    char *orientation = node_hash__get_str( root, "orientation", 11 );
-    if( !orientation ) return @"Must pass orientation";
-    NSString *o = [NSString stringWithUTF8String:orientation];
+    NSString *o = node_hash__get_str_ns( root, "orientation", 11 );
+    if( o == nil ) return @"Must pass orientation";
      
     if( [o isEqualToString:@"portrait"] ) {
         my->device.orientation = UIDeviceOrientationPortrait;
@@ -504,62 +463,49 @@ NSString *handleSetOrientation( myData *my, node_hash *root ) {
 }
 
 NSString *handleAlertInfo( myData *my, node_hash *root ) {
-    XCUIElementQuery *query = [my->app descendantsMatchingType:XCUIElementTypeAlert];
-    XCUIElement *el = [query element];
-    if( el == nil || !el.exists ) return @"{present:false}";
+    SnapshotApplication *app = my->systemApp;
+    SnapFindElResult *alertRes = [app findEl:nil withTypeStr:@"alert"];
+    XCElementSnapshot *alert = alertRes.el;
+    if( alert == nil ) return @"{present:false}";
     
-    NSString *res = @"{\n  present:true\n  buttons:[\n";
+    NSMutableString *res = [[NSMutableString alloc] initWithString:@"{\n  present:true\n  buttons:[\n"];
     
-    NSArray<XCUIElement *> *buttons =
-        [el descendantsMatchingType:XCUIElementTypeButton].allElementsBoundByIndex;
+    NSArray *types = @[ @(XCUIElementTypeButton) ];
+    NSArray<XCElementSnapshot *> *buttons = [alert findEls:nil withType:types];
     
-    for( unsigned long i = 0; i < [buttons count]; i++) {
-        XCUIElement *button = [buttons objectAtIndex:i];
-        res = [res stringByAppendingFormat:@"    \"%@\"\n", button.value ?: button.label ];
+    for( XCElementSnapshot *button in buttons ) {
+        [res appendFormat:@"    \"%@\"\n", button.value ?: button.label ];
     }
+    [res appendString:@"  ]\n"];
     
-    NSPredicate *alertDescrPredicate = [NSPredicate predicateWithFormat:@"elementType IN {%lu,%lu}",
-        XCUIElementTypeTextView, XCUIElementTypeStaticText];
-    NSArray<XCUIElement *> *descriptions = [
-        [el descendantsMatchingType:XCUIElementTypeAny]
-        matchingPredicate:alertDescrPredicate
-    ].allElementsBoundByIndex;
-    NSString *alertText = nil;
-    for( unsigned long i = 0; i < [descriptions count]; i++) {
-        XCUIElement *descr = [descriptions objectAtIndex:i];
-        NSString *label = descr.value;
+    NSArray *textTypes = @[
+        @(XCUIElementTypeTextView),
+        @(XCUIElementTypeStaticText)
+    ];
+    NSArray<XCElementSnapshot *> *texts = [alert findEls:nil withType:textTypes];
+    
+    bool foundTitle = false;
+    for( XCElementSnapshot *text in texts) {
+        NSString *label = text.value;
         if( label == nil ) {
-            if(descr.elementType == XCUIElementTypeStaticText) label = descr.label;
-            if(descr.elementType == XCUIElementTypeTextView  ) label = descr.placeholderValue;
+            if(text.elementType == XCUIElementTypeStaticText) label = text.label;
+            if(text.elementType == XCUIElementTypeTextView  ) label = text.placeholderValue;
         }
         
-        res = [res stringByAppendingFormat:@"    \"%@\"\n", label ];
+        if( !foundTitle ) {
+            foundTitle = true;
+            [res appendFormat:@"  title:\"%@\"\n", label ];
+        } else {
+            [res appendFormat:@"  descr:\"%@\"\n", label ];
+        }
     }
-    
-    return [res stringByAppendingFormat:@"]\n  alert:\"%@\"\n]\n}", alertText];
+    [res appendString:@"}"];
+    return res;
 }
-
-/*NSString *handleIsLocked( myData *my, node_hash *root ) {
-    bool locked = my->device.fb_isScreenLocked;
-    return locked ? @"{\"locked\":true}" : @"{\"locked\":false}";
-}
-
-NSString *handleLock( myData *my, node_hash *root ) {
-    NSError *error;
-    bool success = [my->device fb_lockScreen:&error];
-    return success ? @"{\"success\":true}" : @"{\"success\":false}";
-}
-
-NSString *handleUnlock( myData *my, node_hash *root ) {
-    NSError *error;
-    bool success = [my->device fb_unlockScreen:&error];
-    return success ? @"{\"success\":true}" : @"{\"success\":false}";
-}*/
 
 NSString *handleSiri( myData *my, node_hash *root ) {
-    char *text = node_hash__get_str( root, "text", 4 );
-    NSString *text2 = [NSString stringWithUTF8String:text];
-    [my->device.siriService activateWithVoiceRecognitionText:text2];
+    NSString *text = node_hash__get_str_ns( root, "text", 4 );
+    [my->device.siriService activateWithVoiceRecognitionText:text];
     return @"ok";
 }
 
@@ -570,76 +516,103 @@ NSString *handleTypeText( myData *my, node_hash *root ) {
     return @"ok";
 }
 
+NSString *handleTypeKey( myData *my, node_hash *root ) {
+    //char *key = node_hash__get_int( root, "key", 3 );
+    
+    //XCPointerEventPath *path = [[XCPointerEventPath alloc] initForTextInput];
+    //[path typeKey:XCUIKeyboardKeyLeftArrow modifiers:0 atOffset:0.05];
+    //[my->device runEventPath:path];
+    //NSString *biNS = [NSString stringWithUTF8String:bi];
+    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.mobilenotes"];
+    
+    [my->device cf_typeKey:my->app];
+    
+    return @"ok";
+}
+
+NSString *handleHasEventRecording( myData *my, node_hash *root ) {
+    bool haveIt = [XCTRunnerDaemonSession.sharedSession supportsHIDEventRecording];
+    if( haveIt ) return @"YES";
+    return @"NO";
+}
+
 NSString *handleUpdateApplication( myData *my, node_hash *root ) {
-    char *bi = node_hash__get_str( root, "bundleId", 8 );
-    NSString *biNS = [NSString stringWithUTF8String:bi];
-    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
+    NSString *bi = node_hash__get_str_ns( root, "bundleId", 8 );
+    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:bi];
     return @"ok";
 }
 
 NSString *handleSource( myData *my, node_hash *root ) {
     XCUIElement *el = nil;
     
-    char *bi = node_hash__get_str( root, "bi", 2 );
+    NSString *bi = node_hash__get_str_ns( root, "bi", 2 );
     if( bi ) {
-        NSString *bi2 = [NSString stringWithUTF8String:bi];
-        el = [ [XCUIApplication alloc] initWithBundleIdentifier:bi2];
+        el = [ [XCUIApplication alloc] initWithBundleIdentifier:bi];
     } else {
         el = my->app;
     }
   
     int pid = node_hash__get_int( root, "pid", 3 );
-    if( pid != -1 ) {
+    
+    XCElementSnapshot *snapshot = nil;
+    NSError *serror = nil;
+    
+    if( pid > 0 ) {
         el = (XCUIApplication *)[XCUIApplication appProcessWithPID:pid];
         //el = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
+        snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
+    }
+    else if( pid == -2 ) {
+        snapshot = (XCElementSnapshot *) [my->systemApp.app snapshotWithError:&serror];
+    }
+    else {
+        snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
     }
     
-    NSError *serror = nil;
-    XCElementSnapshot *snapshot = (XCElementSnapshot *) [el snapshotWithError:&serror];
     if( serror != nil ) NSLog( @"err:%@", serror );
-    NSDictionary *sdict = [snapshot dictionaryRepresentation];
-    NSMutableString *str = [NSMutableString stringWithString:@""];
+    NSMutableString *str = nil;
     if( strlen( my->action ) > 6 ) {
-        dictToJson( my, sdict, str, 0 );
+        str = [snapshot asJson];
     } else {
-        dictToStr( my, sdict, str, 0 );
+        str = [snapshot asStringViaDict];
     }
     return str;
 }
 
 XCAccessibilityElement *requestElementAtPoint( CGPoint point ) {
-  __block XCAccessibilityElement *el = nil;
-  dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-  id <XCTMessagingChannel_RunnerToDaemon> proxy = [XCTRunnerDaemonSession sharedSession];
-  [proxy _XCT_requestElementAtPoint:point
-                         reply:
-    ^(XCAccessibilityElement *el2, NSError *error) {
-      if( nil == error ) el = el2;
-      dispatch_semaphore_signal(sem);
-    }
-  ];
-  dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
-  return el;
+    __block XCAccessibilityElement *el = nil;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    id <XCTMessagingChannel_RunnerToDaemon> proxy = [XCTRunnerDaemonSession sharedSession];
+    [proxy _XCT_requestElementAtPoint:point
+                           reply:
+      ^(XCAccessibilityElement *el2, NSError *error) {
+        if( nil == error ) el = el2;
+        dispatch_semaphore_signal(sem);
+      }
+    ];
+    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
+    return el;
 }
 
-XCElementSnapshot *snapshotForElement( XCAccessibilityElement *el,
-                                  NSArray *atts,
-                                  NSDictionary *params )
-{
-  NSError *err;
-  XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
-  XCElementSnapshot *snapshot = [axClient cf_elSnapshot:el
-                                attributes:atts
-                                  maxDepth:@20
-                                     error:&err];
-  return snapshot;
+XCElementSnapshot *snapshotForElement(
+    XCAccessibilityElement *el,
+    NSArray *atts,
+    NSDictionary *params
+) {
+    NSError *err;
+    XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
+    XCElementSnapshot *snapshot = [axClient cf_elSnapshot:el
+                                  attributes:atts
+                                    maxDepth:@20
+                                       error:&err];
+    return snapshot;
 }
 
 NSString *handleElementAtPoint( myData *my, node_hash *root ) {
     int x = node_hash__get_int( root, "x", 1 );
     int y = node_hash__get_int( root, "y", 1 );
     int json = node_hash__get_int( root, "json", 4 );
-    int nopid = node_hash__get_int( root, "nopid", 5 );
+    //int nopid = node_hash__get_int( root, "nopid", 5 );
     int top = node_hash__get_int( root, "top", 3 );
 
     CGPoint point = CGPointMake(x,y);
@@ -651,24 +624,20 @@ NSString *handleElementAtPoint( myData *my, node_hash *root ) {
         snap = snap.rootElement;
     }
     
-    NSMutableString *str = [NSMutableString stringWithString:@""];
+    NSMutableString *str = nil;
   
-  if( nopid == -1 ) [str appendFormat:@"Pid:%ld", (long)el.processIdentifier];
+    //if( nopid == -1 ) [str appendFormat:@"Pid:%ld", (long)el.processIdentifier];
     
-    if( json != -1 ) {
-        snapToJson( my, snap, str, 0, my->app );
-    } else {
-        NSDictionary *sdict = [snap dictionaryRepresentation];
-        dictToStr( my, sdict, str, 0 );
-    }
+    if( json != -1 ) str = [snap asJson];
+    else             str = [snap asStringViaDict];
+
     return str;
 }
 
 NSString *handleElPos( myData *my, node_hash *root ) {
-    char *elId = node_hash__get_str( root, "id", 2 );
-    NSString *id2 = [NSString stringWithUTF8String:elId];
-  
-    XCUIElement *element = my->dict[id2];
+    NSString *elId = node_hash__get_str_ns( root, "id", 2 );
+    
+    XCUIElement *element = my->dict[elId];
     CGRect frame = [element frame];
     int x = (int) frame.origin.x;
     int y = (int) frame.origin.y;
@@ -678,28 +647,22 @@ NSString *handleElPos( myData *my, node_hash *root ) {
 }
 
 NSString *handleNslog( myData *my, node_hash *root ) {
-    char *msg = node_hash__get_str( root, "msg", 3 );
-    NSString *msg2 = [NSString stringWithUTF8String:msg];
-    NSLog( @"%@", msg2 );
+    NSString *msg = node_hash__get_str_ns( root, "msg", 3 );
+    NSLog( @"%@", msg );
     return @"ok";
 }
 
 NSString *handleWindowSize( myData *my, node_hash *root ) {
-    CGRect frame = CGRectIntegral( my->systemApp.frame );
+    CGRect frame = CGRectIntegral( my->systemApp.app.frame );
     return [NSString stringWithFormat:@"{width:%d,height:%d}",
             (int)frame.size.width,
             (int)frame.size.height];
 }
 
 NSString *handleLaunchApp( myData *my, node_hash *root ) {
-    char *bundleID = node_hash__get_str( root, "bundleId", 8 );
+    NSString *bundleID = node_hash__get_str_ns( root, "bundleId", 8 );
     
-    NSInteger pid = [[XCAXClient_iOS.sharedClient systemApplication] processIdentifier];
-    my->systemApp = (XCUIApplication *)[XCUIApplication appProcessWithPID:pid];
-    //my->systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
-
-    NSString *biNS = [NSString stringWithUTF8String:bundleID];
-    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:biNS];
+    my->app = [ [XCUIApplication alloc] initWithBundleIdentifier:bundleID];
     //my->app.launchArguments = @[];
     //my->app.launchEnvironment = @{};
     [my->app launch];
@@ -712,8 +675,7 @@ NSString *handleActiveApps( myData *my, node_hash *root ) {
     NSArray<XCAccessibilityElement *> *apps = [XCAXClient_iOS.sharedClient activeApplications];
     
     NSMutableString *ids = [[NSMutableString alloc] init];
-    for( unsigned long i=0;i<[apps count];i++ ) {
-        XCAccessibilityElement *app = [apps objectAtIndex:i];
+    for( XCAccessibilityElement *app in apps ) {
         NSInteger pid = app.processIdentifier;
         [ids appendFormat:@"%ld,", (long)pid ];
     }
@@ -721,7 +683,7 @@ NSString *handleActiveApps( myData *my, node_hash *root ) {
 }
 
 NSArray<NSString*> *FBStandardAttributeNames(void) {
-  return [XCElementSnapshot sanitizedElementSnapshotHierarchyAttributesForAttributes:nil isMacOS:NO];
+    return [XCElementSnapshot sanitizedElementSnapshotHierarchyAttributesForAttributes:nil isMacOS:NO];
 }
 
 NSString *handleElByPid( myData *my, node_hash *root ) {
@@ -733,16 +695,8 @@ NSString *handleElByPid( myData *my, node_hash *root ) {
   
     XCElementSnapshot *snap = snapshotForElement( el, standardAttributes, nil );
     
-    NSMutableString *str = [NSMutableString stringWithString:@""];
-    
-    if( json != -1 ) {
-        snapToJson( my, snap, str, 0, my->app );
-    } else {
-        NSDictionary *sdict = [snap dictionaryRepresentation];
-        
-        dictToStr( my, sdict, str, 0 );
-    }
-    return str;
+    if( json != -1 ) return [snap asJson];
+    else             return [snap asStringViaDict];
 }
 
 -(void) entry:(id)param {
@@ -757,157 +711,41 @@ NSString *handleElByPid( myData *my, node_hash *root ) {
     }
     NSLog( @"NNG Ready on port %d", _nngPort );
 
-    NSDictionary *types = [[NSDictionary alloc] initWithObjectsAndKeys:
-                             [NSNumber numberWithInt:XCUIElementTypeActivityIndicator],@"activityIndicator",
-                             [NSNumber numberWithInt:XCUIElementTypeAlert],@"alert",
-                             [NSNumber numberWithInt:XCUIElementTypeAny],@"any",
-                             [NSNumber numberWithInt:XCUIElementTypeApplication],@"application",
-                             [NSNumber numberWithInt:XCUIElementTypeBrowser],@"browser",
-                             [NSNumber numberWithInt:XCUIElementTypeButton],@"button",
-                             [NSNumber numberWithInt:XCUIElementTypeCell],@"cell",
-                             [NSNumber numberWithInt:XCUIElementTypeCheckBox],@"checkBox",
-                             [NSNumber numberWithInt:XCUIElementTypeCollectionView],@"collectionView",
-                             [NSNumber numberWithInt:XCUIElementTypeColorWell],@"colorWell",
-                             [NSNumber numberWithInt:XCUIElementTypeComboBox],@"comboBox",
-                             [NSNumber numberWithInt:XCUIElementTypeDatePicker],@"datePicker",
-                             [NSNumber numberWithInt:XCUIElementTypeDecrementArrow],@"decrementArrow",
-                             [NSNumber numberWithInt:XCUIElementTypeDialog],@"dialog",
-                             [NSNumber numberWithInt:XCUIElementTypeDisclosureTriangle],@"disclosureTriangle",
-                             [NSNumber numberWithInt:XCUIElementTypeDockItem],@"dockItem",
-                             [NSNumber numberWithInt:XCUIElementTypeDrawer],@"drawer",
-                             [NSNumber numberWithInt:XCUIElementTypeGrid],@"grid",
-                             [NSNumber numberWithInt:XCUIElementTypeGroup],@"group",
-                             [NSNumber numberWithInt:XCUIElementTypeHandle],@"handle",
-                             [NSNumber numberWithInt:XCUIElementTypeHelpTag],@"helpTag",
-                             [NSNumber numberWithInt:XCUIElementTypeIcon],@"icon",
-                             [NSNumber numberWithInt:XCUIElementTypeImage],@"image",
-                             [NSNumber numberWithInt:XCUIElementTypeIncrementArrow],@"incrementArrow",
-                             [NSNumber numberWithInt:XCUIElementTypeKey],@"key",
-                             [NSNumber numberWithInt:XCUIElementTypeKeyboard],@"keyboard",
-                             [NSNumber numberWithInt:XCUIElementTypeLayoutArea],@"layoutArea",
-                             [NSNumber numberWithInt:XCUIElementTypeLayoutItem],@"layoutItem",
-                             [NSNumber numberWithInt:XCUIElementTypeLevelIndicator],@"levelIndicator",
-                             [NSNumber numberWithInt:XCUIElementTypeLink],@"link",
-                             [NSNumber numberWithInt:XCUIElementTypeMap],@"map",
-                             [NSNumber numberWithInt:XCUIElementTypeMatte],@"matte",
-                             [NSNumber numberWithInt:XCUIElementTypeMenu],@"menu",
-                             [NSNumber numberWithInt:XCUIElementTypeMenuBar],@"menuBar",
-                             [NSNumber numberWithInt:XCUIElementTypeMenuBarItem],@"menuBarItem",
-                             [NSNumber numberWithInt:XCUIElementTypeMenuButton],@"menuButton",
-                             [NSNumber numberWithInt:XCUIElementTypeMenuItem],@"menuItem",
-                             [NSNumber numberWithInt:XCUIElementTypeNavigationBar],@"navigationBar",
-                             [NSNumber numberWithInt:XCUIElementTypeOther],@"other",
-                             [NSNumber numberWithInt:XCUIElementTypeOutline],@"outline",
-                             [NSNumber numberWithInt:XCUIElementTypeOutlineRow],@"outlineRow",
-                             [NSNumber numberWithInt:XCUIElementTypePageIndicator],@"pageIndicator",
-                             [NSNumber numberWithInt:XCUIElementTypePicker],@"picker",
-                             [NSNumber numberWithInt:XCUIElementTypePickerWheel],@"pickerWheel",
-                             [NSNumber numberWithInt:XCUIElementTypePopUpButton],@"popUpButton",
-                             [NSNumber numberWithInt:XCUIElementTypePopover],@"popover",
-                             [NSNumber numberWithInt:XCUIElementTypeProgressIndicator],@"progressIndicator",
-                             [NSNumber numberWithInt:XCUIElementTypeRadioButton],@"radioButton",
-                             [NSNumber numberWithInt:XCUIElementTypeRadioGroup],@"radioGroup",
-                             [NSNumber numberWithInt:XCUIElementTypeRatingIndicator],@"ratingIndicator",
-                             [NSNumber numberWithInt:XCUIElementTypeRelevanceIndicator],@"relevanceIndicator",
-                             [NSNumber numberWithInt:XCUIElementTypeRuler],@"ruler",
-                             [NSNumber numberWithInt:XCUIElementTypeRulerMarker],@"rulerMarker",
-                             [NSNumber numberWithInt:XCUIElementTypeScrollBar],@"scrollBar",
-                             [NSNumber numberWithInt:XCUIElementTypeScrollView],@"scrollView",
-                             [NSNumber numberWithInt:XCUIElementTypeSearchField],@"searchField",
-                             [NSNumber numberWithInt:XCUIElementTypeSecureTextField],@"secureTextField",
-                             [NSNumber numberWithInt:XCUIElementTypeSegmentedControl],@"segmentedControl",
-                             [NSNumber numberWithInt:XCUIElementTypeSheet],@"sheet",
-                             [NSNumber numberWithInt:XCUIElementTypeSlider],@"slider",
-                             [NSNumber numberWithInt:XCUIElementTypeSplitGroup],@"splitGroup",
-                             [NSNumber numberWithInt:XCUIElementTypeSplitter],@"splitter",
-                             [NSNumber numberWithInt:XCUIElementTypeStaticText],@"staticText",
-                             [NSNumber numberWithInt:XCUIElementTypeStatusBar],@"statusBar",
-                             [NSNumber numberWithInt:XCUIElementTypeStatusItem],@"statusItem",
-                             [NSNumber numberWithInt:XCUIElementTypeStepper],@"stepper",
-                             [NSNumber numberWithInt:XCUIElementTypeSwitch],@"switch",
-                             [NSNumber numberWithInt:XCUIElementTypeTab],@"tab",
-                             [NSNumber numberWithInt:XCUIElementTypeTabBar],@"tabBar",
-                             [NSNumber numberWithInt:XCUIElementTypeTabGroup],@"tabGroup",
-                             [NSNumber numberWithInt:XCUIElementTypeTable],@"table",
-                             [NSNumber numberWithInt:XCUIElementTypeTableColumn],@"tableColumn",
-                             [NSNumber numberWithInt:XCUIElementTypeTableRow],@"tableRow",
-                             [NSNumber numberWithInt:XCUIElementTypeTextField],@"textField",
-                             [NSNumber numberWithInt:XCUIElementTypeTextView],@"textView",
-                             [NSNumber numberWithInt:XCUIElementTypeTimeline],@"timeline",
-                             [NSNumber numberWithInt:XCUIElementTypeToggle],@"toggle",
-                             [NSNumber numberWithInt:XCUIElementTypeToolbar],@"toolbar",
-                             [NSNumber numberWithInt:XCUIElementTypeToolbarButton],@"toolbarButton",
-                             [NSNumber numberWithInt:XCUIElementTypeValueIndicator],@"valueIndicator",
-                             [NSNumber numberWithInt:XCUIElementTypeWebView],@"webView",
-                             [NSNumber numberWithInt:XCUIElementTypeWindow],@"window",
-                             [NSNumber numberWithInt:XCUIElementTypeTouchBar],@"touchBar",
-                           nil
-    ];
-  
     XCUIApplication *app = nil;
     
-    XCUIApplication *systemApp = nil;
-    NSInteger pid = [[XCAXClient_iOS.sharedClient systemApplication] processIdentifier];
-    systemApp = (XCUIApplication *)[XCUIApplication appProcessWithPID:pid];
-    //systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
-        
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
+    SnapshotApplication *systemApp = [XCUIApplication systemSnapshotApp];
+    
     XCUIDevice *device = XCUIDevice.sharedDevice;
-  
+    
+    /*__block XCUIApplicationSpecifier *systemSpecifier;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    [XCTRunnerDaemonSession.sharedSession requestApplicationSpecifierForPID:pid reply:^(XCUIApplicationSpecifier *specifier, NSError *err) {
+            systemSpecifier = specifier;
+            dispatch_semaphore_signal(sem);
+        }
+    ];
+    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
+    systemApp = [[XCUIApplication alloc] initWithApplicationSpecifier:systemSpecifier device:device];*/
+        
+    //systemApp = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
+    //systemApp = (XCUIApplication *)[systemApp firstMatch];
+    
+    //systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
+    
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:10];
+      
     XCUIApplication *sbApp = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
     
     NSMutableDictionary *cmdFuncs = [[NSMutableDictionary alloc] initWithCapacity:10];
    
-    #define CHANDLE(name,name2) cmdFuncs[@#name] = [NSValue valueWithPointer:(const void * _Nullable)&handle ## name2 ];
-    CHANDLE(activeApps,ActiveApps);
-    CHANDLE(alertInfo,AlertInfo);
-    CHANDLE(button,Button);
-    CHANDLE(launchApp,LaunchApp);
-    //CHANDLE(elByName,ElByName);
-    //CHANDLE(elByPid,ElByPid);
-    CHANDLE(elClick,ElClick);
-    CHANDLE(elForceTouch,ElForceTouch);
-    CHANDLE(elPos,ElPos);
-    CHANDLE(elTouchAndHold,ElTouchAndHold);
-    //CHANDLE(elementAtPoint,ElementAtPoint);
-    CHANDLE(getEl,GetEl);
-    CHANDLE(getOrientation,GetOrientation);
-    CHANDLE(setOrientation,SetOrientation);
-    CHANDLE(homeBtn,HomeBtn);
-    CHANDLE(iohid,Iohid);
-    //CHANDLE(isLocked,IsLocked);
-    //CHANDLE(lock,Lock);
-    CHANDLE(mouseDown,MouseDown);
-    CHANDLE(mouseUp,MouseUp);
-    CHANDLE(nslog,Nslog);
-    CHANDLE(ping,Ping);
-    CHANDLE(siri,Siri);
-    CHANDLE(source,Source);
-    CHANDLE(sourceJson,Source);
-    CHANDLE(startBroadcastApp,StartBroadcastApp);
-    CHANDLE(swipe,Swipe);
-    CHANDLE(tap,Tap);
-    CHANDLE(doubletap,Doubletap);
-    CHANDLE(tapFirm,TapFirm);
-    CHANDLE(tapTime,TapTime);
-    CHANDLE(toLauncher,ToLauncher);
-    CHANDLE(typeText,TypeText);
-    //CHANDLE(unlock,Unlock);
-    CHANDLE(updateApplication,UpdateApplication);
-    CHANDLE(wifiIp,WifiIp);
-    CHANDLE(restart,StartLTStream);
-    CHANDLE(launchsafariurl,OpenSafari);
-    CHANDLE(cleanbrowser,CleanBrowser);
-    CHANDLE(windowSize,WindowSize);
+    #include "CommandList.h"
    
     myData data;
     data.device = device;
     data.dict = dict;
     data.app = app;
     data.systemApp = systemApp;
-    data.typeMap = _typeMap;
     data.sbApp = sbApp;
-    data.types = types;
     data.nngServer = self;
     
     ujsonin_init();

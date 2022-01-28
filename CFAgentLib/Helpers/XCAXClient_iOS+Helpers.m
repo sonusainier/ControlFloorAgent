@@ -14,7 +14,6 @@
   return client;
 }
 
-// Weirdly it is okay to cast XCUIApplicationProcess to XCUIApplication. :|
 - (XCUIApplicationProcess*) appProcessWithPID:(NSInteger)pid {
   id <XCUIApplicationProcessTracker> processTracker = self.applicationProcessTracker;
   return [processTracker applicationProcessWithPID:(int)pid];

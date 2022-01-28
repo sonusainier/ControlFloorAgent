@@ -42,8 +42,8 @@
 
 @property(readonly, copy) XCUIElementQuery *activityIndicators;
 @property(readonly, copy) XCUIElementQuery *alerts;
-@property(readonly, copy) NSArray *allElementsBoundByAccessibilityElement;
-@property(readonly, copy) NSArray *allElementsBoundByIndex;
+//@property(readonly, copy) NSArray *allElementsBoundByAccessibilityElement;
+//@property(readonly, copy) NSArray *allElementsBoundByIndex;
 @property(readonly, copy) NSSet *allExpressedTypes;
 @property(readonly) XCUIApplication *application;
 @property(readonly, copy) XCUIElementQuery *bannerNotifications;
@@ -55,7 +55,7 @@
 @property(readonly, copy) XCUIElementQuery *collectionViews;
 @property(readonly, copy) XCUIElementQuery *colorWells;
 @property(readonly, copy) XCUIElementQuery *comboBoxes;
-@property(readonly) NSUInteger count;
+//@property(readonly) NSUInteger count;
 @property(readonly, copy) XCUIElementQuery *datePickers;
 @property(readonly, copy) XCUIElementQuery *decrementArrows;
 @property(readonly, copy) XCUIElementQuery *dialogs;
@@ -63,7 +63,7 @@
 @property(readonly, copy) XCUIElementQuery *disclosureTriangles;
 @property(readonly, copy) XCUIElementQuery *dockItems;
 @property(readonly, copy) XCUIElementQuery *drawers;
-@property(readonly) XCUIElement *element;
+//@property(readonly) XCUIElement *element;
 @property(readonly, copy) NSString *elementDescription;
 @property(readonly) id <XCTElementSnapshotAttributeDataSource> elementSnapshotAttributeDataSource;
 @property(readonly, copy) XCUIElementQuery *excludingNonModalElements;

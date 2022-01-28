@@ -61,7 +61,7 @@
 - (id)_snapshotsForInterruptingElementsPresentedByApplication:(id)arg1 interuptedSnapshotFrame:(CGRect)arg2;
 - (BOOL)_unloadAccessibility:(id *)arg1;
 - (id)accessibilityElementForElementAtPoint:(CGPoint)arg1 error:(id *)arg2;
-- (id)activeApplications;
+- (NSArray<XCAccessibilityElement *> *)activeApplications;
 - (id)addObserverForAXNotification:(id)arg1 handler:(CDUnknownBlockType)arg2;
 - (id)attributesForElement:(id)arg1 attributes:(id)arg2 error:(id *)arg3;
 - (BOOL)cachedAccessibilityLoadedValueForPID:(NSInteger)arg1;

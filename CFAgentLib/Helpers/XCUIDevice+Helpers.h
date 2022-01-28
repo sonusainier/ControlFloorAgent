@@ -26,8 +26,14 @@
                                usage:(unsigned int)usage
                             duration:(NSTimeInterval)duration
                                error:(NSError **)error;
-
+- (BOOL)cf_iohid_with_modifier:(unsigned int)page
+           usage:(unsigned int)usage
+        duration:(NSTimeInterval)duration
+        modifier:(XCUIKeyModifierFlags)flags
+           error:(NSError **)error;
 - (NSString *)cf_startBroadcastApp;
+
+- (void)cf_typeKey:(XCUIApplication *)app;
 
 
 //LT Changes Start
@@ -47,5 +53,4 @@
 - (BOOL)LT_cleanBrowser:(NSString *)bid;
 
 //LT Changes End
-
 @end

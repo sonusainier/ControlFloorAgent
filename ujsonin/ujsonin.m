@@ -5,7 +5,6 @@
 #include<stdint.h>
 #include"red_black_tree.h"
 #include"string-tree.h"
-
 #include"ujsonin.h"
 
 node_hash *parse_with_default( char *file, char *def, char **d1, char **d2 ) {
@@ -197,6 +196,14 @@ char *node_hash__get_str( node_hash *self, char *key, long keyLen ) {
     char *buffer = malloc( nodeStr->len + 1 );
     sprintf( buffer, "%.*s", (int)nodeStr->len, nodeStr->str );
     return buffer;
+}
+
+NSString *node_hash__get_str_ns( node_hash *self, char *key, long keyLen ) {
+    char *str = node_hash__get_str( self, key, keyLen );
+    if( !str ) return nil;
+    NSString *out = [NSString stringWithUTF8String:str];
+    free( str );
+    return out;
 }
 
 uint8_t hexlet( char let ) {

@@ -55,7 +55,7 @@
 - (id)mainScreenOrError:(id *)arg1;
 - (id)makeDiagnosticScreenshotAttachmentForDevice;
 - (BOOL)performDeviceEvent:(id)arg1 error:(id *)arg2;
-- (void)performWithKeyModifiers:(NSUInteger)arg1 block:(CDUnknownBlockType)arg2;
+- (void)performWithKeyModifiers:(XCUIKeyModifierFlags)flags block:(XCT_NOESCAPE void (^)(void))block;
 - (NSInteger)platform;
 - (id)platformApplicationManager;
 - (BOOL)playBackHIDEventRecordingFromURL:(id)arg1 error:(id *)arg2;

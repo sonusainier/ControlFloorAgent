@@ -107,7 +107,7 @@
 - (id)screenshotAttachmentWithName:(id)arg1 lifetime:(NSInteger)arg2;
 - (id)screenshotWithEncoding:(id)arg1;
 - (void)scrollByDeltaX:(double)arg1 deltaY:(double)arg2;
-- (id)snapshotWithError:(id *)arg1;
+//- (nullable id<XCUIElementSnapshot>)snapshotWithError:(id *)arg1;
 - (void)swipeDown;
 - (void)swipeDownWithVelocity:(double)arg1;
 - (void)swipeLeft;
@@ -122,9 +122,10 @@
 - (NSUInteger)traits;
 - (void)tripleClick;
 - (void)twoFingerTap;
-- (void)typeText:(id)arg1;
-- (id)valueForAccessibilityAttribute:(id)arg1 error:(id *)arg2;
-- (id)valuesForAccessibilityAttributes:(id)arg1 error:(id *)arg2;
+//- (void)typeText:(id)arg1;
+//- (void)typeKey:(NSString *)key modifierFlags:(XCUIKeyModifierFlags)flags;
+//- (id)valueForAccessibilityAttribute:(id)arg1 error:(id *)arg2;
+//- (id)valuesForAccessibilityAttributes:(id)arg1 error:(id *)arg2;
 - (BOOL)waitForExistenceWithTimeout:(double)arg1;
 
 

@@ -139,6 +139,40 @@
   return [self performDeviceEvent:event error:error];
 }
 
+- (BOOL)cf_iohid_with_modifier:(unsigned int)page
+           usage:(unsigned int)usage
+        duration:(NSTimeInterval)duration
+        modifier:(XCUIKeyModifierFlags)flags
+           error:(NSError **)errorOut
+{
+  XCDeviceEvent *event = [XCDeviceEvent deviceEventWithPage:page usage:usage duration:duration];
+  __block bool success;
+  dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+  
+  __block NSError *error2 = nil;
+  [self performWithKeyModifiers:flags block:^{
+    NSError *error = nil;
+    success = [self performDeviceEvent:event error:&error];
+    if( error != nil ) error2 = error;
+    dispatch_semaphore_signal(sem);
+  }];
+  dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
+  if( errorOut != nil ) *errorOut = error2;
+  return success;
+}
+
+- (void)cf_typeKey:(XCUIApplication *)app
+{
+    XCUIKeyModifierFlags flags = XCUIKeyModifierShift;
+    //XCUIElement *sys = (XCUIElement *) my->systemApp;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    [self performWithKeyModifiers:flags block:^{
+      [app typeText:@"a"];
+      dispatch_semaphore_signal(sem);
+    }];
+    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)));
+}
+
 - (NSString *)cf_startBroadcastApp {
   XCAXClient_iOS *axClient = XCAXClient_iOS.sharedClient;
   NSInteger pid = [[axClient systemApplication] processIdentifier];
@@ -179,17 +213,21 @@
   //XCUIApplication *systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
   
   XCUIApplication *app = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.LT.LTApp"];
-  
-  if( app.state < 2 )   [app launch];
-  else                  [app activate];
+  NSString *ver = [[UIDevice currentDevice] systemVersion];
+  int os = [ver intValue];
   [NSThread sleepForTimeInterval:1.0];
   
   [app.buttons[@"Broadcast Selector"] tap];
   [NSThread sleepForTimeInterval:1.0];
  
-  if( !IOS_LESS_THAN( @"14.0" ) ) [systemApp.buttons[@"Start Broadcast"] tap];
-  else                            [app.staticTexts[@"Start Broadcast"] tap];
-  [NSThread sleepForTimeInterval:3.0];
+  if( os >= 14) {
+    [systemApp.buttons[@"Start Broadcast"] tap];
+    [NSThread sleepForTimeInterval:3.0];
+  }
+  else{
+    [app.staticTexts[@"Start Broadcast"] tap];
+    [NSThread sleepForTimeInterval:3.0];
+  }
   
   [XCUIDevice.sharedDevice pressButton: XCUIDeviceButtonHome];
   [NSThread sleepForTimeInterval:2.0];
