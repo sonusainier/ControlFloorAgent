@@ -213,6 +213,8 @@
   //XCUIApplication *systemApp = [XCTRunnerDaemonSession.sharedSession appWithPID:pid];
   
   XCUIApplication *app = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.LT.LTApp"];
+  if( app.state < 2 )   [app launch];
+  else                  [app activate];
   NSString *ver = [[UIDevice currentDevice] systemVersion];
   int os = [ver intValue];
   [NSThread sleepForTimeInterval:1.0];
@@ -239,21 +241,26 @@
 
 - (NSString *)LT_openUrl:(NSString *)url
 {
-  
   XCUIApplication *app = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.mobilesafari"];
+  if( app.state < 2 )   [app launch];
+  else                  [app activate];
   NSString *urlStr = [NSString stringWithFormat:@"%@\n", url];
   if (IOS_GREATER_THAN_OR_EQUAL_TO(@"15.0")){
     if (app.textFields[@"TabBarItemTitle"].exists){
       [app.textFields[@"TabBarItemTitle"] tap];
     }
     else{
-      [app.buttons[@"UnifiedTabBarItemView?isSelected=true"] tap];
+      if (app.buttons[@"UnifiedTabBarItemView?isSelected=true"].exists){
+        [app.buttons[@"UnifiedTabBarItemView?isSelected=true"] tap];
+      }
     }
     [app typeText: urlStr];
     
   } else{
-    [app.buttons[@"URL"] tap];
-    [app typeText: urlStr];
+    if (app.buttons[@"URL"].exists){
+      [app.buttons[@"URL"] tap];
+      [app typeText: urlStr];
+    }
   }
   return @"true";
   
