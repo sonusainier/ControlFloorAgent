@@ -244,6 +244,9 @@
   XCUIApplication *app = [ [XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.mobilesafari"];
   if( app.state < 2 )   [app launch];
   else                  [app activate];
+  
+  [NSThread sleepForTimeInterval:2.0];
+  
   NSString *urlStr = [NSString stringWithFormat:@"%@\n", url];
   if (IOS_GREATER_THAN_OR_EQUAL_TO(@"15.0")){
     if (app.textFields[@"TabBarItemTitle"].exists){
